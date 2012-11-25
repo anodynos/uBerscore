@@ -14,12 +14,13 @@ globalDefaults = _.clone data.globalDefaults, true
 bundleDefaults = _.clone data.bundleDefaults, true
 obj = _.clone data.obj, true
 arrInt = _.clone data.arrInt, true
+arrInt2 = _.clone data.arrInt2, true
 arrStr = _.clone data.arrStr, true
 
 # simple usage
-describe "grab: version 0.0.1 ", ->
-  describe "grab: Object passed, no params, ", ->
-    result = _B.grab obj
+describe "go: version 0.0.1 ", ->
+  describe "go: Object passed, no params, ", ->
+    result = _B.go obj
     it "should be a same looking object", ->
       expect( result ).to.deep.equal obj
 
@@ -27,8 +28,8 @@ describe "grab: version 0.0.1 ", ->
      expect( result ).to.not.equal obj
      expect( result isnt obj ).to.equal true # is / === check equality ?
 
-  describe "grab: Array<int> passed, no params, ", ->
-    result = _B.grab arrInt
+  describe "go: Array<int> passed, no params, ", ->
+    result = _B.go arrInt
     it "equal's contents array returned", ->
       expect( result ).to.deep.equal arrInt
 
@@ -36,8 +37,8 @@ describe "grab: version 0.0.1 ", ->
       expect( ).to.not.equal arrInt
 
 
-  describe "grab: Array<String> passed, no params, ", ->
-    result = _B.grab _B.grab arrStr
+  describe "go: Array<String> passed, no params, ", ->
+    result = _B.go _B.go arrStr
     it "equal's contents array returned", ->
       expect( result ).to.deep.equal arrStr
 
@@ -46,25 +47,25 @@ describe "grab: version 0.0.1 ", ->
 
 
   # filter
-  describe "grab: Filter : Object ", ->
+  describe "go: Filter : Object ", ->
     it "keys named b", ->
       expect(
-        _B.grab obj, filter: (val, key)-> key not in ["b"]
+        _B.go obj, filter: (val, key)-> key not in ["b"]
       ).to.deep.equal
         ciba: 4, aaa: 7, c: -1
 
     it "values < 5", ->
       expect(
-        _B.grab obj, filter: (val, key)-> val < 5
+        _B.go obj, filter: (val, key)-> val < 5
       ).to.deep.equal
         ciba: 4, b: 2, c: -1
 
 
   # Filter & sortBy Object
   describe "Object: filter values < 5 and sortBy key, ", ->
-    result = _B.grab obj,
-          filter : (val, key)-> val < 5
-          sortBy : (val, key)-> key
+    result = _B.go obj,
+          filter: (val, key)-> val < 5
+          sort: (val, key)-> key
 
     it "deeply equals {b: 2, ciba: 4, c: -1}", ->
       expect(result).to.deep.equal
@@ -75,13 +76,13 @@ describe "grab: version 0.0.1 ", ->
           'b', 'c', 'ciba']
 
     it "iter respects sorted order", ->
-      expect( _.map (_B.grab result), (v,k)->k ).to.deep.equal [
+      expect( _.map (_B.go result), (v,k)->k ).to.deep.equal [
           'b', 'c', 'ciba']
 
   describe "Object: filter large key-names & sortBy value descenting", ->
-    result = _B.grab obj,
-          filter : (val, key)-> key.length < 4
-          sortBy : (val, key)-> -val
+    result = _B.go obj,
+          filter: (val, key)-> key.length < 4
+          sort: (val, key)-> -val
 
     it "deeply equals {aaa: 7, b: 2, c: -1}", ->
       expect(result).to.deep.equal
@@ -92,47 +93,45 @@ describe "grab: version 0.0.1 ", ->
           'aaa', 'b', 'c' ]
 
     it "iter respects sorted order", ->
-      expect( _.map (_B.grab result), (v,k)->k ).to.deep.equal [
+      expect( _.map (_B.go result), (v,k)->k ).to.deep.equal [
           'aaa', 'b', 'c']
 
   # Filter & sortBy Array<int>
   describe "Object: filter values < 5 and sortBy value", ->
-    result = _B.grab arrInt,
-          filter : (val, key)-> val < 5
-          sortBy : (val, key)-> val
+    result = _B.go arrInt,
+          filter: (val, key)-> val < 5
+          sort: (val, key)-> val
 
     it "deeply equals [-1, 2, 4] ", ->
       expect(result).to.deep.equal [-1, 2, 4] ## order matters!
 
   # Filter & sortBy Array<String>
   describe "Object: filter historical names and sortBy value", ->
-    result = _B.grab arrStr,
-          filter : (val, key)-> val not in ['Babylon', 'Sparta']
-          sortBy : (val, key)-> val
+    result = _B.go arrStr,
+          filter: (val, key)-> val not in ['Babylon', 'Sparta']
+          sort: (val, key)-> val
 
     it "deeply equals ['Agelos', 'Anodynos', 'Pikoulas' ] ", ->
       expect(result).to.deep.equal ['Agelos', 'Anodynos', 'Pikoulas'] ## order matters!
 
-
-
   # Collecting!
-  describe "Collectin types & objects", ->
+  describe "Collecting types & objects", ->
     describe "Object: collects to Array & Object!", ->
 
       it "collect values as Array ", ->
         expect(
-          _B.grab obj,
-            sortBy: (v,k)->k # @todo true to use default ({}: key, []:val)
-            collect: '[]' # or 'array', 'a' or [] (slower). Will collect VALUES on this type
+          _B.go obj,
+            sort: (v,k)->k # @todo true to use default ({}: key, []:val)
+            grub: '[]' # or 'array', 'a' or [] (slower). Will collect VALUES on this type
         ).to.deep.equal(
           [ 7, 2, -1, 4 ]
         )
 
       it "declaratively collect on another object, but also returns Obj!", ->
         newObj = {oldKey: "oldValue"}
-        result = _B.grab obj,
-                    sortBy: (v,k)->k #
-                    collect: newObj
+        result = _B.go obj,
+                    sort: (v,k)->k #
+                    grub: newObj
 
         expect(newObj).to.deep.equal { oldKey: "oldValue", aaa:7, b:2, c:-1, ciba:4 }
         expect(result).to.deep.equal { aaa:7, b:2, c:-1, ciba:4 }
@@ -140,9 +139,9 @@ describe "grab: version 0.0.1 ", ->
 
       it "collects keys as Array but returns sorted Obj!", ->
         newArr = []
-        result = _B.grab obj,
-                    sortBy: (v,k)->k #
-                    collect: (v,k)-> newArr.push k
+        result = _B.go obj,
+                    sort: (v,k)->k #
+                    grub: (v,k)-> newArr.push k
 
         expect(newArr).to.deep.equal [ 'aaa', 'b', 'c', 'ciba' ]
         expect(result).to.deep.equal { aaa:7, b:2, c:-1, ciba:4 }
@@ -151,10 +150,10 @@ describe "grab: version 0.0.1 ", ->
     describe "Array: collects to Array & Object!", ->
       it "", ->
         expect(
-          _B.grab arrInt,
-            sortBy: (v,k)->v # @todo true to use default ({}: key, []:val)
+          _B.go arrInt,
+            sort: (v,k)->v # @todo true to use default ({}: key, []:val)
             filter: (v)-> v < 7
-            collect: '{}' # or 'object', 'o' or {} (slower!). Will collect VALUES on this type
+            grub: '{}' # or 'object', 'o' or {} (slower!). Will collect VALUES on this type
         ).to.deep.equal(
           { '0': -1, '1': 2, '2': 4 }
         )
@@ -162,33 +161,30 @@ describe "grab: version 0.0.1 ", ->
       it "declaratively collects array values as objects values, with idx as key",->
         newObj = {oldKey: "oldValue"}
 
-        result = _B.grab arrInt,
-                    sortBy: (v)-> v #todo: true for value sorting
-                    collect: newObj
-        console.log newObj
+        result = _B.go arrInt,
+                    sort: (v)-> v #todo: true for value sorting
+                    grub: newObj
+
         expect(newObj).to.deep.equal { '0': -1, '1': 2, '2': 4, '3': 7, oldKey: 'oldValue' }
-
-        it "it also returns Array of oa items, as they should be", ->
-          expect(result).to.deep.equal { '0': -1, '1': 2, '2': 4, '3': 7 }
-
+        #it "it also returns Array of oa items, as they should be", ->
+        expect(result).to.deep.equal { '0': -1, '1': 2, '2': 4, '3': 7 }
 
       it "collects keys/values in Array but returns sorted Obj!", ->
         newObj = {oldKey: "oldValue"}
 
-        result = _B.grab arrInt,
-                    sortBy: (v,k)->v
-                    collect: (v,k)-> newObj[k] = v
+        result = _B.go arrInt,
+                    sort: (v,k)->v
+                    grub: (v,k)-> newObj[k] = v
 
         expect(newObj).to.deep.equal { '0': -1, '1': 2, '2': 4, '3': 7, oldKey: 'oldValue' }
-
-        it "it also returns Array of oa items, as they should be", ->
-          expect(result).to.deep.equal [ -1, 2, 4, 7 ]
+        #it "it also returns Array of oa items, as they should be", ->
+        expect(result).to.deep.equal [ -1, 2, 4, 7 ]
 
 
   describe "Object: mimicking various _ functions!", ->
     it "resembles _.pick with single string name", ->
       expect(
-        _B.grab obj, filter: 'ciba'
+        _B.go obj, filter: 'ciba'
       ).to.deep.equal(
         _.pick obj, 'ciba'
       )
@@ -197,28 +193,65 @@ describe "grab: version 0.0.1 ", ->
       aaa = {}
       aaa.toString =-> 'aaa'
       expect(
-        _B.grab obj, filter: ['ciba', aaa]
+        _B.go obj, filter: ['ciba', aaa]
       ).to.deep.equal(
         _.pick obj, 'ciba', aaa
       )
 
     it "resembles _.omit ", ->
       expect(
-        _B.grab obj, filter: (v,k)-> k not in ['ciba', 'aaa']
+        _B.go obj, filter: (v,k)-> k not in ['ciba', 'aaa']
       ).to.deep.equal(
         _.omit obj, 'ciba', 'aaa'
       )
 
+    it "resembles _.difference", ->
+      expect(
+        _B.go arrInt, filter: (v)-> v not in arrInt2
+      ).to.deep.equal(
+        _.difference arrInt, arrInt2
+      )
+
+    it "resembles _.map", ->
+      ar = []
+      _B.go obj, grub:(v)-> ar.push v
+      expect( ar ).to.deep.equal( _.map obj, (v)->v )
+
+    it "resembles _.map, with a difference: not restricted to collect in array!", ->
+      ob = {}
+      _B.go obj, grub:(v,k)-> ob[v]=k
+
+      expect(ob).to.deep.equal(
+        '4':'ciba', '7':'aaa', '2':'b', '-1':'c'
+      )
+
     it "resembles _.keys (with order guaranteed!)", ->
       keys = []
-      _B.grab obj,
-        sortBy: (v,k)->k
-        collect: (v,k)->keys.push k  # @todo: allow 'keys' as shortcut for [] & keys ???
-
+      result = _B.go obj,
+        sort: (v,k)->k
+        grub: (v,k)->keys.push k  # @todo: allow 'keys' as shortcut for [] & keys ???
       expect(keys).to.deep.equal (_.keys obj).sort()
 
-      it "it also returns object of oa items, as they should be", ->
-         expect(result).to.deep.equal { aaa: 7, b: 2, c: -1, ciba: 4}
+      #it "it also returns object of oa items, as they should be", ->
+      expect(result).to.deep.equal { aaa: 7, b: 2, c: -1, ciba: 4}
+
+    it "resembles _.pluck", ->
+      stooges = [
+          { 'name': 'moe', 'age': 40 },
+          { 'name': 'larry', 'age': 50 },
+          { 'name': 'curly', 'age': 60 }
+        ]
+      names = []
+      _B.go stooges, grub: (v)-> names.push v.name
+
+      expect(names).to.deep.equal _.pluck stooges, 'name'
+
+      #it "but can grab more than just field names", ->
+      agedNames = []
+      _B.go stooges,
+        grub: (v)-> agedNames.push v.name + " (" + v.age + ")"
+
+      expect(agedNames).to.deep.equal ['moe (40)', 'larry (50)', 'curly (60)']
 
 
   describe "Original objects not mutated", ->
@@ -228,6 +261,7 @@ describe "grab: version 0.0.1 ", ->
     expect(obj).to.deep.equal data.obj
     expect(arrStr).to.deep.equal data.arrStr
     expect(arrInt).to.deep.equal data.arrInt
+    expect(arrInt2).to.deep.equal data.arrInt2
 
   #  @todo : chainin & mixins
   #_.mixin({eachSort:__.eachSort})

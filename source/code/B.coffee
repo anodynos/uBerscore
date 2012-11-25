@@ -1,5 +1,5 @@
 _ = require 'lodash'
-### grab & deepExtend & deepCloneDefaults combined! ###
+### go & deepExtend & deepCloneDefaults combined! ###
 
 
 B = (actions, oa...)-> # @todo: implmement it!
@@ -46,9 +46,10 @@ myFinalSettings = B(
                                                     # If false, its copied by reference.
 
 
-  sortBy: (value, indexOrKey, collection)-> #see _B.grab
-  iter: (value, indexOrKey, collection)-> #see _B.grab
-  map: (value, indexOrKey, collection)-> #see _B.grab
+  sort: (value, indexOrKey, collection)-> #see _B.go
+  iter: (value, indexOrKey, collection)-> #see _B.go
+  grab: (value, indexOrKey, collection)-> #see _B.go
+  map: (value, indexOrKey, collection)-> #see _B.go
 
   opts:
     context: bundleDefaults

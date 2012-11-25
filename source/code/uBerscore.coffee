@@ -1,7 +1,7 @@
 class uBerscore # @todo: integrate with _ & allow chaining,
                 # @todo: instantation of a B object (ala jQuery object) - see B.coffee
 
-  grab: require './grab'
+  go: require './go'
 
   deepExtend: require './deepExtend'
 

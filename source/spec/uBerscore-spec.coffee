@@ -9,4 +9,4 @@ expect = chai.expect
 
 describe 'deepCloneDefaults', ->
   it "should ", ->
-    assert.deepEqual {}, _B.grab {}
+    assert.deepEqual {}, _B.go {}
