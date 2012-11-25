@@ -50,13 +50,13 @@ describe "go: version 0.0.1 ", ->
   describe "go: Filter : Object ", ->
     it "keys named b", ->
       expect(
-        _B.go obj, filter: (val, key)-> key not in ["b"]
+        _B.go obj, fltr: (val, key)-> key not in ["b"]
       ).to.deep.equal
         ciba: 4, aaa: 7, c: -1
 
     it "values < 5", ->
       expect(
-        _B.go obj, filter: (val, key)-> val < 5
+        _B.go obj, fltr: (val, key)-> val < 5
       ).to.deep.equal
         ciba: 4, b: 2, c: -1
 
@@ -64,7 +64,7 @@ describe "go: version 0.0.1 ", ->
   # Filter & sortBy Object
   describe "Object: filter values < 5 and sortBy key, ", ->
     result = _B.go obj,
-          filter: (val, key)-> val < 5
+          fltr: (val, key)-> val < 5
           sort: (val, key)-> key
 
     it "deeply equals {b: 2, ciba: 4, c: -1}", ->
@@ -81,7 +81,7 @@ describe "go: version 0.0.1 ", ->
 
   describe "Object: filter large key-names & sortBy value descenting", ->
     result = _B.go obj,
-          filter: (val, key)-> key.length < 4
+          fltr: (val, key)-> key.length < 4
           sort: (val, key)-> -val
 
     it "deeply equals {aaa: 7, b: 2, c: -1}", ->
@@ -99,7 +99,7 @@ describe "go: version 0.0.1 ", ->
   # Filter & sortBy Array<int>
   describe "Object: filter values < 5 and sortBy value", ->
     result = _B.go arrInt,
-          filter: (val, key)-> val < 5
+          fltr: (val, key)-> val < 5
           sort: (val, key)-> val
 
     it "deeply equals [-1, 2, 4] ", ->
@@ -108,7 +108,7 @@ describe "go: version 0.0.1 ", ->
   # Filter & sortBy Array<String>
   describe "Object: filter historical names and sortBy value", ->
     result = _B.go arrStr,
-          filter: (val, key)-> val not in ['Babylon', 'Sparta']
+          fltr: (val, key)-> val not in ['Babylon', 'Sparta']
           sort: (val, key)-> val
 
     it "deeply equals ['Agelos', 'Anodynos', 'Pikoulas' ] ", ->
@@ -152,7 +152,7 @@ describe "go: version 0.0.1 ", ->
         expect(
           _B.go arrInt,
             sort: (v,k)->v # @todo true to use default ({}: key, []:val)
-            filter: (v)-> v < 7
+            fltr: (v)-> v < 7
             grub: '{}' # or 'object', 'o' or {} (slower!). Will collect VALUES on this type
         ).to.deep.equal(
           { '0': -1, '1': 2, '2': 4 }
@@ -184,7 +184,7 @@ describe "go: version 0.0.1 ", ->
   describe "Object: mimicking various _ functions!", ->
     it "resembles _.pick with single string name", ->
       expect(
-        _B.go obj, filter: 'ciba'
+        _B.go obj, fltr: 'ciba'
       ).to.deep.equal(
         _.pick obj, 'ciba'
       )
@@ -193,21 +193,21 @@ describe "go: version 0.0.1 ", ->
       aaa = {}
       aaa.toString =-> 'aaa'
       expect(
-        _B.go obj, filter: ['ciba', aaa]
+        _B.go obj, fltr: ['ciba', aaa]
       ).to.deep.equal(
         _.pick obj, 'ciba', aaa
       )
 
     it "resembles _.omit ", ->
       expect(
-        _B.go obj, filter: (v,k)-> k not in ['ciba', 'aaa']
+        _B.go obj, fltr: (v,k)-> k not in ['ciba', 'aaa']
       ).to.deep.equal(
         _.omit obj, 'ciba', 'aaa'
       )
 
     it "resembles _.difference", ->
       expect(
-        _B.go arrInt, filter: (v)-> v not in arrInt2
+        _B.go arrInt, fltr: (v)-> v not in arrInt2
       ).to.deep.equal(
         _.difference arrInt, arrInt2
       )

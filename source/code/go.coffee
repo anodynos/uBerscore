@@ -1,19 +1,19 @@
 _ = require 'lodash'
 
 ###
-An extensible, overloaded, anorthodox facade of `_.each`, `_.sort`, `_.filter` and `_.map` combined.
+An extensible, overloaded, anorthodox facade of `_.each`, `_.sort`, `_.fltr` and `_.map` combined.
 
 Unlike _.each,  it also has an interesting returned, result : a clone of the Object or Array passed, after actions are applied;
 
-Allows to enumerate, filter & sort in one go.
+Allows to enumerate, fltr & sort in one go.
    - arrays values/index
    - object's values/keys
    - *NOT IMPLEMENTED* backbone collections  #
-just like in _.each but first a filter and sort are applied, by using a comparator / filter function, just like _.sort & _.filter
+just like in _.each but first a fltr and sort are applied, by using a comparator / fltr function, just like _.sort & _.fltr
 
 Examples :
 _B.go myObject,
-   filter: (val, key)-> key not in ['mixin'] #omit - could have a shortcut for omit/pick
+   fltr: (val, key)-> key not in ['mixin'] #omit - could have a shortcut for omit/pick
 
 @see _.sort(list, iterator, [context])
 
@@ -21,12 +21,12 @@ _B.go myObject,
 
 @options actions {object} The actions to perform on this data (along with options}
 
-  @option filter {function|String}
-      A function to filter by - see [filter](http://lodash.com/docs#filter)
+  @option fltr {function|String}
+      A function to fltr by - see [fltr](http://lodash.com/docs#fltr)
           (value, index|key, collection)->
       OR
       A String or []<String>
-        *key name(s)* to filter (allow), when _.isObject oa. Acts as an alias to _.omit
+        *key name(s)* to fltr (allow), when _.isObject oa. Acts as an alias to _.omit
         *values that* are equal when _.isArray oa (pretty usless - use a ->).
 
   @option sort {function}
@@ -47,7 +47,7 @@ _B.go myObject,
           * use backboney collections only.
           * all of the above!
 
-  @option iter {function} The iterator/callback to invoke, *after* AFTER all actions (filter & sort) are applied.
+  @option iter {function} The iterator/callback to invoke, *after* AFTER all actions (fltr & sort) are applied.
       (element, index, oa)-> ## if oa is array
       (value, key, oa)-> ## if oa is object
       @todo : return false stops iteration!
@@ -71,7 +71,7 @@ _B.go myObject,
 
 ###
 go = (oa, actions, context) -> #map#
-  {filter, iter, sort, grub} = actions if actions
+  {fltr, iter, sort, grub} = actions if actions
 
   isObj = not _.isArray oa # our 'default' collection type
   newOA = -> if isObj then {} else []
@@ -124,19 +124,19 @@ go = (oa, actions, context) -> #map#
       val = oa[key]
     [val, key]
 
-  ## Apply filter:
-  if not (filter is undefined) #
+  ## Apply fltr:
+  if not (fltr is undefined) #
     resetResult()
     _.each oa, (val, key)-> # not needed! [val, key] = fixForObj val, key
-      if _.isFunction filter
-        if filter.call context, val, key, oa
+      if _.isFunction fltr
+        if fltr.call context, val, key, oa
           resultPush val, key
 #        else console.log 'Eliminating val, key ', val, key
       else
         if isObj # Object defaults for <String> & [] filters, which act on key : mimicks pick, omit etc for keys
-          filter = [ filter ] if _.isString filter
-          if _.isArray filter
-            if key in (f.toString() for f in filter)
+          fltr = [ fltr ] if _.isString fltr
+          if _.isArray fltr
+            if key in (f.toString() for f in fltr)
               resultPush val, key
 
     oa = result
@@ -205,9 +205,9 @@ newArr = [667]
 newObj = {"oldKey": "oldValue"}
 #
 #result = go obj ,
-#          #filter: ['ciba', 'b']
-#          filter : (val, key)->
-#            console.log "#### uBerscore's user filter: (val, key)->", val, key
+#          #fltr: ['ciba', 'b']
+#          fltr : (val, key)->
+#            console.log "#### uBerscore's user fltr: (val, key)->", val, key
 #            key in ['ciba', 'b']
 #
 #          sort: (val, key)->
@@ -219,8 +219,8 @@ newObj = {"oldKey": "oldValue"}
 #            newArr.push val
 
 #result = go arrInt,
-#          filter: (val, key)->
-##            console.log "#### go.filter: (val, key)->", val, key
+#          fltr: (val, key)->
+##            console.log "#### go.fltr: (val, key)->", val, key
 #            val < 5
 #
 #          sort: (val, key)->
