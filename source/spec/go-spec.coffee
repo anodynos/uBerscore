@@ -1,13 +1,12 @@
-console.log 'get-test loading'
-_ = require 'lodash'
 chai = require 'chai'
-_B = require '../code/uBerscore' #
-
 assert = chai.assert
 expect = chai.expect
 
-data = require '../spec/spec-data'
+_ = require 'lodash'
+_B = require '../code/uBerscore' #
 
+
+data = require '../spec/spec-data'
 # clone to check mutability
 projectDefaults = _.clone data.projectDefaults, true
 globalDefaults = _.clone data.globalDefaults, true
@@ -122,7 +121,7 @@ describe "go: version 0.0.1 ", ->
         expect(
           _B.go obj,
             sort: (v,k)->k # @todo true to use default ({}: key, []:val)
-            grub: '[]' # or 'array', 'a' or [] (slower). Will collect VALUES on this type
+            grab: '[]' # or 'array', 'a' or [] (slower). Will collect VALUES on this type
         ).to.deep.equal(
           [ 7, 2, -1, 4 ]
         )
@@ -131,50 +130,50 @@ describe "go: version 0.0.1 ", ->
         newObj = {oldKey: "oldValue"}
         result = _B.go obj,
                     sort: (v,k)->k #
-                    grub: newObj
+                    grab: newObj
 
         expect(newObj).to.deep.equal { oldKey: "oldValue", aaa:7, b:2, c:-1, ciba:4 }
         expect(result).to.deep.equal { aaa:7, b:2, c:-1, ciba:4 }
 
 
-      it "collects keys as Array but returns sorted Obj!", ->
+      it "using grab:-> collects keys as Array (in reverse -unsihft!), but returns sorted proper sorted Obj!", ->
         newArr = []
         result = _B.go obj,
                     sort: (v,k)->k #
-                    grub: (v,k)-> newArr.push k
+                    grab: (v,k)-> newArr.unshift k
 
-        expect(newArr).to.deep.equal [ 'aaa', 'b', 'c', 'ciba' ]
+        expect(newArr).to.deep.equal [ 'ciba', 'c', 'b', 'aaa']
         expect(result).to.deep.equal { aaa:7, b:2, c:-1, ciba:4 }
 
 
-    describe "Array: collects to Array & Object!", ->
-      it "", ->
+    describe "Array: collects to Object (& Array)!", ->
+      it "returns an Object when grab instructs it", ->
         expect(
           _B.go arrInt,
             sort: (v,k)->v # @todo true to use default ({}: key, []:val)
             fltr: (v)-> v < 7
-            grub: '{}' # or 'object', 'o' or {} (slower!). Will collect VALUES on this type
+            grab: '{}' # or 'object', 'o' or {} (slower!). Will collect VALUES on this type
         ).to.deep.equal(
           { '0': -1, '1': 2, '2': 4 }
         )
 
-      it "declaratively collects array values as objects values, with idx as key",->
+      it "'grab' declaratively collects array values as object values, with idx as key",->
         newObj = {oldKey: "oldValue"}
 
         result = _B.go arrInt,
                     sort: (v)-> v #todo: true for value sorting
-                    grub: newObj
+                    grab: newObj
 
         expect(newObj).to.deep.equal { '0': -1, '1': 2, '2': 4, '3': 7, oldKey: 'oldValue' }
         #it "it also returns Array of oa items, as they should be", ->
         expect(result).to.deep.equal { '0': -1, '1': 2, '2': 4, '3': 7 }
 
-      it "collects keys/values in Array but returns sorted Obj!", ->
+      it "using a function, it collects keys/values newObj, but returns sorted Array!", ->
         newObj = {oldKey: "oldValue"}
 
         result = _B.go arrInt,
                     sort: (v,k)->v
-                    grub: (v,k)-> newObj[k] = v
+                    grab: (v,k)-> newObj[k] = v
 
         expect(newObj).to.deep.equal { '0': -1, '1': 2, '2': 4, '3': 7, oldKey: 'oldValue' }
         #it "it also returns Array of oa items, as they should be", ->
@@ -214,12 +213,12 @@ describe "go: version 0.0.1 ", ->
 
     it "resembles _.map", ->
       ar = []
-      _B.go obj, grub:(v)-> ar.push v
+      _B.go obj, grab:(v)-> ar.push v
       expect( ar ).to.deep.equal( _.map obj, (v)->v )
 
     it "resembles _.map, with a difference: not restricted to collect in array!", ->
       ob = {}
-      _B.go obj, grub:(v,k)-> ob[v]=k
+      _B.go obj, grab:(v,k)-> ob[v]=k
 
       expect(ob).to.deep.equal(
         '4':'ciba', '7':'aaa', '2':'b', '-1':'c'
@@ -229,7 +228,7 @@ describe "go: version 0.0.1 ", ->
       keys = []
       result = _B.go obj,
         sort: (v,k)->k
-        grub: (v,k)->keys.push k  # @todo: allow 'keys' as shortcut for [] & keys ???
+        grab: (v,k)->keys.push k  # @todo: allow 'keys' as shortcut for [] & keys ???
       expect(keys).to.deep.equal (_.keys obj).sort()
 
       #it "it also returns object of oa items, as they should be", ->
@@ -242,14 +241,14 @@ describe "go: version 0.0.1 ", ->
           { 'name': 'curly', 'age': 60 }
         ]
       names = []
-      _B.go stooges, grub: (v)-> names.push v.name
+      _B.go stooges, grab: (v)-> names.push v.name
 
       expect(names).to.deep.equal _.pluck stooges, 'name'
 
       #it "but can grab more than just field names", ->
       agedNames = []
       _B.go stooges,
-        grub: (v)-> agedNames.push v.name + " (" + v.age + ")"
+        grab: (v)-> agedNames.push v.name + " (" + v.age + ")"
 
       expect(agedNames).to.deep.equal ['moe (40)', 'larry (50)', 'curly (60)']
 
@@ -262,13 +261,3 @@ describe "go: version 0.0.1 ", ->
     expect(arrStr).to.deep.equal data.arrStr
     expect(arrInt).to.deep.equal data.arrInt
     expect(arrInt2).to.deep.equal data.arrInt2
-
-  #  @todo : chainin & mixins
-  #_.mixin({eachSort:__.eachSort})
-  #
-  #show _(o).chain().pick( "b", "aaa").eachSort().each( (value, key, list) -> show value, key).value()
-  #
-  #myo = {}
-  #myo[key]=val for key, val of a
-  #show myo
-  #

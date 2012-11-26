@@ -1,10 +1,8 @@
-console.log 'deepExtend-test loading'
-
 chai = require 'chai'
-_B = require '../code/uBerscore' #
-
 assert = chai.assert
 expect = chai.expect
+
+_B = require '../code/uBerscore' #
 
 #describe 'deepExtend', ->
 #  it "should ", ->

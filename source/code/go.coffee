@@ -86,7 +86,7 @@ This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut fo
 
 ###
 go = (oa, actions, context) -> #map#
-  {fltr, iter, sort, grub} = actions if actions
+  {fltr, iter, sort, grab} = actions if actions
 
   isObj = not _.isArray oa # our 'default' collection type
   newOA = -> if isObj then {} else []
@@ -95,25 +95,25 @@ go = (oa, actions, context) -> #map#
   # result handling
   # holds temporary result @todo: convert to class
   result = null # 'declaration'
-  resetResult = -> # create a NEW collector, depending on our grub Collection OR oa type
+  resetResult = -> # create a NEW collector, depending on our grab Collection OR oa type
     result =
-      if grub is undefined
+      if grab is undefined
         newOA()
       else
-        if _.isFunction grub    # used to grub from outside go
+        if _.isFunction grab    # used to grab from outside go
           newOA() # use oa's type as default collector
         else
-          if _.isArray grub
+          if _.isArray grab
             []
           else
-            if _.isObject grub
+            if _.isObject grab
               {}
             else
-              if _.isString grub # string etc - are you kiddning me ?
-                if grub in ['[]', 'array', 'Array', 'a', 'A']
+              if _.isString grab # string etc - are you kiddning me ?
+                if grab in ['[]', 'array', 'Array', 'a', 'A']
                   []
                 else
-                  if grub in ['{}', 'object', 'Object', 'o', 'O' ]
+                  if grab in ['{}', 'object', 'Object', 'o', 'O' ]
                     {}
                   else
                     newOA()
@@ -121,7 +121,7 @@ go = (oa, actions, context) -> #map#
                 newOA() # use oa's type as default collector
 
 
-  # our default grub() fn, # either :
+  # our default grab() fn, # either :
   # push a result for Array,
   # OR add/overwritre a key for Object
   resultPush = (val, key)->
@@ -195,18 +195,18 @@ go = (oa, actions, context) -> #map#
       _.each oa, (val, key)->
         iter.call context, val, key, oa
 
-  # grub to our collection
-  if grub
-    if _.isFunction grub # could've done in in iter, but better keep 'em seperated (even if slower!)
+  # grab to our collection
+  if grab
+    if _.isFunction grab # could've done in in iter, but better keep 'em seperated (even if slower!)
       _.each oa, (val, key)->
-        grub.call context, val, key, oa
+        grab.call context, val, key, oa
 
     else
-      if _.isArray grub
-        grub.push arrItem for arrItem in oa
+      if _.isArray grab
+        grab.push arrItem for arrItem in oa
       else
-        if _.isObject grub
-          _.extend grub, oa
+        if _.isObject grab
+          _.extend grab, oa
 
   oa # a sorted Array or Object
 
@@ -230,8 +230,8 @@ module.exports = go
 #            console.log "#### uBerscore's user sort: (val, key)->", val, key
 #            val
 #
-#          grub: (val, key)->
-#            console.log "#### go.grub: (val, key)->", val, key
+#          grab: (val, key)->
+#            console.log "#### go.grab: (val, key)->", val, key
 #            newArr.push val
 
 #result = go arrInt,
@@ -245,10 +245,10 @@ module.exports = go
 #          iter: (val, key)->
 ##            console.log "#### go.iter: (val, key)->", val, key
 #
-#          grub:newObj
-#          grub:newArr
-#          grub: (val, key)->
-##            console.log "#### go.grub: (val, key)->", val, key
+#          grab:newObj
+#          grab:newArr
+#          grab: (val, key)->
+##            console.log "#### go.grab: (val, key)->", val, key
 #            newObj[key]=val
 #            newArr.push val
 
@@ -259,6 +259,6 @@ module.exports = go
 #
 #console.log go arrInt,
 #        sort: (v)-> v #todo: true for value sorting
-#        grub: newObj
+#        grab: newObj
 #
 #console.log newObj

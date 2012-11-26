@@ -1,10 +1,9 @@
-console.log 'deepCloneDefaults-test loading'
-_ = require 'lodash'
-_B = require '../code/uBerscore' #
-
 chai = require 'chai'
 assert = chai.assert
 expect = chai.expect
+
+_ = require 'lodash'
+_B = require '../code/uBerscore' #
 
 data = require '../spec/spec-data'
 # clone to check mutability

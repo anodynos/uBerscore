@@ -1,8 +1,8 @@
 _ = require 'lodash'
-object = b: 2, ciba: 4
 
-console.log _.map object, (val, key)-> key
 
+
+console.log rootExports("factory()", 'window')
 
 
 ###!

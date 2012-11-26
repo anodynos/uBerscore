@@ -34,7 +34,6 @@ gruntFunction = (grunt) ->
       """
       varVersion: "var version = '<%= pkg.version %>'; //injected by grunt:concat"
       mdVersion: "# uBerscore v<%= pkg.version %>"
-      usrBinEnvNode: "#!/usr/bin/env node"
 
     options:
       sourceDir:     sourceDir
@@ -55,13 +54,16 @@ gruntFunction = (grunt) ->
         command: "coffee -cbw -o ./#{buildDir} ./#{sourceDir}"
 
       uRequire:
-        command: "urequire UMD ./#{buildDir} -f"
+        command: "urequire AMD ./#{buildDir} -f -s"
 
-      uRequireSpecs:
-        command: "urequire UMD ./#{buildSpecDir} -f"
+      uRequireSpec:
+        command: "urequire AMD ./#{buildSpecDir} -f -s"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
+
+      mochaCurrent:
+        command: "mocha #{buildSpecDir}/okv-spec --recursive --bail --reporter spec"
 
       doc:
         command: "codo source/code --title 'uBerscore #{pkg.version} API documentation' --cautious"
@@ -74,19 +76,18 @@ gruntFunction = (grunt) ->
     concat:
       bin:
         src: [
-          '<banner:meta.usrBinEnvNode>'
           '<banner>'
           '<banner:meta.varVersion>'
           '<%= options.buildDir %>/uBerscore.js'
         ]
         dest:'<%= options.buildDir %>/uBerscore.js'
 
-#    copy:
-#      spec: files:"<%= options.buildSpecDir %>/":
-#            ("#{sourceSpecDir}/**/#{ext}" for ext in []) # "*.html", "*.js", "*.txt", "*.json" ])
-#
+    copy:
+      spec: files:"<%= options.buildSpecDir %>/":
+            ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
+
 #      code: files:"<%= options.buildDir %>/":
-#            ("#{sourceDir}/**/#{ext}" for ext in []) # "*.html", "*.js", "*.txt", "*.json" ])
+#            ("#{sourceDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
 
     clean:
         files: [
@@ -102,18 +103,31 @@ gruntFunction = (grunt) ->
   # generic shortcuts
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
-     "default": "clean build test"
-     "build":   "cf concat" #ur
-     "test":    "coffeeSpec mocha"
+     "default": "cl b test"
+     "build":   "cf ur concat"
+     "deploy":  "cl b cfs urs cp"
+     "test":    "cfs urs mocha"
+
       # generic shortcuts
      "cf":      "shell:coffee" # there's a 'coffee' task already!
-     "cfw":     "coffeeWatch"
+     "cfs":     "shell:coffeeSpec"
+     "cfw":     "shell:coffeeWatch"
      "cl":      "clean"
      "cp":      "copy" #" todo: all ?
      "ur":      "shell:uRequire"
+     "urs":     "shell:uRequireSpec"
      "b":       "build"
+     "d":       "deploy"
      "t":       "test"
   }
+
+  grunt.registerTask shortCut, tasks for shortCut, tasks of {
+    "alt-c": "cp"
+    "alt-b": "b"
+    "alt-d": "d"
+    "alt-t": "t"
+  }
+
 
   grunt.initConfig gruntConfig
   grunt.loadNpmTasks 'grunt-contrib'

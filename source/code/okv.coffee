@@ -1,3 +1,4 @@
+_ = require 'lodash'
 ###
  A helper to create an object literal with a dynamic (calculated) keys on the fly.
 
@@ -17,6 +18,8 @@
  ```o = okv {}, "key#{name1}",         "value1"
                  "anotherKey#{name2}", "value2"
  ```
+ result
+ ```o = {"keyfoo": "value1", "anotherKeybar", "value2"}```
 
  @param obj {Object} where k/v go
  @param keyValPairs... {String} key {String}, value {object} pairs.
@@ -26,11 +29,11 @@
  @return obj {Object} with augmented properties.
 ###
 okv = (obj, keyValPairs...)->
-  for keyName, idx in keyValPairs by 2 when idx+1 < keyValPairs.length
-      obj[keyName] = keyValPairs[idx+1]
-  obj
+  if _.isObject obj
+    for keyName, idx in keyValPairs by 2 when idx+1 < keyValPairs.length
+        obj[keyName] = keyValPairs[idx+1]
+    obj
+  else
+    null
 
 module.exports = okv
-
-o = okv {}, "marika", "pentagiotisa", "papari", 'orthio'
-console.log o

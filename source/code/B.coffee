@@ -1,6 +1,6 @@
-_ = require 'lodash'
 ### go & deepExtend & deepCloneDefaults combined! ###
-
+###    work in progress                           ###
+_ = require 'lodash'
 
 B = (actions, oa...)-> # @todo: implmement it!
 
@@ -61,6 +61,6 @@ myFinalSettings = B(
     asynch: default: false
 )
 
-console.log _.isEqual data.bundleDefaults, bundleDefaults
-console.log _.isEqual data.projectDefaults, projectDefaults
-console.log _.isEqual data.globalDefaults, globalDefaults
+#console.log _.isEqual data.bundleDefaults, bundleDefaults
+#console.log _.isEqual data.projectDefaults, projectDefaults
+#console.log _.isEqual data.globalDefaults, globalDefaults
