@@ -82,7 +82,7 @@ describe "go: version 0.0.1 ", ->
   describe "Object: filter large key-names & sortBy value descenting", ->
     result = _B.go obj,
           fltr: (val, key)-> key.length < 4
-          sort: (val, key)-> -val
+          sort: (val)-> -val
 
     it "deeply equals {aaa: 7, b: 2, c: -1}", ->
       expect(result).to.deep.equal
@@ -99,8 +99,8 @@ describe "go: version 0.0.1 ", ->
   # Filter & sortBy Array<int>
   describe "Object: filter values < 5 and sortBy value", ->
     result = _B.go arrInt,
-          fltr: (val, key)-> val < 5
-          sort: (val, key)-> val
+          fltr: (val)-> val < 5
+          sort: (val)-> val
 
     it "deeply equals [-1, 2, 4] ", ->
       expect(result).to.deep.equal [-1, 2, 4] ## order matters!
@@ -108,8 +108,8 @@ describe "go: version 0.0.1 ", ->
   # Filter & sortBy Array<String>
   describe "Object: filter historical names and sortBy value", ->
     result = _B.go arrStr,
-          fltr: (val, key)-> val not in ['Babylon', 'Sparta']
-          sort: (val, key)-> val
+          fltr: (val)-> val not in ['Babylon', 'Sparta']
+          sort: (val)-> val
 
     it "deeply equals ['Agelos', 'Anodynos', 'Pikoulas' ] ", ->
       expect(result).to.deep.equal ['Agelos', 'Anodynos', 'Pikoulas'] ## order matters!

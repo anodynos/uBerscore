@@ -1,21 +1,28 @@
 _ = require 'lodash'
 
 ###
-An extensible, overloaded, anorthodox facade of `_.each`, `_.sort`, `_.fltr` and `_.map` combined.
+An extensible, overloaded, anorthodox facade of `_.each`, `_.sortBy`, `_.filter` (and `_.map` and _.ManyMore!) combined.
 
-Unlike _.each,  it also has an interesting returned, result : a clone of the Object or Array passed, after actions are applied;
+Unlike _.each,  it always has a return result :
+  either a clone of the Object or Array passed (after actions are applied);
+  Or a 'grab' object (or object type) that is passed.
 
-Allows to enumerate, fltr & sort in one go.
+*go* allows to enumerate, filter, sort & collect
    - arrays values/index
    - object's values/keys
    - *NOT IMPLEMENTED* backbone collections  #
-just like in _.each but first a fltr and sort are applied, by using a comparator / fltr function, just like _.sort & _.fltr
+in one go, similarly to `_.each`.
+But you can have a `fltr` and `sort` applied first, similar to _.filter & _.sortBy.
+`fltr` and `sort` are an extremely overloaded condition /comprator, with many shortcuts.
+Finally at each of the resulted elements, you can collect (grab) values/keys/calcs in any form & destination you want.
+
 
 Examples :
-_B.go myObject,
-   fltr: (val, key)-> key not in ['mixin'] #omit - could have a shortcut for omit/pick
+```_B.go o, fltr: (val, key)-> key not in ['mixin']```
 
-@see _.sort(list, iterator, [context])
+This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut for pick
+
+```_B.go o, fltr:['thisKey', 'thatKey'] #```
 
 @param  {object,array} oa      list (Object or Array) whose properties are to be enumerated (& dangled)
 
@@ -27,7 +34,7 @@ _B.go myObject,
       OR
       A String or []<String>
         *key name(s)* to fltr (allow), when _.isObject oa. Acts as an alias to _.omit
-        *values that* are equal when _.isArray oa (pretty usless - use a ->).
+        *values that* are equal when _.isArray oa (pretty usless - use a -> instead).
 
   @option sort {function}
     A function to compare key names with - see <code>_.sort</code>
@@ -35,9 +42,17 @@ _B.go myObject,
     A key/value to sort with - by default :
       * Arrays are sorted on the 'element' (The value, record)
       * Objects are sorted on the 'key' (tubpleName / fieldName)
+
     Calls are
-    `(element, index, oa)-> `## if oa is array
-    `(value, key, oa)-> `## if oa is object
+
+      `(element, index, oa)-> `## if oa is array
+      `(value, key, oa)-> `## if oa is object
+
+    @example
+      ```_B.go {a:1, b:4, c:2}, sort:(v)->v```
+      returns : {a:1, c:2, b:4 }
+
+      Check spec for more examples.
 
     Note for Objects: [JavaScript doesn't guarantee Object Property Order](http://stackoverflow.com/questions/5525795/does-javascript-guarantee-object-property-order) hence your result object might not be as meaningfull as you'd like. But your each action fn, will be called in a sorted manner!
 
