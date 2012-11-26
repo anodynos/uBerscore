@@ -167,8 +167,12 @@ go = (oa, actions, context) -> #map#
           (val, key)->  #console.log '!!! called sort function(val, key, oa[val]): ', val, key, oa[val]
             sort.apply context, (fixForObj val, key)  # uBer sort always called with val, key
         else
+            # @todo : check this part!
+            # @ todo : provide shortcuts
+            #   ['val', 'v'] = (v)->v
+            #   ['key', 'k'] = (v,k)->k
           if _.isString sort #'field' or 'value' # @todo: array of Strings as sort key ?
-            (val)-> val #default sort field is a) the value of an array item and b) the key of an object
+            (val)-> val       #default sort field is a) the value of an array item and b) the key of an object
           else
             if _.isBoolean sort # todo: this is not working probably - check it!
               if sort then ->true else ->false
@@ -204,21 +208,18 @@ go = (oa, actions, context) -> #map#
         if _.isObject grub
           _.extend grub, oa
 
-
-
-
   oa # a sorted Array or Object
 
 module.exports = go
 
 # inline dev tests - make them into specs!
-obj = ciba: 4, aaa: 7, b: 2, c: -1
-arrInt = [ 4, 7, 2, -1 ]
-arrStr = ['Pikoulas', 'Anodynos', 'Babylon', 'Agelos']
-
-newArr = [667]
-newObj = {"oldKey": "oldValue"}
+#obj = ciba: 4, aaa: 7, b: 2, c: -1
+#arrInt = [ 4, 7, 2, -1 ]
+#arrStr = ['Pikoulas', 'Anodynos', 'Babylon', 'Agelos']
 #
+#newArr = [667]
+#newObj = {"oldKey": "oldValue"}
+##
 #result = go obj ,
 #          #fltr: ['ciba', 'b']
 #          fltr : (val, key)->
@@ -255,9 +256,9 @@ newObj = {"oldKey": "oldValue"}
 #console.log "result=", result
 #console.log "newObj=", newObj
 #console.log "newArr=", newArr
-
-console.log go arrInt,
-        sort: (v)-> v #todo: true for value sorting
-        grub: newObj
-
-console.log newObj
+#
+#console.log go arrInt,
+#        sort: (v)-> v #todo: true for value sorting
+#        grub: newObj
+#
+#console.log newObj
