@@ -17,7 +17,7 @@ arrInt2 = _.clone data.arrInt2, true
 arrStr = _.clone data.arrStr, true
 
 # simple usage
-describe "go: version 0.0.1 ", ->
+describe "go: version 0.0.3", ->
   describe "go: Object passed, no params, ", ->
     result = _B.go obj
     it "should be a same looking object", ->

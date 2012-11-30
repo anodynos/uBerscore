@@ -54,10 +54,10 @@ gruntFunction = (grunt) ->
         command: "coffee -cbw -o ./#{buildDir} ./#{sourceDir}"
 
       uRequire:
-        command: "urequire AMD ./#{buildDir} -f -s"
+        command: "urequire UMD ./#{buildDir} -f -s"
 
       uRequireSpec:
-        command: "urequire AMD ./#{buildSpecDir} -f -s"
+        command: "urequire UMD ./#{buildSpecDir} -f -s"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"

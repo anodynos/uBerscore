@@ -12,9 +12,11 @@ Unlike _.each,  it always has a return result :
    - object's values/keys
    - *NOT IMPLEMENTED* backbone collections  #
 in one go, similarly to `_.each`.
+
 But you can have a `fltr` and `sort` applied first, similar to _.filter & _.sortBy.
 `fltr` and `sort` are an extremely overloaded condition /comprator, with many shortcuts.
-Finally at each of the resulted elements, you can collect (grab) values/keys/calcs in any form & destination you want.
+
+  Finally at each of the resulted elements, you can collect (grab) values/keys/calcs in any form & destination you want.
 
 
 Examples :
@@ -24,7 +26,7 @@ This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut fo
 
 ```_B.go o, fltr:['thisKey', 'thatKey'] #```
 
-@param  {object,array} oa      list (Object or Array) whose properties are to be enumerated (& dangled)
+@param  {object,array} oa  list (Object or Array) whose properties are to be enumerated (& dangled)
 
 @options actions {object} The actions to perform on this data (along with options}
 
@@ -43,14 +45,24 @@ This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut fo
       * Arrays are sorted on the 'element' (The value, record)
       * Objects are sorted on the 'key' (tubpleName / fieldName)
 
-    Calls are
-
+    All calls are
       `(element, index, oa)-> `## if oa is array
       `(value, key, oa)-> `## if oa is object
 
     @example
-      ```_B.go {a:1, b:4, c:2}, sort:(v)->v```
+
+      ```
+      o = {b:4, a:1, c:2}
+      _B.go o, sort:(v)->v
+      ```
       returns : {a:1, c:2, b:4 }
+
+      while
+
+      ```
+      _B.go o, sort:(v,k)->k
+      ```
+      returns : {a:1, b:4, c:2 }
 
       Check spec for more examples.
 
@@ -68,21 +80,20 @@ This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut fo
       @todo : return false stops iteration!
 
   @todo: @option map {function} what to actually put on the UOA - new value is called after iter.
+         How is it used - examples ??
 
-  @todo @option {object} opts =
+  @todo: @option {object} opts =
                 deep:
                   type:int
                   descr:"how deep to go into sub-levels"
                   default: 99999
-                clone: default: true
-                asynch:default: false
+                clone: default: true # if clone is false, what ? might be too hard to suport!
+                asynch: default: false
 
-  @context {Object} where to bind this @ on all actions.
+ @context {Object} where to bind this @ on all actions.
 
  @return {Object}      returns UOA = "Uber Object Array": a _new_ (cloned) Object or Array, after *all* the operations are applied along with some extra Uber meta-information.
 
-@todo isClone : if isClone is false, always work with oa - might be too hard to suport!
-@todo: add map ?? Is it needed ?
 
 ###
 go = (oa, actions, context) -> #map#
@@ -213,6 +224,7 @@ go = (oa, actions, context) -> #map#
 module.exports = go
 
 # inline dev tests - make them into specs!
+
 #obj = ciba: 4, aaa: 7, b: 2, c: -1
 #arrInt = [ 4, 7, 2, -1 ]
 #arrStr = ['Pikoulas', 'Anodynos', 'Babylon', 'Agelos']
