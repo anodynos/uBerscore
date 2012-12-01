@@ -9,19 +9,20 @@
     <script src="../../libs/require-min.js"></script>
 
     <script type="text/javascript">
-       window.B = function(){return 'oldB'};
+       window._B = "old _B" ;
+       window.uBerscore = "old uBerscore";
 
        require.config ({
         // set baseUrl to point to the 'bundle', relative to this HTML
-        baseUrl: '../code',
+        baseUrl: '../../build/code',
 
         // all libraries are now relative to the bundle/baseUrl
         paths: {
           chai:  "../../libs/chai",
           mocha: "../../libs/mocha",
 //          lodash: "../../libs/lodash.min"
-          lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash
-
+          lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash
+          spec: "../spec/"
         },
         shim: {
           mocha: { deps: [], exports: "mocha"},
@@ -36,13 +37,12 @@
 
           require([
               // load all your unit-tests here, always relative to the bundle/baseUrl
-            "../spec/go-spec",
-            "../spec/deepCloneDefaults-spec",
-            "../spec/deepExtend-spec",
-            "../spec/go-spec",
-            "../spec/okv-spec",
-            "../spec/spec-data",
-            "../spec/uBerscore-spec"
+            "spec/deepCloneDefaults-spec",
+            "spec/deepExtend-spec",
+            "spec/go-spec",
+            "spec/okv-spec",
+            "spec/spec-data",
+            "spec/uBerscore-spec"
           ],
             // once unit-tests are loaded
             function(){ mocha.run().globals(['_', 'B']);}

@@ -3,9 +3,9 @@ assert = chai.assert
 expect = chai.expect
 
 _ = require 'lodash'
-B = require '../code/uBerscore' #
+B = require 'uBerscore' #
 
-data = require '../spec/spec-data'
+data = require 'spec-data'
 # clone to check mutability
 projectDefaults = _.clone data.projectDefaults, true
 globalDefaults = _.clone data.globalDefaults, true

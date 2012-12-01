@@ -9,16 +9,6 @@ gruntFunction = (grunt) ->
 
   pkg = JSON.parse _fs.readFileSync './package.json', 'utf-8'
 
-  globalBuildCode = switch process.platform
-    when "win32" then "c:/Program Files/nodejs/node_modules/uberscore/build/code/"
-    when 'linux' then "/usr/local/lib/node_modules/uberscore/build/code/"
-    else ""
-
-  globalClean = switch process.platform
-    when "win32" then  "c:/Program Files/nodejs/node_modules/uberscore/build/code/**/*.*"
-    when 'linux' then "/usr/local/lib/node_modules/uberscore/build/code/**/*.*"
-    else ""
-
   gruntConfig =
     pkg: "<json:package.json>"
 
@@ -40,8 +30,6 @@ gruntFunction = (grunt) ->
       buildDir:      buildDir
       sourceSpecDir: sourceSpecDir
       buildSpecDir:  buildSpecDir
-      globalBuildCode: globalBuildCode
-      globalClean: globalClean
 
     shell:
       coffee:
@@ -58,6 +46,12 @@ gruntFunction = (grunt) ->
 
       uRequireSpec:
         command: "urequire UMD ./#{buildSpecDir} -f -s"
+
+      rjsBuildAlmond:
+        command:"r.js.cmd -o build/code/build.js"
+
+      rjsBuildAlmondMin:
+        command:"r.js.cmd -o build/code/build-min.js"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
@@ -83,11 +77,14 @@ gruntFunction = (grunt) ->
         dest:'<%= options.buildDir %>/uBerscore.js'
 
     copy:
-      spec: files:"<%= options.buildSpecDir %>/":
-            ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
 
-#      code: files:"<%= options.buildDir %>/":
-#            ("#{sourceDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
+      code: files:"<%= options.buildDir %>/":
+            ("#{sourceDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
+      spec: files:"<%= options.buildSpecDir %>/":
+        ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
+
+      almond: files:"<%= options.buildDir %>/": "libs/almond-sync.js"
+
 
     clean:
         files: [
@@ -104,9 +101,9 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
      "default": "cl b test"
-     "build":   "cf ur concat"
-     "deploy":  "cl b cfs urs cp"
-     "test":    "cfs urs mocha"
+     "build":   "cf ur cp concat"
+     "deploy":  "rjsBuildAlmond rjsBuildAlmondMin"
+     "test":    "cfs urs copy mocha"
 
       # generic shortcuts
      "cf":      "shell:coffee" # there's a 'coffee' task already!

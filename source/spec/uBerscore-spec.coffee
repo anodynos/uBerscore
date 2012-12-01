@@ -2,30 +2,26 @@ chai = require 'chai'
 assert = chai.assert
 expect = chai.expect
 
-_B = require '../code/uBerscore' #
+_uB = require 'uBerscore' #
+# @todo: test integrate with _, chainin etc
 
-describe 'uBerscore', ->
 
-# @todo: integrate with _ & allow chaining,
 
-### not working: @rootExports not working on nodejs
-#glob__B = 'I am the old _B'
-#glob_uBerscore = -> 'I am the old _uBerscore'
-#
-#global._B = glob__B
-#global._uBerscore = glob_uBerscore
+if isWeb # rootExports work only on browser (for now!)
+         # window._B & window.uBerscore must be set
+         # BEFORE loading uBerscore lib (in SpecRunner.html)
 
-#
-#  it "rootExports: should register _B & uBerscore as globals ", ->
-#    expect(_B).equal global._B
-#    expect(_B).equal global._uBerscore
+  describe 'uBerscore rootExports:', ->
+    it "registers globals _B & uBerscore", ->
+      expect( _B ).to.equal _uB
+      expect( uBerscore ).to.equal _uB
 
-#  it "noConflict() should de-register globals, return 'em to previous state!", ->
-#    _B.noConflict
-#    expect(global._B).deepEqual glob__B
-#    expect(global._uBerscore).deepEqual glob_uBerscore
-###
+    it "noConflict() returns module & sets old values to globals _B & uBerscore", ->
+      # _B & uBerscore globals are registered in SpecRunner.html
 
+      expect( _B.noConflict() ).to.equal _uB
+      expect( _B ).to.equal "old _B"
+      expect( uBerscore ).to.equal "old uBerscore"
 
   #  @todo : chainin & mixins
   #_.mixin({eachSort:__.eachSort})

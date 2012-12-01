@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>uBerscore example, using a plain &ltscript/> loader</title>
+    <!--<script src="../../libs/lodash.min.js"></script>-->
+    <script src="../../libs/underscore-min.js"></script>
+    <script src="../../build/uBerscore.js"></script>
+
+    <script type="text/javascript">
+//       setTimeout( function() {
+          // todo: normal almond AMD loader is loading asynchronously
+          // so we need to wait for it to finish loading (or wait for dom ready?)
+          // todo: report it on r.js forums
+          // uBerscore is using a (slighly) modified almond.js where line ~354 'if (forceSync)' -> 'if (true)', which does the trick!
+
+          var o = {a:5, b:-2, c:3},
+              consoleKV = function(v,k){console.log(k,':',v)};
+
+          // globals _B & uBerscore
+          uBerscore.go(o, {iter: consoleKV} );
+          console.log("Sorted");
+          _B.go(o, {iter: consoleKV, sort: function(v){return v} } );
+
+//       }, 200);
+    </script>
+  </head>
+
+  <body>
+  Check console
+  </body>
+
+</html>
