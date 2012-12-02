@@ -8,13 +8,15 @@
     <script type="text/javascript">
 
        require.config ({
-        baseUrl: '../../build/code',
+        baseUrl: '../../build/code', // Loaded as individual AMD/UMD without optimization
         paths: {
-//          lodash: "../../libs/lodash.min"
-          lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash
+          lodash: "../../libs/lodash.min"
+//          lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash
         },
         shim: {
-          lodash: { deps: [], exports: "_"} // needed only for underscore
+          lodash: {
+              deps: [], exports: "_" // needed only for underscore
+          }
         }
       });
 

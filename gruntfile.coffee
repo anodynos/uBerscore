@@ -42,16 +42,16 @@ gruntFunction = (grunt) ->
         command: "coffee -cbw -o ./#{buildDir} ./#{sourceDir}"
 
       uRequire:
-        command: "urequire UMD ./#{buildDir} -f -s"
+        command: "urequire AMD ./#{buildDir} -f"
 
       uRequireSpec:
-        command: "urequire UMD ./#{buildSpecDir} -f -s"
+        command: "urequire AMD ./#{buildSpecDir} -f"
 
       rjsBuildAlmond:
         command:"r.js.cmd -o build/code/build.js"
 
-      rjsBuildAlmondMin:
-        command:"r.js.cmd -o build/code/build-min.js"
+#      rjsBuildAlmondMin:
+#        command:"r.js.cmd -o build/code/build-min.js"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
@@ -83,7 +83,9 @@ gruntFunction = (grunt) ->
       spec: files:"<%= options.buildSpecDir %>/":
         ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
 
-      almond: files:"<%= options.buildDir %>/": "libs/almond-sync.js"
+      'almond-sync': files:"<%= options.buildDir %>/": "libs/almond-sync.js"
+
+      'almond': files:"<%= options.buildDir %>/": "libs/almond.js"
 
 
     clean:
@@ -102,7 +104,7 @@ gruntFunction = (grunt) ->
      # basic commands
      "default": "cl b test"
      "build":   "cf ur cp concat"
-     "deploy":  "rjsBuildAlmond rjsBuildAlmondMin"
+     "deploy":  "rjsBuildAlmond" #rjsBuildAlmondMin
      "test":    "cfs urs copy mocha"
 
       # generic shortcuts

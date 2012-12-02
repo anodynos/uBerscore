@@ -2,7 +2,7 @@
 
 An anorthodox, extensible, overloaded facade experiment of underscore facilities & leftovers.
 
-uBerscore.js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality that underscore doesn't and wouldn't have, and its highly build on _ it.
+uBerscore.js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality that underscore doesn't and wouldn't have, and its highly build on the great `_`.
 
 Too early to comment more, see go.coffee to get some ideas.
 

@@ -1,1 +1,0 @@
-define -> return _;

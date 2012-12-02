@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>uBerscore example using AMD/RequireJS loader</title>
+    <script src="../../libs/require-min.js"></script>
+    <script type="text/javascript">
+
+        require.config({
+            // baseUrl: '../../build/code',
+            paths : {
+                lodash : "../../libs/lodash.min",
+                // lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash
+                uBerscore : "../../build/uBerscore"
+            },
+            shim : {
+               //lodash : { deps : [], exports : "_"} // needed only for underscore
+               uBerscore: { deps: ['lodash'], exports: "_B" }
+            }
+        });
+        console.log("loadin uBerscore!");
+        require(['uBerscore'], function (ub) {
+            console.log("loaded uBerscore!");
+            var o = {a : 5, b : -2, c : 3},
+                    consoleKV = function (v, k) {
+                        console.log(k, ':', v)
+                    };
+
+//            ub.go(o, {iter : consoleKV});
+
+            // globals _B & uBerscore
+            uBerscore.go(o, {iter : consoleKV});
+            console.log("Sorted");
+            _B.go(o, {iter : consoleKV, sort : function (v) {
+                return v
+            } });
+        });
+    </script>
+</head>
+
+<body>
+Check console
+</body>
+
+</html>
