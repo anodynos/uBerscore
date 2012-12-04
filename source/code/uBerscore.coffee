@@ -5,7 +5,7 @@ urequire:                         # uRequire Module Configuration
 
   noConflict: true                # descr: 'Generate noConflict() for module'
                                   # type: 'boolean', default: false
-
+  noAMDonly: true
 
 #  rootExports for nodejs NOT working yet on uRequire 0.2.7 - wait for upgrade?!
 #  nodejs: true                    # descr: 'Export & noConflict() for nodejs as well'

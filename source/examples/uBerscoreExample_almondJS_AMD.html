@@ -10,28 +10,32 @@
         require.config({
             // baseUrl: '../../build/code',
             paths : {
-                lodash : "../../libs/lodash.min",
-                // lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash
-                uBerscore : "../../build/uBerscore"
-            },
-            shim : {
-               //lodash : { deps : [], exports : "_"} // needed only for underscore
-               uBerscore: { deps: ['lodash'], exports: "_B" }
+//                lodash : "../../libs/lodash.min",
+                lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash
+                uBerscore : "../../build/dist/uBerscore-dev"
             }
+//            ,
+//            shim : {
+////               //lodash : { deps : [], exports : "_"} // needed only for underscore
+////               uBerscore: { deps: ['lodash'], exports: "_B" }
+//            }
         });
         console.log("loadin uBerscore!");
         require(['uBerscore'], function (ub) {
-            console.log("loaded uBerscore!");
+            console.log("loaded uBerscore");
             var o = {a : 5, b : -2, c : 3},
                     consoleKV = function (v, k) {
                         console.log(k, ':', v)
                     };
 
-//            ub.go(o, {iter : consoleKV});
+            console.log("ub local");
+            ub.go(o, {iter : consoleKV});
 
             // globals _B & uBerscore
+            console.log("uBerscore global, sorted");
             uBerscore.go(o, {iter : consoleKV});
-            console.log("Sorted");
+
+            console.log("_B global, sorted");
             _B.go(o, {iter : consoleKV, sort : function (v) {
                 return v
             } });
