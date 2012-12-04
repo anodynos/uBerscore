@@ -42,16 +42,15 @@ gruntFunction = (grunt) ->
         command: "coffee -cbw -o ./#{buildDir} ./#{sourceDir}"
 
       uRequire:
-        command: "urequire AMD ./#{buildDir} -f"
+        command: "urequire UMD ./#{buildDir} -f"
 
       uRequireSpec:
-        command: "urequire AMD ./#{buildSpecDir} -f"
+        command: "urequire UMD ./#{buildSpecDir} -f"
 
-      rjsBuildAlmond:
-        command:"r.js.cmd -o build/code/build.js"
-
-#      rjsBuildAlmondMin:
-#        command:"r.js.cmd -o build/code/build-min.js"
+      urequireCombine:
+        command: "urequire config build/code/uRequireConfig.js"
+#      rjsBuildAlmond:
+#        command:"r.js.cmd -o build/code/build.js"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
@@ -82,11 +81,6 @@ gruntFunction = (grunt) ->
             ("#{sourceDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
       spec: files:"<%= options.buildSpecDir %>/":
         ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
-
-      'almond-sync': files:"<%= options.buildDir %>/": "libs/almond-sync.js"
-
-      'almond': files:"<%= options.buildDir %>/": "libs/almond.js"
-
 
     clean:
         files: [
@@ -121,9 +115,9 @@ gruntFunction = (grunt) ->
   }
 
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
-    "alt-c": "cp"
+    "alt-c": "cf"
     "alt-b": "b"
-    "alt-d": "d"
+    "alt-d": "urequireCombine"
     "alt-t": "t"
   }
 

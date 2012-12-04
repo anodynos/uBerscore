@@ -1,8 +1,10 @@
-_ = require 'lodash'
+uBer = require '../../../build/dist/uBerscore-dev'
+
+uBer.go {a:1, b:5}, iter: (v)-> console.log(v)
 
 
 
-console.log rootExports("factory()", 'window')
+
 
 
 ###!

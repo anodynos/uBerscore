@@ -27,11 +27,13 @@
             "  return require('uBerscore');};\n" +
             "if (isAMD) {\n" +
             "    define(['lodash'], factory);\n" +
-            "} else { factory();}" // We dont have AMD:
-                                    // * run the almond factory
-                                    // * rely on globals xxx been established with getGlobal_xxx
-                                    //      to return the result that gets available internally.
-                                    // * exportsGlobals anyway ?
+            "} else { " + // We dont have AMD:
+            "   if (typeof exports === 'object') {" +
+            "       module.exports = factory();" + //require('lodash')
+            "   } else { factory();}" + // * run the almond factory,
+            "}"                   // * rely on globals xxx been established with getGlobal_xxx
+                                  //      to return internally available vars.
+                                  // * exportsGlobals anyway ?
     },
 
     //  out: "../uBerscore-min.js",  optimize:'uglify', // min profile
@@ -41,3 +43,13 @@
 })
 
 
+//if (isAMD) {
+//    define(['lodash'], factory); // AMD
+//} else {
+//    if (typeof exports === 'object') {
+//        var window = this;
+//        module.exports = factory(require('lodash'));  //node
+//    } else {
+//        factory(window._); // <script>
+//    }
+//}
