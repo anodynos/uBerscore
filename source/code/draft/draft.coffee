@@ -1,16 +1,12 @@
 uBer = require '../../../build/dist/uBerscore-dev'
-
 uBer.go {a:1, b:5}, iter: (v)-> console.log(v)
 
 
 
-
-
-
 ###!
- function double(value) { return value * 2; }
+function double(value) { return value * 2; }
 
- _([42, 43]).chain()
+_([42, 43]).chain()
    .first()            // 42
    .take(double)       // Applies double to 42: 84
    .tap(console.log);
