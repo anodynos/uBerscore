@@ -1,24 +1,35 @@
-module.exports =
-  bundlePath: 'build/code'
-  outputPath: 'build/dist/uBerscore-dev.js'
+
+bundle =
+  verbose: true
+  #bundlePath: './source/code' # implied by config's position
+  outputPath: './build/dist/uBerscore-dev.js'
 
 #  forceOverwriteSources: true
 
   template: 'combine'
 
-  verbose: true
-
   webRootMap: false
 
-  exclude: ['draft/draft.js'] # everything that matches these is not proccessed
+  exclude: [/^draft/] # everything that matches these is not proccessed
 
   mainName: "uBerscore"
 
+  exports:
+    # { varName:dep *}
+    # Each dep will be available in the whole bundle under varName
+    bundleVars:
+      '_': 'underscore'
+      'persons': 'models/PersonModel'
+      'personView': 'views/PersonView'
+
+    root: ''# works only on Browser
+
   combine:
 
-    method: 'rjs-almond' # default (only one for now)
+    method: 'almond' # default (only one for now)
 
     globals:
+
       ###
       # Array of globals that will be inlined (instead of creating a getGlobal_xxx).
       # 'true' means all
@@ -28,8 +39,13 @@ module.exports =
       inline: ['backbone']
 
       ###
-
-        They can be infered from the code of course :-)
+        They can be infered from the code of course (AMD only for now)
+        Required here in case they are missing, or to override var name used in modules.
       ###
-      varNames: { lodash: "_", underscore:"_", backbone: "Backbone" }
+      varNames:
+        lodash: "_"
+        underscore: "_"
+        backbone: "Backbone"
 
+
+module.exports = bundle

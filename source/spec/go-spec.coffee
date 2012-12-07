@@ -6,7 +6,7 @@ _ = require 'lodash'
 _B = require 'uBerscore' #
 
 
-data = require 'spec-data'
+data = require './spec-data'
 # clone to check mutability
 projectDefaults = _.clone data.projectDefaults, true
 globalDefaults = _.clone data.globalDefaults, true

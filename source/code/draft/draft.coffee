@@ -1,7 +1,21 @@
+_ = require 'lodash'
+
+#cs = require 'coffee-script'
+#source = "eat food for food ina ['aa', 'bb']"
+#console.log cs.compile source, {bare:true}
+
 uBer = require '../../../build/dist/uBerscore-dev'
 uBer.go {a:1, b:5}, iter: (v)-> console.log(v)
 
+#uRequire = require 'urequire'
+#_fs = require 'fs'
+#options = require '../uRequireConfig'
+#
+#bp = new uRequire.BundleProcessor(options)
+#bp.processBundle();
+a = [1,2,3]
 
+console.log undefined in a
 
 ###!
 function double(value) { return value * 2; }

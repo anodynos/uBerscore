@@ -6,6 +6,7 @@ gruntFunction = (grunt) ->
   buildDir      = "build/code"
   sourceSpecDir = "source/spec"
   buildSpecDir  = "build/spec"
+  distDir       = "build/dist"
 
   pkg = JSON.parse _fs.readFileSync './package.json', 'utf-8'
 
@@ -25,41 +26,32 @@ gruntFunction = (grunt) ->
       varVersion: "var version = '<%= pkg.version %>'; //injected by grunt:concat"
       mdVersion: "# uBerscore v<%= pkg.version %>"
 
-    options:
-      sourceDir:     sourceDir
-      buildDir:      buildDir
-      sourceSpecDir: sourceSpecDir
-      buildSpecDir:  buildSpecDir
+    options: {
+      sourceDir
+      buildDir
+      sourceSpecDir
+      buildSpecDir
+      distDir
+    }
 
     shell:
-      coffee:
-        command: "coffee -cb -o ./#{buildDir} ./#{sourceDir}"
-
-      coffeeSpec:
-        command: "coffee -cb -o ./#{buildSpecDir} ./#{sourceSpecDir}"
-
-      coffeeWatch:
-        command: "coffee -cbw -o ./#{buildDir} ./#{sourceDir}"
-
       uRequire:
-        command: "urequire UMD ./#{buildDir} -f"
+        command: "urequire UMD ./#{sourceDir} -o ./#{buildDir}"
 
       uRequireSpec:
-        command: "urequire UMD ./#{buildSpecDir} -f"
+        command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
 
       urequireCombine:
-        command: "urequire config build/code/uRequireConfig.js"
-#      rjsBuildAlmond:
-#        command:"r.js.cmd -o build/code/build.js"
+        command: "urequire config source/code/uRequireConfig.coffee"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
 
-      mochaCurrent:
-        command: "mocha #{buildSpecDir}/okv-spec --recursive --bail --reporter spec"
-
       doc:
         command: "codo source/code --title 'uBerscore #{pkg.version} API documentation' --cautious"
+
+      runAlmondInNode:
+        command: "node build/code/draft/draft.js"
 
       _options: # subtasks inherit _options but can override them
         failOnError: true
@@ -86,6 +78,7 @@ gruntFunction = (grunt) ->
         files: [
           "<%= options.buildDir %>/**/*.*"
           "<%= options.buildSpecDir %>/**/*.*"
+          "<%= options.distDir %>/**/*.*"
         ]
 
   ### shortcuts generation ###
@@ -97,14 +90,11 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
      "default": "cl b test"
-     "build":   "cf ur cp concat"
-     "deploy":  "rjsBuildAlmond" #rjsBuildAlmondMin
-     "test":    "cfs urs copy mocha"
+     "build":   "ur cp concat"
+     "deploy":  "urequireCombine" #rjsBuildAlmondMin
+     "test":    "urs copy mocha runAlmondInNode"
 
-      # generic shortcuts
-     "cf":      "shell:coffee" # there's a 'coffee' task already!
-     "cfs":     "shell:coffeeSpec"
-     "cfw":     "shell:coffeeWatch"
+      # generic shortcuts (coffee is gone!)
      "cl":      "clean"
      "cp":      "copy" #" todo: all ?
      "ur":      "shell:uRequire"
@@ -115,9 +105,9 @@ gruntFunction = (grunt) ->
   }
 
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
-    "alt-c": "cf"
+    "alt-c": "cp"
     "alt-b": "b"
-    "alt-d": "urequireCombine"
+    "alt-d": "d"
     "alt-t": "t"
   }
 

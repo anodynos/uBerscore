@@ -1,5 +1,5 @@
 define ->
   if typeof _ is "undefined"
-    nodeRequire "lodash"
+    __nodeRequire "lodash"
   else
     _

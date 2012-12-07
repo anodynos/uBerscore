@@ -3,9 +3,9 @@ assert = chai.assert
 expect = chai.expect
 
 _ = require 'lodash'
-B = require 'uBerscore' #
+_B = require 'uBerscore' #
 
-data = require 'spec-data'
+data = require './spec-data'
 # clone to check mutability
 projectDefaults = _.clone data.projectDefaults, true
 globalDefaults = _.clone data.globalDefaults, true
@@ -16,7 +16,7 @@ describe 'okv :', ->
 
   it "builds a simple object, with weird keyName", ->
     expect(
-      B.okv {},
+      _B.okv {},
         "foo_#{weirdKeyName}", 8
         "bar#{weirdKeyName}", 'some bar'
     ).to.deep.equal {
@@ -27,11 +27,11 @@ describe 'okv :', ->
   describe "build a more invloved object", ->#
     o = {}
 
-    B.okv o,
+    _B.okv o,
       "foo_#{weirdKeyName}", 8
       bar = "bar#{weirdKeyName}", 'some bar' # note we store key name
 
-    o[bar] = B.okv {},
+    o[bar] = _B.okv {},
       "nestedBar#{weirdKeyName}", "This is a secret bar"
       "anotherBar#{weirdKeyName}", "Many bars, no foo"
 
@@ -46,7 +46,7 @@ describe 'okv :', ->
       }
 
     it "add nested weird keyd bars on existing key", ->
-      B.okv o[bar],
+      _B.okv o[bar],
         "newbar#{weirdKeyName}", "a new bar!"
         'bar' + ("#{i}" for i in [1,2,3]).join('-'), "ther weirest bar!"
 

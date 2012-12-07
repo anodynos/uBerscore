@@ -6,6 +6,7 @@
 /samples
 /build/spec/
 /build/examples/
+/build/dist/
 /package.coffee
 /.npmignore
 /*.bat

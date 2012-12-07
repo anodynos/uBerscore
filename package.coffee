@@ -1,9 +1,9 @@
 myPackage =
   name: "uberscore"
 
-  description: "uBerscore js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality that underscore doesn't and wouldn't have, and its highly build on _ it."
+  description: "uBerscore js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality 7 shortcuts that underscore doesn't, wouldn't, shouldn't have. Its highly build on _."
 
-  version: "0.0.3"
+  version: "0.0.4"
 
   homepage: "https://github.com/anodynos/uBerscore"
 

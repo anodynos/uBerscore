@@ -5,12 +5,11 @@ expect = chai.expect
 _ = require 'lodash'
 _B = require 'uBerscore' #
 
-data = require 'spec-data'
+data = require './spec-data'
 # clone to check mutability
 projectDefaults = _.clone data.projectDefaults, true
 globalDefaults = _.clone data.globalDefaults, true
 bundleDefaults = _.clone data.bundleDefaults, true
-
 
 describe 'deepCloneDefaults:', ->
 

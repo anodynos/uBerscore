@@ -1,4 +1,3 @@
-_ = require 'lodash'
 ###
  A helper to create an object literal with a dynamic (calculated) keys on the fly.
 
@@ -27,7 +26,15 @@ _ = require 'lodash'
         Values can be any other objects.
         If even number is passed, the last one is ignored.
  @return obj {Object} with augmented properties.
+
+ @todo : what happens if key is invalid (null/undefined) ?
+          throw error ?
+          Discard ?
+          Perhaps have two versions, loose & strict
 ###
+
+_ = require 'lodash'
+
 okv = (obj, keyValPairs...)->
   if _.isObject obj
     for keyName, idx in keyValPairs by 2 when idx+1 < keyValPairs.length
