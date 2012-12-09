@@ -1,4 +1,3 @@
-_ = require 'lodash'
 ###
   @param o {Anything} An Object, String, number etc that we check against fltr.
 
@@ -6,13 +5,12 @@ _ = require 'lodash'
               If its a Function where its simply called with o as param
               Othewise _.isEqual is applied
 ###
-isAgree = (o, fltr)->
-  if _.isRegExp fltr
-    fltr.test (o + '')
-  else
-    if _.isFunction fltr
-      fltr o
+define ['lodash'], (_)->
+  (o, fltr)->
+    if _.isRegExp fltr
+      fltr.test (o + '')
     else
-      _.isEqual o, fltr
-
-module.exports = isAgree
+      if _.isFunction fltr
+        fltr o
+      else
+        _.isEqual o, fltr

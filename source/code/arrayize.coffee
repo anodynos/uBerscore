@@ -4,7 +4,8 @@ _ = require 'lodash'
   @return Array If item not already an Array, it becomes an item of an array.
                 If its null or undefined, empty array is returned (to prevent loops)
 ###
-arrayize = (item)->
+module.exports =
+(item)->
   if _.isArray item
     item
   else
@@ -12,8 +13,6 @@ arrayize = (item)->
       []
     else
       [item]
-
-module.exports = arrayize
 
 # @todo: spec it!
 #console.log arrayize 'a'

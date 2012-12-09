@@ -6,31 +6,22 @@
     <title>uBerscore example, using a plain &ltscript/> loader</title>
     <script src="../../libs/lodash.min.js"></script>
     <!--<script src="../../libs/underscore-min.js"></script>-->
+    <script src="../../libs/backbone.js"></script>
 
     <!-- Loading as plain JS, rootExports uBerscore & _B as window global vars -->
     <script src="../../build/dist/uBerscore-dev.js"></script>
 
     <script type="text/javascript">
-//       setTimeout( function() {
-          // todo: normal almond AMD loader is loading asynchronously
-          // so we need to wait for it to finish loading (or wait for dom ready?)
+      var o = {a:5, b:-2, c:3},
+          consoleKV = function(v,k){console.log(k,':',v)};
 
-          // see https://github.com/jrburke/almond/issues/42
+      // globals _B & uBerscore
+      uBerscore.go(o, {iter: consoleKV} );
+      console.log("Sorted");
+      _B.go(o, {iter: consoleKV, sort: function(v){return v} } );
 
-          // (dirty) Solution #1: uBerscore is using a (slighly) modified almond-sync.js
-          // where line ~354 'if (forceSync)' becomes 'if (true)', which does the trick!
+      _B.backboner();
 
-          // (better) Soluton #2 https://github.com/jrburke/almond/issues/42#issuecomment-9498562
-
-          var o = {a:5, b:-2, c:3},
-              consoleKV = function(v,k){console.log(k,':',v)};
-
-          // globals _B & uBerscore
-          uBerscore.go(o, {iter: consoleKV} );
-          console.log("Sorted");
-          _B.go(o, {iter: consoleKV, sort: function(v){return v} } );
-
-//       }, 200);
     </script>
   </head>
 

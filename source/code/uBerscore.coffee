@@ -1,13 +1,8 @@
 urequire:                         # uRequire Module Configuration
-  rootExports: ['_B', 'uBerscore'] # descr: 'export these names as global keys, with vthe alue being this Module.
-                                  # type: ['String', '[]'], default: 'undefined'
 
-  noConflict: true                # descr: 'Generate noConflict() for module'
-                                  # type: 'boolean', default: false
+  rootExports: ['_B', 'uBerscore']
 
-#  rootExports for nodejs NOT working yet on uRequire 0.2.7 - wait for upgrade?!
-#  nodejs: true                    # descr: 'Export & noConflict() for nodejs as well'
-#                                  # type:'boolean', default: false
+  noConflict: true
 
 class uBerscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
@@ -23,6 +18,7 @@ class uBerscore
   isAgree: require './isAgree'
   inFilters: require './inFilters'
   certain: require './certain'
+  backboner: require './backboner'
 
 module.exports = new uBerscore
 

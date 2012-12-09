@@ -6,7 +6,7 @@
     <title>uBerscore spec tests</title>
     <link rel="stylesheet" href="../../libs/mocha.css" />
 
-    <script src="../../libs/require-min.js"></script>
+    <script src="../../libs/require.js"></script>
 
     <script type="text/javascript">
        window._B = "old _B" ;
@@ -20,13 +20,15 @@
         paths: {
           chai:  "../../libs/chai",
           mocha: "../../libs/mocha",
-//          lodash: "../../libs/lodash.min"
-          lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash
+          lodash: "../../libs/lodash.min",
+          //lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash
+          backbone: "../../libs/backbone",
           spec: "../spec/"
         },
         shim: {
           mocha: { deps: [], exports: "mocha"},
-          lodash: { deps: [], exports: "_"} // needed only for underscore
+          lodash: { deps: [], exports: "_"}, // needed only for underscore
+          backbone: {deps: ['lodash'], exports: "Backbone"}
         }
       });
 

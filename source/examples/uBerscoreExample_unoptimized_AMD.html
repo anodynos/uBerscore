@@ -4,19 +4,24 @@
   <head>
     <meta charset="utf-8">
     <title>uBerscore example using AMD/RequireJS loader</title>
-    <script src="../../libs/require-min.js"></script>
+    <script src="../../libs/require.js"></script>
     <script type="text/javascript">
 
        require.config ({
         baseUrl: '../../build/code', // Loaded as individual AMD/UMD without optimization
         paths: {
-          lodash: "../../libs/lodash.min"
+            backbone: "../../libs/backbone",
+            lodash: "../../libs/lodash.min"
 //          lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash
         },
         shim: {
-          lodash: {
-              deps: [], exports: "_" // needed only for underscore
+          lodash: { // needed only when paths: lodash: '...underscore'
+              deps: [], exports: "_"
+          },
+          backbone: {
+              deps: ['lodash'], exports: "Backbone" // needed only for underscore
           }
+
         }
       });
 
@@ -33,6 +38,8 @@
           _B.go(o, {iter: consoleKV, sort: function(v){return v} } );
 
           console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! ') );
+
+          ub.backboner();
       });
 
     </script>
