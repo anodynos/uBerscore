@@ -3,7 +3,7 @@ myPackage =
 
   description: "uBerscore js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality 7 shortcuts that underscore doesn't, wouldn't, shouldn't have. Its highly build on _."
 
-  version: "0.0.4"
+  version: "0.0.5"
 
   homepage: "https://github.com/anodynos/uBerscore"
 

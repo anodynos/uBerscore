@@ -1,4 +1,4 @@
-_ = require 'lodash'
+_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 
 deepExtend = require './deepExtend'
 #@todo: test _.mixin deepExtend

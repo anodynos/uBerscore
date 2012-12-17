@@ -1,3 +1,5 @@
+_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+
 # Coffeescript adaptation by Agelos.Pikoulas@gmail.com
 # Original by Kurt Milam - folllows below
 
@@ -11,8 +13,6 @@
 #   *
 #   * You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
 #   **/
-
-_ = require("lodash")
 
 deepExtend = (obj, sources...) ->
   parentRE = /#{\s*?_\s*?}/

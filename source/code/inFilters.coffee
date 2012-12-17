@@ -1,4 +1,4 @@
-_ = require 'lodash'
+_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 arrayize = require './arrayize'
 isAgree = require './isAgree'
 

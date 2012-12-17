@@ -1,6 +1,6 @@
 ### go & deepExtend & deepCloneDefaults combined! ###
 ###    work in progress                           ###
-_ = require 'lodash'
+_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 
 B = (actions, oa...)-> # @todo: implmement it!
 

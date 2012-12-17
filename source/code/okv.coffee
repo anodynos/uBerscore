@@ -1,3 +1,5 @@
+_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+
 ###
  A helper to create an object literal with a dynamic (calculated) keys on the fly.
 
@@ -32,9 +34,6 @@
           Discard ?
           Perhaps have two versions, loose & strict
 ###
-
-_ = require 'lodash'
-
 okv = (obj, keyValPairs...)->
   if _.isObject obj
     for keyName, idx in keyValPairs by 2 when idx+1 < keyValPairs.length

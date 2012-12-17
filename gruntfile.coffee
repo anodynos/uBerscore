@@ -36,13 +36,14 @@ gruntFunction = (grunt) ->
 
     shell:
       uRequire:
-        command: "urequire UMD ./#{sourceDir} -o ./#{buildDir}"
+        #command: "urequire UMD ./#{sourceDir} -o ./#{buildDir}"
+        command: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD -v" # needs bundleExport info
 
       uRequireSpec:
         command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
 
       urequireCombine:
-        command: "urequire config source/code/uRequireConfig.coffee"
+        command: "urequire config source/code/uRequireConfig.coffee -v"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
@@ -51,7 +52,7 @@ gruntFunction = (grunt) ->
         command: "codo source/code --title 'uBerscore #{pkg.version} API documentation' --cautious"
 
       runAlmondInNode:
-        command: "node build/code/draft/draft.js"
+        command: "coffee source/examples/almondBuildTest.coffee"
 
       _options: # subtasks inherit _options but can override them
         failOnError: true
@@ -89,7 +90,7 @@ gruntFunction = (grunt) ->
   # generic shortcuts
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
-     "default": "cl b test"
+     "default": "clean build deploy test"
      "build":   "ur cp concat"
      "deploy":  "urequireCombine" #rjsBuildAlmondMin
      "test":    "urs copy mocha runAlmondInNode"
