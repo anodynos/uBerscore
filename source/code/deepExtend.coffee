@@ -1,4 +1,4 @@
-_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+#_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 
 # Coffeescript adaptation by Agelos.Pikoulas@gmail.com
 # Original by Kurt Milam - folllows below

@@ -1,4 +1,4 @@
-_ = require 'lodash'
+#_ = require 'lodash'
 ###
 An extensible, overloaded, anorthodox facade of `_.each`, `_.sortBy`, `_.filter` (and `_.map` and _.ManyMore!) combined.
 

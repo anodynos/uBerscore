@@ -1,4 +1,4 @@
-_ = require 'lodash'
+#_ = require 'lodash'
 go = require './go'
 isAgree = require './isAgree'
 

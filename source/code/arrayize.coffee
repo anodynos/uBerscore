@@ -1,4 +1,4 @@
-_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+#_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 isAgree = require './isAgree'
 
 ###

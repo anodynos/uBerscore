@@ -10,7 +10,8 @@
               Othewise _.isEqual is applied
 ###
 # The dependency is NOT NEEDED any more, cause we have it as bundle export.
-# But leave it here to illustrate Bundle Dependency injection respects existing parameters!
+# But leave it here to illustrate Bundle Dependency injection respects
+# existing parameters as injected variable names
 define ['lodash'], (_)->
 #_ = require 'lodash'
 #module.exports =

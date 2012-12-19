@@ -1,18 +1,20 @@
-#_ = require 'lodash'
-#_B = require '../uBerscore'
-#
-#bundleExports = 'nai re'
-#  { 'naire': "_" }
+_fs = require 'fs'
+copyFileSync = (srcFile, destFile) ->
+  BUF_LENGTH = 64*1024
+  buff = new Buffer(BUF_LENGTH)
+  fdr = _fs.openSync(srcFile, 'r')
+  fdw = _fs.openSync(destFile, 'w')
+  bytesRead = 1
+  pos = 0
+  while bytesRead > 0
+    bytesRead = _fs.readSync(fdr, buff, 0, BUF_LENGTH, pos)
+    _fs.writeSync(fdw,buff,0,bytesRead)
+    pos += bytesRead
+  _fs.closeSync(fdr)
+  _fs.closeSync(fdw)
 
+copyFileSync 'draft.coffee', 'draft2.coffee'
 
-#  @bundle.dependencies.bundleExports =
-
-#uRequire = require 'urequire'
-#_fs = require 'fs'
-#options = require '../uRequireConfig'
-#
-#bp = new uRequire.BundleProcessor(options)
-#bp.processBundle();
 
 ###!
 function double(value) { return value * 2; }
