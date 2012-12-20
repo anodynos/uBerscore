@@ -37,7 +37,7 @@ gruntFunction = (grunt) ->
     shell:
       uRequire:
         #command: "urequire UMD ./#{sourceDir} -o ./#{buildDir}"
-        command: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD -v" # needs bundleExport info
+        command: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD -v"
 
       uRequireSpec:
         command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
