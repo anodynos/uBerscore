@@ -15,14 +15,14 @@
 #        backbone: "Backbone"  # just testing!
 
 
-# WILL work with uRequire 0.3 alpha #2 format
+# WILL work with uRequire 0.3 alpha >#2 format
 module.exports =
   bundle:
     bundleName: "uBerscore" # becomes: bundleName
     main: "uBerscore"
     excludes: [/^draft/]
     dependencies:
-      bundleExports: ['lodash', 'backbone']
+      bundleExports: ['lodash', 'backbone', 'agreeTest/isAgree']
 #        'lodash': ['_']
 #        'backbone': ['Backbone'] # test as string
 

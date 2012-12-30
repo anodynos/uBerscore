@@ -20,6 +20,11 @@ describe 'arrayize :', ->
       _B.arrayize 19
     ).to.deep.equal [19]
 
+  it "arrayize an Object", ->
+    expect(
+      _B.arrayize {a:1, b:2}
+    ).to.deep.equal [{a:1, b:2}]
+
   it "arrayize an existing array", ->
     arr = [1, 'john']
     expect(

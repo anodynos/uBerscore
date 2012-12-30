@@ -1,6 +1,7 @@
 #_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
-arrayize = require './arrayize'
-isAgree = require './isAgree'
+#isAgree = require './isAgree' # not need anymore, we have it as a Bundle Dependency!
+arrayize = require './arrayizeTest/arrayize'
+
 
 ###
   @param o {Anything} an item to check through filters

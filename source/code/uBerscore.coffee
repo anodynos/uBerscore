@@ -11,8 +11,8 @@ class uBerscore
 
   # Object related
   okv: require './okv'
-  arrayize: require './arrayize'
-  isAgree: require './isAgree'
+  arrayize: require './arrayizeTest/arrayize'
+  isAgree: require './agreeTest/isAgree'
   inFilters: require './inFilters'
   certain: require './certain'
 
