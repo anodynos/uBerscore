@@ -1,5 +1,5 @@
 #_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
-define ['../agreeTest/isAgree'], (isAgree)->
+define ['./agreement/isAgree'], (isAgree)->
   ###
     @return Array If item not already an Array, it becomes an item of an array.
                   If its null or undefined, empty array is returned (to prevent loops)

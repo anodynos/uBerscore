@@ -1,19 +1,5 @@
-_fs = require 'fs'
-copyFileSync = (srcFile, destFile) ->
-  BUF_LENGTH = 64*1024
-  buff = new Buffer(BUF_LENGTH)
-  fdr = _fs.openSync(srcFile, 'r')
-  fdw = _fs.openSync(destFile, 'w')
-  bytesRead = 1
-  pos = 0
-  while bytesRead > 0
-    bytesRead = _fs.readSync(fdr, buff, 0, BUF_LENGTH, pos)
-    _fs.writeSync(fdw,buff,0,bytesRead)
-    pos += bytesRead
-  _fs.closeSync(fdr)
-  _fs.closeSync(fdw)
 
-copyFileSync 'draft.coffee', 'draft2.coffee'
+console.log {x:'agelos', toString:->@x} + ''
 
 
 ###!

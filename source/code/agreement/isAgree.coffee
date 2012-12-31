@@ -9,12 +9,9 @@
 
               Othewise _.isEqual is applied
 ###
-# The dependency is NOT NEEDED any more, cause we have it as bundle export.
-# But leave it here to illustrate Bundle Dependency injection respects
-# existing parameters as injected variable names
+# The 'lodash' dependency is NOT NEEDED any more, cause we have it as bundle export.
+# But leave it to illustrate Bundle Dependency injection respects existing parameters as injected variable names
 define ['lodash'], (_)->
-#_ = require 'lodash'
-#module.exports =
   (o, fltr)->
     if _.isRegExp fltr
       fltr.test (o + '')
@@ -25,4 +22,7 @@ define ['lodash'], (_)->
         if fltr is undefined
           true
         else
-          _.isEqual o, fltr
+          if _.isEqual o, fltr
+            true
+          else
+            (o + '') is (fltr + '') # convert both to Strings

@@ -1,6 +1,6 @@
 #_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 #isAgree = require './isAgree' # not need anymore, we have it as a Bundle Dependency!
-arrayize = require './arrayizeTest/arrayize'
+arrayize = require './../arrayize'
 
 
 ###
@@ -24,13 +24,3 @@ inFilters = (o, filters)->
 
 module.exports = inFilters
 
-## todo: make specs!
-#compiledFiles = /.*\.(coffee|iced|coco)$/i
-#jsFiles = /.*\.(js|javascript)$/i
-#
-#include = [jsFiles, compiledFiles, 'papari.txt']
-#exclude = [/.*lalakis.*/]
-#
-#libs = ['file.coffee', 'lalakis.coffee', 'superlalakis.js', 'papari.txt', 'loulou.gif', 'bla.js']
-#
-#console.log inFilters 'file.coffee', include

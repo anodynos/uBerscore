@@ -22,7 +22,7 @@ module.exports =
     main: "uBerscore"
     excludes: [/^draft/]
     dependencies:
-      bundleExports: ['lodash', 'backbone', 'agreeTest/isAgree']
+      bundleExports: ['lodash', 'backbone', 'agreement/isAgree']
 #        'lodash': ['_']
 #        'backbone': ['Backbone'] # test as string
 

@@ -5,21 +5,24 @@ urequire:                        # uRequire Module Configuration
 class uBerscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
   # Collection related
-  go: require './go'
+  go: require 'go'
   deepExtend: require './deepExtend'
-  deepCloneDefaults: require './deepCloneDefaults'
+  deepCloneDefaults: require 'deepCloneDefaults'
 
   # Object related
-  okv: require './okv'
-  arrayize: require './arrayizeTest/arrayize'
-  isAgree: require './agreeTest/isAgree'
-  inFilters: require './inFilters'
-  certain: require './certain'
+  okv: require 'okv'
+  arrayize: require './arrayize'
+
+  # agreement related - required both as bundleRelative & fileRelative for uRequire 's sake
+  isAgree: require './agreement/isAgree'
+  inFilters: require 'agreement/inFilters'
+
+  certain: require 'certain'
 
   # mutators
-  mutate: require './mutate'
+  mutate: require 'mutate'
 
-  backboner: require './backboner'
+  backboner: require 'backboner'
 
 module.exports = new uBerscore
 

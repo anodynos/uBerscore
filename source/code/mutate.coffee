@@ -1,6 +1,6 @@
 #_ = require 'lodash'
 go = require './go'
-isAgree = require './agreeTest/isAgree'
+isAgree = require './agreement/isAgree'
 
 ###
   Mutates the `Value` for each of the `Keys` of a given Object or Array

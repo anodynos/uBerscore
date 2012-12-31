@@ -1,6 +1,6 @@
 _ = require 'lodash'
-arrayize = require '../arrayizeTest/arrayize'
-inFilters = require '../inFilters'
+arrayize = require '../arrayize'
+inFilters = require '../agreement/inFilters'
 
 
 ###
