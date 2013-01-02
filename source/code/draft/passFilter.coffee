@@ -1,6 +1,6 @@
 _ = require 'lodash'
 arrayize = require '../arrayize'
-inFilters = require '../agreement/inFilters'
+inAgreements = require '../agreement/inAgreements'
 
 
 ###
@@ -10,8 +10,8 @@ inFilters = require '../agreement/inFilters'
 ###
 
 makeFilter = (include, exclude)->
-      inFilters(o, include) and
-        ( _.isEmpty(exclude) or not inFilters(o, exclude) )
+      inAgreements(o, include) and
+        ( _.isEmpty(exclude) or not inAgreements(o, exclude) )
 
 
 compiledFiles = /.*\.(coffee|iced|coco)$/i

@@ -8,6 +8,8 @@ isAgree = require './agreement/isAgree'
   @param oa Object or Array
   @param Function mutator (v,k) is given the old val & key and returns a new value.
   @param Filter as in `_B.isAgree`, otherwise this key/value its not mutated. Note: isAgree allows "undefined" as a truthy filter
+
+  @todo: mutateKey() ?
 ###
 mutate = (oa, mutator, fltr)->
   if _.isFunction mutator #todo:2 other non-function mutators ?

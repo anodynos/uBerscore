@@ -15,7 +15,7 @@ class uBerscore
 
   # agreement related - required both as bundleRelative & fileRelative for uRequire 's sake
   isAgree: require './agreement/isAgree'
-  inFilters: require 'agreement/inFilters'
+  inAgreements: require 'agreement/inAgreements'
 
   certain: require 'certain'
 

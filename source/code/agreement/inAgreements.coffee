@@ -10,17 +10,17 @@ arrayize = require './../arrayize'
 
   @return true if o `isAgree` with any `filter`s, false otherwise
 ###
-inFilters = (o, filters)->
-  filters = arrayize filters
+inAgreements = (o, agreements)->
+  agreements = arrayize agreements
 
-  if _.isEmpty filters
+  if _.isEmpty agreements
     false
   else
-    for fltr in filters
-      if isAgree o, fltr
+    for agr in agreements
+      if isAgree o, agr
         return true
 
   false
 
-module.exports = inFilters
+module.exports = inAgreements
 
