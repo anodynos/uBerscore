@@ -22,9 +22,16 @@ module.exports =
     main: "uBerscore"
     excludes: [/^draft/]
     dependencies:
+      # Export these dependencies in the whole bundle.
+      # Discover the variable names they bind from bundle modules
+      # that actually import these deps, eg @see `arrayize`.
       bundleExports: ['lodash', 'backbone', 'agreement/isAgree']
+
+#      # alternatively (more proper, yet verbose) it could have been:
+#      bundleExports:
 #        'lodash': ['_']
-#        'backbone': ['Backbone'] # test as string
+#        'backbone': ['Backbone']
+#        'agreement/isAgree': 'isAgree' # test as string also works!
 
   build:
     outputPath: './build/dist/uBerscore-dev.js'

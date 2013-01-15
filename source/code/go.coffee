@@ -18,7 +18,7 @@ But you can have a `fltr` and `sort` applied first, similar to _.filter & _.sort
   Finally at each of the resulted elements, you can collect (grab) values/keys/calcs in any form & destination you want.
 
 
-Examples :
+@example :
 ```_B.go o, fltr: (val, key)-> key not in ['mixin']```
 
 This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut for pick

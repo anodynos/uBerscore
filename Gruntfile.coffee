@@ -36,14 +36,15 @@ gruntFunction = (grunt) ->
 
     shell:
       uRequire:
-        #command: "urequire UMD ./#{sourceDir} -o ./#{buildDir}"
+        #use a uRequire config, changing the template and outputPath. CMD options have precedence over configFiles
         command: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD -v"
 
       uRequireSpec:
         command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
 
       urequireCombine:
-        command: "urequire config source/code/uRequireConfig.coffee -v"
+        #use two uRequire configs just for demonstration. Configs on the left have precedence.
+        command: "urequire config source/code/uRequireConfig.coffee,source/uRequireMyTopConfig.json -v"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"

@@ -1,0 +1,14 @@
+{
+ "bundle": {
+  "dependencies": {
+   "bundleExports": [
+    "lodash",
+    "backbone"
+   ]
+  }
+ },
+ "build": {
+  "debugLevel": 50,
+  "template": "AMD"
+ }
+}
