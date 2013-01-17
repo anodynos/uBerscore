@@ -1,6 +1,7 @@
-#_ = require 'lodash'
+#_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+
 ###
-An extensible, overloaded, anorthodox facade of `_.each`, `_.sortBy`, `_.filter` (and `_.map` and _.ManyMore!) combined.
+An extensible, overloaded, anorthodox facade experiment of `_.each`, `_.sortBy`, `_.filter` (and `_.map` and _.ManyMore!) combined.
 
 Unlike _.each,  it always has a return result :
   either a clone of the Object or Array passed (after actions are applied);

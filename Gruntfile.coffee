@@ -36,24 +36,28 @@ gruntFunction = (grunt) ->
 
     shell:
       uRequire:
-        #use a uRequire config, changing the template and outputPath. CMD options have precedence over configFiles
-        command: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD -v"
+        # use a uRequire config, changing the template, outputPath via CMD options (which have precedence over configFiles)
+        command_NotUsed: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD"
+        # use a 2nd uRequireConfig for demonstration, instead of the above. Configs on the right have precedence
+        command: "urequire config source/code/uRequireConfig_UMDBuild.json,source/code/uRequireConfig.coffee"
+
+      uRequireCombine:
+        command: "urequire config source/code/uRequireConfig.coffee -v"
 
       uRequireSpec:
         command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
-
-      urequireCombine:
-        #use two uRequire configs just for demonstration. Configs on the left have precedence.
-        command: "urequire config source/code/uRequireConfig.coffee,source/uRequireMyTopConfig.json -v"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
 
       doc:
         command: "codo source/code --title 'uBerscore #{pkg.version} API documentation' --cautious"
+        
+      runBuildExample:
+        command: "coffee source/examples/buildExample.coffee"
 
-      runAlmondInNode:
-        command: "coffee source/examples/almondBuildTest.coffee"
+      runAlmondBuildExample:
+        command: "coffee source/examples/almondBuildExample.coffee"
 
       _options: # subtasks inherit _options but can override them
         failOnError: true
@@ -64,17 +68,17 @@ gruntFunction = (grunt) ->
       bin:
         src: [
           '<banner>'
-          '<banner:meta.varVersion>'
-          '<%= options.buildDir %>/uBerscore.js'
+          #'<banner:meta.varVersion>'
+          '<%= options.distDir %>/uBerscore-dev.js'
         ]
-        dest:'<%= options.buildDir %>/uBerscore.js'
+        dest:'<%= options.distDir %>/uBerscore-dev.js'
 
-    copy:
-
-      code: files:"<%= options.buildDir %>/":
-            ("#{sourceDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
-      spec: files:"<%= options.buildSpecDir %>/":
-        ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
+# copy gone - done by uRequire
+#    copy:
+#      code: files:"<%= options.buildDir %>/":
+#            ("#{sourceDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
+#      spec: files:"<%= options.buildSpecDir %>/":
+#        ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
 
     clean:
         files: [
@@ -92,11 +96,11 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
      "default": "clean build deploy test"
-     "build":   "ur cp concat"
-     "deploy":  "urequireCombine" #rjsBuildAlmondMin
-     "test":    "urs copy mocha runAlmondInNode"
+     "build":   "ur"
+     "deploy":  "shell:uRequireCombine concat"
+     "test":    "urs mocha runBuildExample runAlmondBuildExample"
 
-      # generic shortcuts (coffee is gone!)
+    # generic shortcuts
      "cl":      "clean"
      "cp":      "copy" #" todo: all ?
      "ur":      "shell:uRequire"

@@ -11,6 +11,8 @@ projectDefaults = _.clone data.projectDefaults, true
 globalDefaults = _.clone data.globalDefaults, true
 bundleDefaults = _.clone data.bundleDefaults, true
 
+#@todo: test _.mixin deepExtend
+
 describe 'deepCloneDefaults:', ->
 
   it "more 'specific' options eg. project, merged (taking precedence) to more 'global' defaults", ->

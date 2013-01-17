@@ -1,8 +1,14 @@
 #_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 
 deepExtend = require './deepExtend'
-#@todo: test _.mixin deepExtend
-
+# @todo:6,2 make a non clone version ? Implications ?
+# @todo:7,8 get rid of it and use B
+###
+  Works like `_.defaults`, but
+  a) goes deep, not just surface like `_.defaults`
+  b) clones defaults... objects
+  @todo:at implications would it have ?
+###
 deepCloneDefaults = (o, defaults...)->
   reversedClonedDefaults = []
   for d in arguments
@@ -12,18 +18,3 @@ deepCloneDefaults = (o, defaults...)->
   o
 
 module.exports = deepCloneDefaults
-
-# inline dev tests
-#data = require '../spec/spec-data'
-## clone to check mutability
-#projectDefaults = _.clone data.projectDefaults, true
-#globalDefaults = _.clone data.globalDefaults, true
-#bundleDefaults = _.clone data.bundleDefaults, true
-#
-#result = deepCloneDefaults bundleDefaults, projectDefaults, globalDefaults
-#
-#console.log JSON.stringify result, null, ' '
-#
-#console.log _.isEqual data.bundleDefaults, bundleDefaults
-#console.log _.isEqual data.projectDefaults, projectDefaults
-#console.log _.isEqual data.globalDefaults, globalDefaults

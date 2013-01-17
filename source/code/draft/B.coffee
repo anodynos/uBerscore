@@ -22,7 +22,7 @@ Note:
 
 # inline dev tests
 
-data = require '../spec/spec-data'
+data = require '../../spec/spec-data'
 # clone to check mutability
 projectDefaults = _.clone data.projectDefaults, true
 globalDefaults = _.clone data.globalDefaults, true

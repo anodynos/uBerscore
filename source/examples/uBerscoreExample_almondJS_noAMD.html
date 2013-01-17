@@ -6,7 +6,7 @@
     <title>uBerscore example, using a plain &ltscript/> loader</title>
     <script src="../../libs/lodash.min.js"></script>
     <!--<script src="../../libs/underscore-min.js"></script>-->
-    <script src="../../libs/backbone.js"></script>
+    <!--<script src="../../libs/backbone.js"></script>-->
 
     <!-- Loading as plain JS, rootExports uBerscore & _B as window global vars -->
     <script src="../../build/dist/uBerscore-dev.js"></script>
@@ -19,8 +19,6 @@
       uBerscore.go(o, {iter: consoleKV} );
       console.log("Sorted");
       _B.go(o, {iter: consoleKV, sort: function(v){return v} } );
-
-      _B.backboner();
 
     </script>
   </head>

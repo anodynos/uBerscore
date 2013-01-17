@@ -1,12 +1,13 @@
-# uBerscore v0.0.3
+# uBerscore v0.0.5
 
-An anorthodox, extensible, overloaded facade experiment of underscore facilities & leftovers.
+An anorthodox, extensible, overloaded, highly experimental facade of *underscore* facilities & leftovers.
 
-uBerscore.js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality that underscore doesn't and wouldn't have, and its highly build on the great `_`.
+uBerscore.js is an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality that underscore doesn't and wouldn't have, and its highly build on the great `_`.
 
 Too early to comment more, see go.coffee to get some ideas.
 
-One thing to note: its running on both the Web (AMD and as plain `<script/>`) and nodejs through the UMD conversion of [uRequire](https://github.com/anodynos/uRequire)
+One thing to note: its running on the WEB, (both with AMD and as plain `<script/>`) & in nodejs through the UMD conversion / single-file combination of [uRequire >v0.3]
+(https://github.com/anodynos/uRequire)
 
 # License
 The MIT License

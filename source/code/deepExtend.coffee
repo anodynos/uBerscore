@@ -1,7 +1,7 @@
 #_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
 
 # Coffeescript adaptation by Agelos.Pikoulas@gmail.com
-# Original by Kurt Milam - folllows below
+# Original by Kurt Milam - follows below
 
 #/**
 #   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )

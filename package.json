@@ -24,22 +24,22 @@
  "bugs": {
   "url": ""
  },
- "main": "./build/code/uBerscore.js",
+ "main": "./build/dist/uBerscore-dev.js",
  "test": "mocha build/spec --recursive --bail --reporter spec",
  "directories": {
   "doc": "./doc",
-  "dist": "./build"
+  "dist": "./build/dist"
  },
  "engines": {
   "node": "*"
  },
  "dependencies": {
-  "grunt": "0.3.x",
-  "lodash": "*",
-  "urequire": "*"
+  "lodash": "*"
  },
  "devDependencies": {
   "chai": "*",
+  "urequire": "0.3.x",
+  "grunt": "0.3.x",
   "grunt-shell": "*",
   "grunt-contrib": "*"
  }

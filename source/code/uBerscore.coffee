@@ -22,8 +22,6 @@ class uBerscore
   # mutators
   mutate: require 'mutate'
 
-  backboner: require 'backboner'
-
 module.exports = new uBerscore
 
 ao = a:1, b:2, c:-1
