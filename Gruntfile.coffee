@@ -95,7 +95,7 @@ gruntFunction = (grunt) ->
   # generic shortcuts
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
-     "default": "clean build deploy test"
+     "default": "clean build deploy doc test"
      "build":   "ur"
      "deploy":  "shell:uRequireCombine concat"
      "test":    "urs mocha runBuildExample runAlmondBuildExample"

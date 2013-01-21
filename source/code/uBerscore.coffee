@@ -1,7 +1,9 @@
 urequire:                        # uRequire Module Configuration
   rootExports: ['_B', 'uBerscore']
   noConflict: true
-
+###
+  The main class that gets exported (but all methods are static and independent :-)
+###
 class uBerscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
   # Collection related
