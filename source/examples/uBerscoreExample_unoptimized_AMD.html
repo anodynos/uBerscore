@@ -1,51 +1,76 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <meta charset="utf-8">
-    <title>uBerscore example using AMD/RequireJS loader</title>
-    <script src="../../libs/require.js"></script>
-    <script type="text/javascript">
-
-       require.config ({
-        baseUrl: '../../build/code', // Loaded as individual AMD/UMD without optimization
-        paths: {
-            backbone: "../../libs/backbone",
-            lodash: "../../libs/lodash.min"
-//          lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash
-        },
-        shim: {
-          lodash: { // needed only when paths: lodash: '...underscore'
-              deps: [], exports: "_"
-          },
-          backbone: {
-              deps: ['lodash'], exports: "Backbone" // needed only for underscore
-          }
-
-        }
-      });
-
-      require(['uBerscore'], function(ub) {
-
-          var o = {a:5, b:-2, c:3},
-              consoleKV = function(v,k){console.log(k,':',v)};
-
-          ub.go(o, {iter: consoleKV} );
-
-          console.log("uBerscore & _B globals");
-          uBerscore.go(o, {iter: consoleKV} );
-          console.log("Sorted");
-          _B.go(o, {iter: consoleKV, sort: function(v){return v} } );
-
-          console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! ') );
-
-      });
-
-    </script>
+    <title>uBerscore unoptimized example using AMD/RequireJS loader</title>
   </head>
 
   <body>
-    Check console
+    <strong>uBerscore unoptimized example using AMD/RequireJS loader</strong>
+
+    <p/>Dependencies (lodash) are loaded through RequireJs loader (using its paths)
+    <p/>uBerscore & and its deps are loaded through requireJs's config baseUrl
+    <p/>Check console
   </body>
+
+  <script src="../../libs/require.js"></script>
+
+  <script>
+    require.config({
+      baseUrl : '../../build/code', // Loaded as individual AMD/UMD without optimization
+      paths : {
+        backbone : "../../libs/backbone",
+        lodash : "../../libs/lodash.min"
+        //lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash :-)
+      },
+      shim : {
+        lodash : { // needed only when paths: lodash: '...underscore'
+          deps : [], exports : "_"
+        },
+        backbone : {
+          deps : ['lodash'], exports : "Backbone" // needed only for underscore
+        }
+      }
+    });
+
+    // lets create two globals, that will be hijacked by uBerscore when loaded
+    _B = 'Old global _B';
+    uBerscore = 'Old global uBerscore';
+
+    console.log("LOADING uBerscore via requireJs....");
+    require(['uBerscore'], function(ub){
+      console.log("...LOADED uBerscore via requireJs!");
+      var o = {a: 5, c: 3, b: -2},
+        consoleKV = function(v,k){console.log(k, ':', v)};
+
+      console.log("ub local dependency variable");
+      ub.go(o, {iter: consoleKV});
+
+      // globals _B & uBerscore
+      console.log("uBerscore global");
+      uBerscore.go(o, {iter: consoleKV});
+
+      console.log("_B global, sorted by value");
+      _B.go(o, {iter: consoleKV, sort: function(v){return v} });
+
+      console.log("_B global, sorted by key");
+      _B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+
+      console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! '));
+
+      console.log("Checking noConflict(), reclaim globals _B & uBerscore.");
+      console.log("Current values:");
+      console.log(_B);
+      console.log(uBerscore);
+      var local_B = _B.noConflict();
+      console.log("noConflict() was called - new values:");
+      console.log("Old _B is '" + _B + "'");
+      console.log("Old uBerscore is '" + uBerscore + "'");
+
+      console.log("local_B still works, sorted by key");
+      local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+    });
+
+  </script>
 
 </html>

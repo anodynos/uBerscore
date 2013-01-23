@@ -3,28 +3,56 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>uBerscore example, using a plain &ltscript/> loader</title>
+    <title>uBerscore optimized example, using a plain &ltscript/&gt</title>
+  </head>
+
+  <body>
+    <strong>uBerscore optimized example, using a plain &ltscript/&gt</strong>
+    <p/>Dependencies (lodash or underscore) must be &ltscript/&gt loaded before it, exposing the global '_'
+    <p/>Check console
+  </body>
+
     <script src="../../libs/lodash.min.js"></script>
     <!--<script src="../../libs/underscore-min.js"></script>-->
     <!--<script src="../../libs/backbone.js"></script>-->
+
+    <script>
+      // lets create two globals, that will be hijacked by uBerscore when loaded
+      _B = 'Old global _B';
+      uBerscore = 'Old global uBerscore';
+    </script>
 
     <!-- Loading as plain JS, rootExports uBerscore & _B as window global vars -->
     <script src="../../build/dist/uBerscore-dev.js"></script>
 
     <script type="text/javascript">
-      var o = {a:5, b:-2, c:3},
-          consoleKV = function(v,k){console.log(k,':',v)};
+      var o = {a: 5, c: 3, b: -2},
+        consoleKV = function(v,k){console.log(k, ':', v)};
 
       // globals _B & uBerscore
-      uBerscore.go(o, {iter: consoleKV} );
-      console.log("Sorted");
-      _B.go(o, {iter: consoleKV, sort: function(v){return v} } );
+      console.log("uBerscore global");
+      uBerscore.go(o, {iter: consoleKV});
+
+      console.log("_B global, sorted by value");
+      _B.go(o, {iter: consoleKV, sort: function(v){return v} });
+
+      console.log("_B global, sorted by key");
+      _B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+
+      console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! '));
+
+      console.log("Checking noConflict(), reclaim globals _B & uBerscore.");
+      console.log("Current values:");
+      console.log(_B);
+      console.log(uBerscore);
+      var local_B = _B.noConflict();
+      console.log("noConflict() was called - new values:");
+      console.log("Old _B is '" + _B + "'");
+      console.log("Old uBerscore is '" + uBerscore + "'");
+
+      console.log("local_B still works, sorted by key");
+      local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
 
     </script>
-  </head>
-
-  <body>
-  Check console
-  </body>
 
 </html>

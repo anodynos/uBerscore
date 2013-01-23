@@ -5,6 +5,7 @@ module.exports =
   bundle:
     # our 'main' / index .js file - used by r.js optimizer as
     main: "uBerscore"
+#    bundleName: "uBerscore_bundleName_urequireconfig"
 
     # do not include any file within these patterns
     excludes: [/^draft/]
@@ -28,6 +29,6 @@ module.exports =
   # these are our build options
   build:
     outputPath: './build/dist/uBerscore-dev.js'
-    template: 'combine'
-    debugLevel: 40
-    verbose: true
+    template: 'combined'
+    debugLevel: 0
+#    verbose: true

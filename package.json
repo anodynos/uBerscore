@@ -41,6 +41,7 @@
   "urequire": "0.3.x",
   "grunt": "0.3.x",
   "grunt-shell": "*",
-  "grunt-contrib": "*"
+  "grunt-contrib": "*",
+  "grunt-urequire": "*"
  }
 }

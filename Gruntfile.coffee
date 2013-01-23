@@ -34,6 +34,33 @@ gruntFunction = (grunt) ->
       distDir
     }
 
+    urequire: # shell: uRequireSpec
+      _defaults: #todo: do it!
+        bundle:
+          #main: "uBerscore" # needed only for 'combined'. Defaults to grunt's @target (subtask name)
+          bundlePath: "#{sourceDir}"
+          excludes: [/^draft/]
+          dependencies:
+            bundleExports: ['lodash', 'agreement/isAgree']
+
+        build:
+          verbose: false
+          debugLevel: 0
+
+      uBerscoreUMD:
+        outputPath: "#{buildDir}"
+        # template: 'UMD' # 'UMD' is default
+
+      uBerscore: # combined
+        outputPath: './build/dist/uBerscore-dev.js'
+        template: 'combined'
+
+      spec:
+        bundlePath: "#{sourceSpecDir}"
+        outputPath: "#{buildSpecDir}"
+        # template: 'UMD' # 'UMD' is default
+        dependencies: bundleExports: [null, null] # reseting default deps
+
     shell:
       uRequire:
         # use a uRequire config, changing the template, outputPath via CMD options (which have precedence over configFiles)
@@ -41,7 +68,7 @@ gruntFunction = (grunt) ->
         # use a 2nd uRequireConfig for demonstration, instead of the above. Configs on the right have precedence
         command: "urequire config source/code/uRequireConfig_UMDBuild.json,source/code/uRequireConfig.coffee"
 
-      uRequireCombine:
+      uRequireCombined:
         command: "urequire config source/code/uRequireConfig.coffee -v"
 
       uRequireSpec:
@@ -97,7 +124,7 @@ gruntFunction = (grunt) ->
      # basic commands
      "default": "clean build deploy doc test"
      "build":   "ur"
-     "deploy":  "shell:uRequireCombine concat"
+     "deploy":  "shell:uRequireCombined concat"
      "test":    "urs mocha runBuildExample runAlmondBuildExample"
 
     # generic shortcuts
@@ -120,7 +147,8 @@ gruntFunction = (grunt) ->
 
   grunt.initConfig gruntConfig
   grunt.loadNpmTasks 'grunt-contrib'
-  grunt.loadNpmTasks 'grunt-shell' #https://npmjs.org/package/grunt-shell
+  grunt.loadNpmTasks 'grunt-shell'
+  grunt.loadNpmTasks 'grunt-urequire'
 
   null
 
