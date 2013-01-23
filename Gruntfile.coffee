@@ -59,20 +59,21 @@ gruntFunction = (grunt) ->
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
         # template: 'UMD' # 'UMD' is default
-        dependencies: bundleExports: [null, null] # reseting default deps
+        dependencies: bundleExports: [null, null] # workaround to reseting default deps @todo: fix this in uBerscore.deepCloneDefaults
 
     shell:
-      uRequire:
-        # use a uRequire config, changing the template, outputPath via CMD options (which have precedence over configFiles)
-        command_NotUsed: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD"
-        # use a 2nd uRequireConfig for demonstration, instead of the above. Configs on the right have precedence
-        command: "urequire config source/code/uRequireConfig_UMDBuild.json,source/code/uRequireConfig.coffee"
-
-      uRequireCombined:
-        command: "urequire config source/code/uRequireConfig.coffee -v"
-
-      uRequireSpec:
-        command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
+      ###    shell:uRequireXXX not used anymore - grunt-urequire is used instead! ###
+#      uRequire:
+#        # use a uRequire config, changing the template, outputPath via CMD options (which have precedence over configFiles)
+#        command_NotUsed: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD"
+#        # use a 2nd uRequireConfig for demonstration, instead of the above. Configs on the right have precedence
+#        command: "urequire config source/code/uRequireConfig_UMDBuild.json,source/code/uRequireConfig.coffee"
+#
+#      uRequireCombined:
+#        command: "urequire config source/code/uRequireConfig.coffee -v"
+#
+#      uRequireSpec:
+#        command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
 
       mocha:
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
@@ -100,13 +101,6 @@ gruntFunction = (grunt) ->
         ]
         dest:'<%= options.distDir %>/uBerscore-dev.js'
 
-# copy gone - done by uRequire
-#    copy:
-#      code: files:"<%= options.buildDir %>/":
-#            ("#{sourceDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
-#      spec: files:"<%= options.buildSpecDir %>/":
-#        ("#{sourceSpecDir}/**/#{ext}" for ext in ["*.html", "*.js", "*.txt", "*.json" ])
-
     clean:
         files: [
           "<%= options.buildDir %>/**/*.*"
@@ -123,15 +117,16 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
      "default": "clean build deploy doc test"
-     "build":   "ur"
-     "deploy":  "shell:uRequireCombined concat"
+     "build":   "urequire:uBerscoreUMD"
+     "deploy":  "urequire:uBerscore"
      "test":    "urs mocha runBuildExample runAlmondBuildExample"
 
     # generic shortcuts
      "cl":      "clean"
      "cp":      "copy" #" todo: all ?
-     "ur":      "shell:uRequire"
-     "urs":     "shell:uRequireSpec"
+     "ur":      "urequire:uBerscoreUMD"
+     "urc":     "urequire:uBerscore"
+     "urs":     "urequire:spec"
      "b":       "build"
      "d":       "deploy"
      "t":       "test"
