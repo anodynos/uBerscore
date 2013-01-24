@@ -59,7 +59,22 @@ gruntFunction = (grunt) ->
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
         # template: 'UMD' # 'UMD' is default
-        dependencies: bundleExports: [null, null] # workaround to reseting default deps @todo: fix this in uBerscore.deepCloneDefaults
+        dependencies:
+          bundleExports: [null, null] # temp workaround to reseting default deps @todo: fix this in uBerscore.deepCloneDefaults
+
+      specCombined:
+        bundlePath: "#{sourceSpecDir}"
+        main: 'index' # not needed:
+                        # if `bundle.main` is undefined,
+                        #   it defaults to `bundle.bundleName` or 'index' or 'main'
+                        #   with the price of a warning!
+        outputPath: "#{buildSpecDir}/index-combined.js"
+        template: 'combined'
+        dependencies:
+          variableNames:
+            uBerscore: ['_B', 'uBerscore']
+          bundleExports: [null, null] # temp workaround to reseting default deps @todo: fix this in uBerscore.deepCloneDefaults
+
 
     shell:
       ###    shell:uRequireXXX not used anymore - grunt-urequire is used instead! ###
@@ -116,17 +131,16 @@ gruntFunction = (grunt) ->
   # generic shortcuts
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
-     "default": "clean build deploy doc test"
+     "default": "clean build deploy test"
      "build":   "urequire:uBerscoreUMD"
      "deploy":  "urequire:uBerscore"
-     "test":    "urs mocha runBuildExample runAlmondBuildExample"
+     "test":    "urequire:spec urequire:specCombined mocha runBuildExample runAlmondBuildExample"
 
     # generic shortcuts
      "cl":      "clean"
      "cp":      "copy" #" todo: all ?
      "ur":      "urequire:uBerscoreUMD"
      "urc":     "urequire:uBerscore"
-     "urs":     "urequire:spec"
      "b":       "build"
      "d":       "deploy"
      "t":       "test"

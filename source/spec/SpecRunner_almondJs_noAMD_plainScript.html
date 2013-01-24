@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--<meta charset="utf-8">-->
+    <title>uBerscore spec - almondjs OPTIMIZED, plain &ltscript/&gt loader</title>
+  </head>
+
+  <body>
+    <h1>uBerscore spec - almondjs OPTIMIZED, plain &ltscript/&gt loader</h1>
+
+    <strong> ** uRequire note: **</strong>
+    <ul>
+      <li>uBerscore-dev.js is loaded as a simple &ltscript/&gt, WITHOUT any trace of RequireJs loader or configuration!
+      <li>Dependencies (eg. `lodash` or `underscore`) must be &ltscript/&gt loaded BEFORE it, exposing the global '_',
+          which is then acquired by `uRequire`'s special build with `combined` template.
+    </ul>
+
+    <link rel="stylesheet" href="../../libs/mocha.css" />
+    <div id="mocha"></div>
+  </body>
+
+  <!--We load our 'dependencies' first, exposing globals (eg '_')-->
+  <script src="../../libs/lodash.min.js"></script>
+  <!--<script src="../../libs/underscore-min.js"></script>-->
+  <!--<script src="../../libs/backbone.js"></script>-->
+
+  <script src="../../libs/chai.js"></script>
+  <script src="../../libs/mocha.js"></script>
+  <script>
+    mocha.setup('bdd');
+  </script>
+
+  <script>
+    // lets create two globals, that will be 'hijacked' by uBerscore when its loaded.
+    // Then we can test `noConflict()`
+    window._B = "Old global `_B`";
+    window.uBerscore = "Old global `uBerscore`";
+  </script>
+
+  <!-- Loading as plain JS: it rootExports `uBerscore` & `_B` as window/global vars -->
+  <script src="../../build/dist/uBerscore-dev.js"></script>
+
+  <!--load all your specs here, in a uRequire 'combined' .js -->
+  <script src="../../build/spec/index-combined.js"></script>
+
+  <script>
+    // once unit-tests are loaded, hit mocha.run()
+    mocha.run().globals(['_', 'B']);
+  </script>
+</html>

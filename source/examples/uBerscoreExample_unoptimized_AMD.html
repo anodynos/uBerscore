@@ -2,40 +2,50 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>uBerscore unoptimized example using AMD/RequireJS loader</title>
+    <title>uBerscore example - UNOPTIMIZED, AMD/RequireJS loader</title>
   </head>
 
   <body>
-    <strong>uBerscore unoptimized example using AMD/RequireJS loader</strong>
+    <h1>uBerscore example - UNOPTIMIZED, AMD/RequireJS loader</h1>
 
-    <p/>Dependencies (lodash) are loaded through RequireJs loader (using its paths)
-    <p/>uBerscore & and its deps are loaded through requireJs's config baseUrl
-    <p/>Check console
+    <strong> ** uRequire note: **</strong>
+    <ul>
+      <li>Dependencies (eg. `lodash`) are loaded through RequireJs loader (using `rjs.paths`)
+      <li>'uBerscore' dependency is loading through `rjs.baseUrl`, which in turn loads all bundle dependencies *as seperate files*).
+    </ul>
+    <p/>Check console's output
   </body>
 
   <script src="../../libs/require.js"></script>
 
   <script>
     require.config({
-      baseUrl : '../../build/code', // Loaded as individual AMD/UMD without optimization
-      paths : {
-        backbone : "../../libs/backbone",
-        lodash : "../../libs/lodash.min"
-        //lodash: "../../libs/underscore-min" // drop in 'alternative' of lodash :-)
+      // set baseUrl to point to the 'bundle', relative to this HTML
+      baseUrl: '../../build/code', // needed only if loading as individual AMD/UMD (without optimization)
+
+      // all libraries are now relative to the bundle/baseUrl
+      paths: {
+        lodash: "../../libs/lodash.min",
+        //lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash :-)
+        backbone: "../../libs/backbone"
+        // ** uRequire note: **
+        // if the following 'rjs.paths.uBerscore' exists,
+        //  it mandates we are loading the OPTIMIZED version,
+        // else
+        //  we load 'uBerscore' dependency (and its contained deps) through `rjs.baseUrl`.
+        // this is the only change needed!
+        //,uBerscore : "../../build/dist/uBerscore-dev"
       },
-      shim : {
-        lodash : { // needed only when paths: lodash: '...underscore'
-          deps : [], exports : "_"
-        },
-        backbone : {
-          deps : ['lodash'], exports : "Backbone" // needed only for underscore
-        }
+
+      shim: {
+        lodash: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
+        backbone: {deps: ['lodash'], exports: "Backbone"}
       }
     });
 
     // lets create two globals, that will be hijacked by uBerscore when loaded
-    _B = 'Old global _B';
-    uBerscore = 'Old global uBerscore';
+    _B = 'Old global `_B`';
+    uBerscore = 'Old global `uBerscore`';
 
     console.log("LOADING uBerscore via requireJs....");
     require(['uBerscore'], function(ub){
@@ -64,13 +74,11 @@
       console.log(uBerscore);
       var local_B = _B.noConflict();
       console.log("noConflict() was called - new values:");
-      console.log("Old _B is '" + _B + "'");
-      console.log("Old uBerscore is '" + uBerscore + "'");
+      console.log("Old global `_B` is '" + _B + "'");
+      console.log("Old global `uBerscore` is '" + uBerscore + "'");
 
       console.log("local_B still works, sorted by key");
       local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
     });
-
   </script>
-
 </html>

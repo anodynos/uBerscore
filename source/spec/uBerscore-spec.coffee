@@ -5,8 +5,6 @@ expect = chai.expect
 _uB = require 'uBerscore' #
 # @todo: test integrate with _, chainin etc
 
-
-
 if isWeb # rootExports work only on browser (for now!)
          # window._B & window.uBerscore must be set
          # BEFORE loading uBerscore lib (in SpecRunner.html)
@@ -18,10 +16,9 @@ if isWeb # rootExports work only on browser (for now!)
 
     it "noConflict() returns module & sets old values to globals _B & uBerscore", ->
       # _B & uBerscore globals are registered in SpecRunner.html
-
       expect( _B.noConflict() ).to.equal _uB
-      expect( _B ).to.equal "old _B"
-      expect( uBerscore ).to.equal "old uBerscore"
+      expect( _B ).to.equal "Old global `_B`"
+      expect( uBerscore ).to.equal "Old global `uBerscore`"
 
   #  @todo : chainin & mixins
   #_.mixin({eachSort:__.eachSort})

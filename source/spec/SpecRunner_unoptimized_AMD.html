@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>uBerscore spec - UNOPTIMIZED, AMD/RequireJS loader</title>
+  </head>
+
+  <body>
+    <h1>uBerscore spec - UNOPTIMIZED, AMD/RequireJS loader</h1>
+
+    <strong> ** uRequire note: **</strong>
+    <ul>
+      <li>Dependencies (eg. `lodash`) are loaded through RequireJs loader (using `rjs.paths`)
+      <li>'uBerscore' dependency is loading through `rjs.baseUrl`, which in turn loads all bundle dependencies *as seperate files*).
+    </ul>
+
+    <link rel="stylesheet" href="../../libs/mocha.css" />
+    <div id="mocha"></div>
+  </body>
+
+  <script src="../../libs/require.js"></script>
+
+  <script type="text/javascript">
+     window._B = "Old global `_B`" ;
+     window.uBerscore = "Old global `uBerscore`";
+
+     require.config ({
+      // set baseUrl to point to the 'bundle', relative to this HTML
+      baseUrl: '../../build/code', // needed only if loading as individual AMD/UMD (without optimization)
+
+      // all libraries are now relative to the bundle/baseUrl
+      paths: {
+        chai:  "../../libs/chai",
+        mocha: "../../libs/mocha",
+
+        lodash: "../../libs/lodash.min",
+        //lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash
+        backbone: "../../libs/backbone",
+
+        // ** uRequire note: **
+        // if the following 'rjs.paths.uBerscore' exists,
+        //  it mandates we are loading the OPTIMIZED version,
+        // else
+        //  we load 'uBerscore' dependency (and its contained deps) through `rjs.baseUrl`.
+        // this is the only change needed!
+        //uBerscore : "../../build/dist/uBerscore-dev",
+        spec: "../spec/"
+      },
+
+      shim: {
+        mocha: { deps: [], exports: "mocha"},
+        lodash: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
+        backbone: {deps: ['lodash'], exports: "Backbone"}
+      }
+    });
+
+    // load mocha via requirejs
+    require(['mocha'], function(mocha) {
+        // initialize mocha
+        mocha.setup('bdd');
+
+        require([
+          // load all your unit-tests here, always relative to the bundle/baseUrl
+          "spec/arrayize-spec",
+          "spec/deepCloneDefaults-spec",
+          "spec/deepExtend-spec",
+          "spec/go-spec",
+          "spec/mutate-spec",
+          "spec/okv-spec",
+          "spec/spec-data",
+          "spec/uBerscore-spec"
+        ],
+          // once unit-tests are loaded
+          function(){ mocha.run().globals(['_', '_B', 'uBerscore']);}
+        );
+    });
+  </script>
+</html>

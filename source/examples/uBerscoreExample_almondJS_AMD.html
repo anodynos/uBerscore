@@ -1,78 +1,84 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>uBerscore optimized example using AMD/RequireJS loader</title>
-    </head>
+  <head>
+    <meta charset="utf-8">
+    <title>uBerscore example - almondjs OPTIMIZED, AMD/RequireJS loader</title>
+  </head>
 
-    <body>
-        <strong>uBerscore optimized example using AMD/RequireJS loader</strong>
-        <p/>Dependencies (lodash) are loaded through RequireJs loader (using its paths)
-        <p/>uBerscore's path it self is defined in RequireJs paths
-        <p/>Check console
-    </body>
+  <body>
+    <h1>uBerscore example - almondjs OPTIMIZED, AMD/RequireJS loader</h1>
 
-    <script src="../../libs/require.js"></script>
-    <script>
+    <strong> ** uRequire note: **</strong>
+    <ul>
+      <li>Dependencies (eg. `lodash`) are loaded through RequireJs loader (using `rjs.paths`)
+      <li>'uBerscore' dependency it self is defined in `rjs.paths`, loading 'uBerscore-dev.js' which contains all other bundle dependencies).
+    </ul>
+    <p/>Check console's output
+  </body>
 
-        require.config({
-            // baseUrl: '../../build/code',
-            paths : {
-                lodash: "../../libs/lodash.min",
-                //lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash
-                backbone: "../../libs/backbone",
-                uBerscore : "../../build/dist/uBerscore-dev"
-            }
-            ,
-            shim : {
-        //                uBerscore: { deps: ['lodash'], exports: "_B" }, // not needed
-        //                lodash : { // needed only when 'lodash' is 'underscore'
-        //                   deps : [], exports : "_"
-        //               },
-               backbone: {
-                   deps: ['lodash'], exports: "Backbone"
-               }
-            }
-        });
+  <script src="../../libs/require.js"></script>
 
-        // lets create two globals, that will be hijacked by uBerscore when loaded
-        _B = 'Old global _B';
-        uBerscore = 'Old global uBerscore';
+  <script>
+    require.config({
+      // set baseUrl to point to the 'bundle', relative to this HTML
+      baseUrl: '../../build/code', // needed only if loading as individual AMD/UMD (without optimization)
 
-        console.log("LOADING uBerscore via requireJs....");
-        require(['uBerscore'], function(ub){
-          console.log("...LOADED uBerscore via requireJs!");
-          var o = {a: 5, c: 3, b: -2},
-            consoleKV = function(v,k){console.log(k, ':', v)};
+      // all libraries are now relative to the bundle/baseUrl
+      paths: {
+        lodash: "../../libs/lodash.min",
+        //lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash :-)
+        backbone: "../../libs/backbone"
+        // ** uRequire note: **
+        // if the following 'rjs.paths.uBerscore' exists,
+        //  it mandates we are loading the OPTIMIZED version,
+        // else
+        //  we load 'uBerscore' dependency (and its contained deps) through `rjs.baseUrl`.
+        // this is the only change needed!
+        ,uBerscore: "../../build/dist/uBerscore-dev"
+      },
 
-          console.log("ub local dependency variable");
-          ub.go(o, {iter: consoleKV});
+      shim: {
+        lodash: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
+        backbone: {deps: ['lodash'], exports: "Backbone"}
+      }
+    });
 
-          // globals _B & uBerscore
-          console.log("uBerscore global");
-          uBerscore.go(o, {iter: consoleKV});
+    // lets create two globals, that will be hijacked by uBerscore when loaded
+    _B = 'Old global `_B`';
+    uBerscore = 'Old global `uBerscore`';
 
-          console.log("_B global, sorted by value");
-          _B.go(o, {iter: consoleKV, sort: function(v){return v} });
+    console.log("LOADING uBerscore via requireJs....");
+    require(['uBerscore'], function(ub){
+      console.log("...LOADED uBerscore via requireJs!");
+      var o = {a: 5, c: 3, b: -2},
+        consoleKV = function(v,k){console.log(k, ':', v)};
 
-          console.log("_B global, sorted by key");
-          _B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+      console.log("ub local dependency variable");
+      ub.go(o, {iter: consoleKV});
 
-          console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! '));
+      // globals _B & uBerscore
+      console.log("uBerscore global");
+      uBerscore.go(o, {iter: consoleKV});
 
-          console.log("Checking noConflict(), reclaim globals _B & uBerscore.");
-          console.log("Current values:");
-          console.log(_B);
-          console.log(uBerscore);
-          var local_B = _B.noConflict();
-          console.log("noConflict() was called - new values:");
-          console.log("Old _B is '" + _B + "'");
-          console.log("Old uBerscore is '" + uBerscore + "'");
+      console.log("_B global, sorted by value");
+      _B.go(o, {iter: consoleKV, sort: function(v){return v} });
 
-          console.log("local_B still works, sorted by key");
-          local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
-        });
+      console.log("_B global, sorted by key");
+      _B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
 
+      console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! '));
 
-    </script>
+      console.log("Checking noConflict(), reclaim globals _B & uBerscore.");
+      console.log("Current values:");
+      console.log(_B);
+      console.log(uBerscore);
+      var local_B = _B.noConflict();
+      console.log("noConflict() was called - new values:");
+      console.log("Old global `_B` is '" + _B + "'");
+      console.log("Old global `uBerscore` is '" + uBerscore + "'");
+
+      console.log("local_B still works, sorted by key");
+      local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+    });
+  </script>
 </html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>uBerscore example - almondjs OPTIMIZED, plain &ltscript/&gt loader</title>
+  </head>
+
+  <body>
+    <h1>uBerscore example - almondjs OPTIMIZED, plain &ltscript/&gt loader</h1>
+
+    <strong> ** uRequire note: **</strong>
+    <ul>
+      <li>uBerscore-dev.js is loaded as a simple &ltscript/&gt, WITHOUT any trace of RequireJs loader or configuration!
+      <li>Dependencies (eg. `lodash` or `underscore`) must be &ltscript/&gt loaded BEFORE it, exposing the global '_',
+          which is then acquired by `uRequire`'s special build with `combined` template.
+    </ul>
+    <p/>Check console's output
+  </body>
+
+  <!--We load our 'dependencies' first, exposing globals (eg '_')-->
+  <script src="../../libs/lodash.min.js"></script>
+  <!--<script src="../../libs/underscore-min.js"></script>-->
+  <!--<script src="../../libs/backbone.js"></script>-->
+
+  <script>
+    // lets create two globals, that will be 'hijacked' by uBerscore when its loaded.
+    // Then we can test `noConflict()`
+    window._B = "Old global `_B`" ;
+    window.uBerscore = "Old global `uBerscore`";
+  </script>
+
+  <!-- Loading as plain JS: it rootExports `uBerscore` & `_B` as window/global vars -->
+  <script src="../../build/dist/uBerscore-dev.js"></script>
+
+  <!--Now lets run some examples/tests!-->
+  <script>
+    var o = {a: 5, c: 3, b: -2},
+      consoleKV = function(v,k){console.log(k, ':', v)};
+
+    // globals _B & uBerscore
+    console.log("uBerscore global");
+    uBerscore.go(o, {iter: consoleKV});
+
+    console.log("_B global, sorted by value");
+    _B.go(o, {iter: consoleKV, sort: function(v){return v} });
+
+    console.log("_B global, sorted by key");
+    _B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+
+    console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! '));
+
+    console.log("Checking noConflict(), reclaim globals _B & uBerscore.");
+    console.log("Current values:");
+    console.log(_B);
+    console.log(uBerscore);
+    var local_B = _B.noConflict();
+    console.log("noConflict() was called - new values:");
+    console.log("Old global `_B` is '" + _B + "'");
+    console.log("Old global `uBerscore` is '" + uBerscore + "'");
+
+    console.log("local_B still works, sorted by key");
+    local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+  </script>
+</html>
