@@ -1,10 +1,10 @@
 urequire:                        # uRequire Module Configuration
-  rootExports: ['_B', 'uBerscore']
+  rootExports: ['_B', 'uberscore']
   noConflict: true
 ###
   The main class that gets exported (but all methods are static and independent :-)
 ###
-class uBerscore
+class uberscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
   # Collection related
   go: require 'go'
@@ -24,7 +24,7 @@ class uBerscore
   # mutators
   mutate: require 'mutate'
 
-module.exports = new uBerscore
+module.exports = new uberscore
 
 ao = a:1, b:2, c:-1
 

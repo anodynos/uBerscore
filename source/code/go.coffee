@@ -68,7 +68,7 @@ This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut fo
 
     Note for Objects: [JavaScript doesn't guarantee Object Property Order](http://stackoverflow.com/questions/5525795/does-javascript-guarantee-object-property-order) hence your result object might not be as meaningfull as you'd like. But your each action fn, will be called in a sorted manner!
 
-      @todo: Make all iterators in uBerscore to respect that sorted Object!
+      @todo: Make all iterators in uberscore to respect that sorted Object!
           * store information on UOA, about key order - eg ['name', 'surname', 'address']
           * store the `sort` function on on UOA. Should keys change they, re-sort!
           * use backboney collections only.
@@ -235,11 +235,11 @@ module.exports = go
 #result = go obj ,
 #          #fltr: ['ciba', 'b']
 #          fltr : (val, key)->
-#            console.log "#### uBerscore's user fltr: (val, key)->", val, key
+#            console.log "#### uberscore's user fltr: (val, key)->", val, key
 #            key in ['ciba', 'b']
 #
 #          sort: (val, key)->
-#            console.log "#### uBerscore's user sort: (val, key)->", val, key
+#            console.log "#### uberscore's user sort: (val, key)->", val, key
 #            val
 #
 #          grab: (val, key)->

@@ -1,4 +1,4 @@
-# uBerscore v0.0.5
+# uBerscore v0.0.6
 
 An anorthodox, extensible, overloaded, highly experimental facade of *underscore* facilities & leftovers.
 

@@ -3,7 +3,7 @@ assert = chai.assert
 expect = chai.expect
 
 _ = require 'lodash'
-_B = require 'uBerscore' #
+_B = require 'uberscore' #
 data = require '../spec-data'
 
 compiledFiles = /.*\.(coffee|iced|coco)$/i

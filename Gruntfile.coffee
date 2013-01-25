@@ -37,30 +37,38 @@ gruntFunction = (grunt) ->
     urequire: # shell: uRequireSpec
       _defaults: #todo: do it!
         bundle:
-          #main: "uBerscore" # needed only for 'combined'. Defaults to grunt's @target (subtask name)
           bundlePath: "#{sourceDir}"
-          excludes: [/^draft/]
-          dependencies:
-            bundleExports: ['lodash', 'agreement/isAgree']
+          ignore: [/^draft/]
 
         build:
           verbose: false
           debugLevel: 0
 
-      uBerscoreUMD:
+      uberscoreUMD:
+        dependencies: bundleExports: ['lodash', 'agreement/isAgree']
         outputPath: "#{buildDir}"
+        debugLevel: 80
         # template: 'UMD' # 'UMD' is default
 
-      uBerscore: # combined
-        outputPath: './build/dist/uBerscore-dev.js'
+      uberscore: # combined
+        dependencies: bundleExports: ['lodash', 'agreement/isAgree']
+        #main: "uberscore" # Needed only for 'combined'.
+                           # Defaults to 'bundleName' if its a valid module.
+                           # 'bundleName' it self defaults to
+                           # grunt's @target (subtask name) i.e 'uberscore'
+        outputPath: './build/dist/uberscore-dev.js'
         template: 'combined'
 
       spec:
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
         # template: 'UMD' # 'UMD' is default
-        dependencies:
-          bundleExports: [null, null] # temp workaround to reseting default deps @todo: fix this in uBerscore.deepCloneDefaults
+
+#      oneFile:
+#        outputPath: "#{buildDir}"
+#        processModules: ["go.coffee"]
+#        debugLevel: 80
+        # template: 'UMD' # 'UMD' is default
 
       specCombined:
         bundlePath: "#{sourceSpecDir}"
@@ -68,13 +76,9 @@ gruntFunction = (grunt) ->
                         # if `bundle.main` is undefined,
                         #   it defaults to `bundle.bundleName` or 'index' or 'main'
                         #   with the price of a warning!
+        dependencies: variableNames: uberscore: ['_B', 'uberscore']
         outputPath: "#{buildSpecDir}/index-combined.js"
         template: 'combined'
-        dependencies:
-          variableNames:
-            uBerscore: ['_B', 'uBerscore']
-          bundleExports: [null, null] # temp workaround to reseting default deps @todo: fix this in uBerscore.deepCloneDefaults
-
 
     shell:
       ###    shell:uRequireXXX not used anymore - grunt-urequire is used instead! ###
@@ -94,7 +98,7 @@ gruntFunction = (grunt) ->
         command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
 
       doc:
-        command: "codo source/code --title 'uBerscore #{pkg.version} API documentation' --cautious"
+        command: "codo source/code --title 'uberscore #{pkg.version} API documentation' --cautious"
         
       runBuildExample:
         command: "coffee source/examples/buildExample.coffee"
@@ -112,9 +116,9 @@ gruntFunction = (grunt) ->
         src: [
           '<banner>'
           #'<banner:meta.varVersion>'
-          '<%= options.distDir %>/uBerscore-dev.js'
+          '<%= options.distDir %>/uberscore-dev.js'
         ]
-        dest:'<%= options.distDir %>/uBerscore-dev.js'
+        dest:'<%= options.distDir %>/uberscore-dev.js'
 
     clean:
         files: [
@@ -132,15 +136,15 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, tasks for shortCut, tasks of {
      # basic commands
      "default": "clean build deploy test"
-     "build":   "urequire:uBerscoreUMD"
-     "deploy":  "urequire:uBerscore"
+     "build":   "urequire:uberscoreUMD"
+     "deploy":  "urequire:uberscore"
      "test":    "urequire:spec urequire:specCombined mocha runBuildExample runAlmondBuildExample"
 
     # generic shortcuts
      "cl":      "clean"
      "cp":      "copy" #" todo: all ?
-     "ur":      "urequire:uBerscoreUMD"
-     "urc":     "urequire:uBerscore"
+     "ur":      "urequire:uberscoreUMD"
+     "urc":     "urequire:uberscore"
      "b":       "build"
      "d":       "deploy"
      "t":       "test"

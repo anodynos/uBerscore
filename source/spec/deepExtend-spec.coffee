@@ -2,7 +2,7 @@ chai = require 'chai'
 assert = chai.assert
 expect = chai.expect
 
-_B = require 'uBerscore' #
+_B = require 'uberscore' #
 
 #describe 'deepExtend', ->
 #  it "should ", ->

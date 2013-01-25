@@ -2,16 +2,16 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>uBerscore spec - UNOPTIMIZED, AMD/RequireJS loader</title>
+    <title>uberscore spec - UNOPTIMIZED, AMD/RequireJS loader</title>
   </head>
 
   <body>
-    <h1>uBerscore spec - UNOPTIMIZED, AMD/RequireJS loader</h1>
+    <h1>uberscore spec - UNOPTIMIZED, AMD/RequireJS loader</h1>
 
     <strong> ** uRequire note: **</strong>
     <ul>
       <li>Dependencies (eg. `lodash`) are loaded through RequireJs loader (using `rjs.paths`)
-      <li>'uBerscore' dependency is loading through `rjs.baseUrl`, which in turn loads all bundle dependencies *as seperate files*).
+      <li>'uberscore' dependency is loading through `rjs.baseUrl`, which in turn loads all bundle dependencies *as seperate files*).
     </ul>
 
     <link rel="stylesheet" href="../../libs/mocha.css" />
@@ -22,7 +22,7 @@
 
   <script type="text/javascript">
      window._B = "Old global `_B`" ;
-     window.uBerscore = "Old global `uBerscore`";
+     window.uberscore = "Old global `uberscore`";
 
      require.config ({
       // set baseUrl to point to the 'bundle', relative to this HTML
@@ -38,12 +38,12 @@
         backbone: "../../libs/backbone",
 
         // ** uRequire note: **
-        // if the following 'rjs.paths.uBerscore' exists,
+        // if the following 'rjs.paths.uberscore' exists,
         //  it mandates we are loading the OPTIMIZED version,
         // else
-        //  we load 'uBerscore' dependency (and its contained deps) through `rjs.baseUrl`.
+        //  we load 'uberscore' dependency (and its contained deps) through `rjs.baseUrl`.
         // this is the only change needed!
-        //uBerscore : "../../build/dist/uBerscore-dev",
+        //uberscore : "../../build/dist/uberscore-dev",
         spec: "../spec/"
       },
 
@@ -68,10 +68,11 @@
           "spec/mutate-spec",
           "spec/okv-spec",
           "spec/spec-data",
-          "spec/uBerscore-spec"
+          "spec/uberscore-spec"
+//            "spec/index"
         ],
           // once unit-tests are loaded
-          function(){ mocha.run().globals(['_', '_B', 'uBerscore']);}
+          function(){ mocha.run().globals(['_', '_B', 'uberscore']);}
         );
     });
   </script>
