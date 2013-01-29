@@ -47,7 +47,6 @@ gruntFunction = (grunt) ->
       uberscoreUMD:
         dependencies: bundleExports: ['lodash', 'agreement/isAgree']
         outputPath: "#{buildDir}"
-        debugLevel: 80
         # template: 'UMD' # 'UMD' is default
 
       uberscore: # combined
@@ -77,7 +76,7 @@ gruntFunction = (grunt) ->
                         #   it defaults to `bundle.bundleName` or 'index' or 'main'
                         #   with the price of a warning!
         dependencies: variableNames: uberscore: ['_B', 'uberscore']
-        outputPath: "#{buildSpecDir}/index-combined.js"
+        outputPath: "#{buildSpecDir}_combined/index-combined.js"
         template: 'combined'
 
     shell:
@@ -138,7 +137,7 @@ gruntFunction = (grunt) ->
      "default": "clean build deploy test"
      "build":   "urequire:uberscoreUMD"
      "deploy":  "urequire:uberscore"
-     "test":    "urequire:spec urequire:specCombined mocha runBuildExample runAlmondBuildExample"
+     "test":    "urequire:spec urequire:specCombined mocha runBuildExample runAlmondBuildExample" #urequire:specCombined
 
     # generic shortcuts
      "cl":      "clean"

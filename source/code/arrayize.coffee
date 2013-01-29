@@ -1,4 +1,4 @@
-#_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+#_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 
 ###
   Places item in a new array, if its not already an array.

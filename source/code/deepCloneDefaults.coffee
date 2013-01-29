@@ -1,4 +1,4 @@
-#_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+#_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 
 deepExtend = require './deepExtend'
 # @todo:6,2 make a non clone version ? Implications ?

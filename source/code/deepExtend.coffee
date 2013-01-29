@@ -1,7 +1,10 @@
-#_ = require 'lodash' # not need anymore, we have it as a Bundle Dependency!
+#_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+prettify = (o)-> JSON.stringify o, null, ' '
 
 # Coffeescript adaptation by Agelos.Pikoulas@gmail.com
 # Original by Kurt Milam - follows below
+#
+# Changes: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
 
 #/**
 #   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
@@ -15,28 +18,46 @@
 #   **/
 
 deepExtend = (obj, sources...) ->
-  parentRE = /#{\s*?_\s*?}/
+  parentRE = /\${\s*?_\s*?}/
 
-  for source in sources
+  #for source in sources
+  _.each sources, (source)->
     for own prop of source
       if _.isUndefined(obj[prop])
         obj[prop] = source[prop]
-      else if _.isString(source[prop]) and parentRE.test(source[prop])
-        obj[prop] = source[prop].replace(parentRE, obj[prop])  if _.isString(obj[prop])
-      else if _.isArray(obj[prop]) or _.isArray(source[prop])
-        if not _.isArray(obj[prop]) or not _.isArray(source[prop])
-          throw "Error: Trying to combine an array with a non-array (" + prop + ")"
-        else
-          obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), (item) ->
-            _.isNull item
-          )
-      else if _.isObject(obj[prop]) or _.isObject(source[prop])
-        if not _.isObject(obj[prop]) or not _.isObject(source[prop])
-          throw "Error: Trying to combine an object with a non-object (" + prop + ")"
-        else
-          obj[prop] = deepExtend(obj[prop], source[prop])
       else
-        obj[prop] = source[prop]
+        ###
+        String
+        ###
+        if _.isString(source[prop]) and parentRE.test(source[prop])
+          if _.isString(obj[prop])
+            obj[prop] = source[prop].replace parentRE, obj[prop]
+        else
+          ### Array ###
+          if _.isArray(obj[prop]) or _.isArray(source[prop])
+            if not _.isArray(obj[prop]) or not _.isArray(source[prop])
+              throw """
+                      deepExtend: Error: Trying to combine an array with a non-array.
+                      Property: #{prop}
+                      destination[prop]: #{prettify obj[prop]}
+                      source[prop]: #{prettify source[prop]}
+                """
+            else
+              obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), (item)->_.isNull item)
+          else
+            ### Object ###
+            if _.isObject(obj[prop]) or _.isObject(source[prop])
+              if not _.isObject(obj[prop]) or not _.isObject(source[prop])
+                throw """
+                      deepExtend: Error trying to combine an object with a non-object.
+                      Property: #{prop}
+                      destination[prop]: #{prettify obj[prop]}
+                      source[prop]: #{prettify source[prop]}
+                """
+              else
+                obj[prop] = deepExtend(obj[prop], source[prop])
+            else
+              obj[prop] = source[prop]
 
   obj
 
@@ -44,6 +65,12 @@ module.exports = deepExtend
 
 
 ## Inline dev tests
+
+#console.log deepExtend(
+#            [100, {id: 1234}, true, "foo", [250, 500]],
+#            ['${_}', '${_}', false, '${_}', '${_}']
+#        )
+
 #data = require '../spec/spec-data'
 ## clone to check mutability
 #projectDefaults = _.clone data.projectDefaults, true
@@ -53,9 +80,9 @@ module.exports = deepExtend
 #result = deepExtend globalDefaults, projectDefaults, bundleDefaults
 #
 #console.log JSON.stringify result, null, ' '
-
-
-
+#console.log deepExtend({url: "www.example.com"}, {url: 'http://!{_}/path/to/file.html'})
+#
+#
 #
 ############ Original js code
 #//  var _ = require('lodash')

@@ -5,26 +5,28 @@
     __isWeb = !__isNode;
 (function (root,factory) {
   if (typeof exports === 'object') {
-   var nr = new (require('urequire').NodeRequirer) ('uRequireConfig', module, __dirname, '.');
+   var nr = new (require('urequire').NodeRequirer) ('type', module, __dirname, '.');
    module.exports = factory(nr.require, exports, module, nr.require('lodash'), nr.require('./agreement/isAgree'));
  } else if (typeof define === 'function' && define.amd) {
      define(['require', 'exports', 'module', 'lodash', './agreement/isAgree'], factory);
  }
 })(this,function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
-module.exports = {
-    bundle: {
-        main: "uberscore",
-        excludes: [ /^draft/ ],
-        dependencies: {
-            bundleExports: [ "lodash", "agreement/isAgree" ]
+var knownTypes, type, _;
+
+_ = require("lodash");
+
+knownTypes = [ "Array", "Arguments", "Function", "String", "Number", "Date", "RegExp", "Boolean", "Null", "Undefined", "Object" ];
+
+module.exports = type = function(o) {
+    var testType, _i, _len;
+    for (_i = 0, _len = knownTypes.length; _i < _len; _i++) {
+        testType = knownTypes[_i];
+        if (_["is" + testType](o)) {
+            return testType;
         }
-    },
-    build: {
-        outputPath: "./build/dist/uberscore-dev.js",
-        template: "combined",
-        debugLevel: 0
     }
+    return "UNKNOWN";
 };
 // uRequire: end body of original nodejs module
 

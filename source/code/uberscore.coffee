@@ -24,11 +24,14 @@ class uberscore
   # mutators
   mutate: require 'mutate'
 
+  # types
+  type: require 'type'
+
 module.exports = new uberscore
 
-ao = a:1, b:2, c:-1
-
-ao = module.exports.go ao, fltr:'a'
+#ao = a:1, b:2, c:-1
+#
+#ao = module.exports.go ao, fltr:'a'
 #console.log ao
 
 #! extendIf (maybe noit, you can achivie it with a chain. Still worth a shortcut?)

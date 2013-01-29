@@ -61,15 +61,16 @@
 
         require([
           // load all your unit-tests here, always relative to the bundle/baseUrl
-          "spec/arrayize-spec",
-          "spec/deepCloneDefaults-spec",
-          "spec/deepExtend-spec",
-          "spec/go-spec",
-          "spec/mutate-spec",
-          "spec/okv-spec",
-          "spec/spec-data",
-          "spec/uberscore-spec"
-//            "spec/index"
+//          "spec/arrayize-spec",
+//          "spec/deepCloneDefaults-spec",
+//          "spec/deepExtend-spec",
+//          "spec/go-spec",
+//          "spec/mutate-spec",
+//          "spec/okv-spec",
+//          "spec/spec-data",
+//          "spec/type-spec",
+//          "spec/uberscore-spec"
+            "spec/index"
         ],
           // once unit-tests are loaded
           function(){ mocha.run().globals(['_', '_B', 'uberscore']);}
