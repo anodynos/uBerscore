@@ -6,15 +6,13 @@
 (function (root,factory) {
   if (typeof exports === 'object') {
    var nr = new (require('urequire').NodeRequirer) ('uberscore-spec', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module);
+   module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('./spec-data'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'chai', 'uberscore'], factory);
+     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], factory);
  }
-})(this,function (require, exports, module) {
+})(this,function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var assert, chai, expect, _uB;
-
-chai = require("chai");
+var assert, expect, _uB;
 
 assert = chai.assert;
 
@@ -25,13 +23,13 @@ _uB = require("uberscore");
 describe("uRequire's `rootExports` & `noConflict()`\n   (running on " + (__isNode ? "nodsjs" : "Web") + " via " + (__isAMD ? "AMD" : "noAMD/script") + ")", function() {
     if (__isWeb) {
         it("registers globals '_B' & 'uberscore'", function() {
-            expect(_B).to.equal(_uB);
-            return expect(uberscore).to.equal(_uB);
+            expect(window._B).to.equal(_uB);
+            return expect(window.uberscore).to.equal(_uB);
         });
         return it("noConflict() returns module & sets old values to globals '_B' & 'uberscore'", function() {
-            expect(_B.noConflict()).to.equal(_uB);
-            expect(_B).to.equal("Old global `_B`");
-            return expect(uberscore).to.equal("Old global `uberscore`");
+            expect(window._B.noConflict()).to.equal(_uB);
+            expect(window._B).to.equal("Old global `_B`");
+            return expect(window.uberscore).to.equal("Old global `uberscore`");
         });
     } else {
         it("NOT TESTING `rootExports`, I am on node/" + (__isAMD ? "AMD" : "plain") + "!", function() {});

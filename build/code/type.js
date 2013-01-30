@@ -16,7 +16,7 @@ var knownTypes, type, _;
 
 _ = require("lodash");
 
-knownTypes = [ "Array", "Arguments", "Function", "String", "Number", "Date", "RegExp", "Boolean", "Null", "Undefined", "Object" ];
+knownTypes = [ "Arguments", "Array", "Function", "String", "Date", "RegExp", "Object", "Number", "Boolean", "Null", "Undefined" ];
 
 module.exports = type = function(o) {
     var testType, _i, _len;

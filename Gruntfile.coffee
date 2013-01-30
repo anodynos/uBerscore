@@ -45,12 +45,19 @@ gruntFunction = (grunt) ->
           debugLevel: 0
 
       uberscoreUMD:
-        dependencies: bundleExports: ['lodash', 'agreement/isAgree']
+        dependencies:
+          bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
+            'lodash':"_",                               # precise syntax
+            'agreement/isAgree': 'isAgree'
+
         outputPath: "#{buildDir}"
         # template: 'UMD' # 'UMD' is default
 
       uberscore: # combined
-        dependencies: bundleExports: ['lodash', 'agreement/isAgree']
+        dependencies:
+          bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
+            'lodash':"_",                               # precise syntax
+            'agreement/isAgree': 'isAgree'
         #main: "uberscore" # Needed only for 'combined'.
                            # Defaults to 'bundleName' if its a valid module.
                            # 'bundleName' it self defaults to
@@ -62,6 +69,14 @@ gruntFunction = (grunt) ->
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
         # template: 'UMD' # 'UMD' is default
+        dependencies:
+          bundleExports:
+            chai: 'chai'
+            lodash: '_'
+            uberscore: '_B'
+            'spec-data': 'data'
+            # assert = chai.assert #todo(for uRequire 4 5 5) allow for . notation to refer to export!
+
 
 #      oneFile:
 #        outputPath: "#{buildDir}"
@@ -72,10 +87,16 @@ gruntFunction = (grunt) ->
       specCombined:
         bundlePath: "#{sourceSpecDir}"
         main: 'index' # not needed:
-                        # if `bundle.main` is undefined,
-                        #   it defaults to `bundle.bundleName` or 'index' or 'main'
-                        #   with the price of a warning!
-        dependencies: variableNames: uberscore: ['_B', 'uberscore']
+                      # if `bundle.main` is undefined,
+                      #   it defaults to `bundle.bundleName` or 'index' or 'main'
+                      #   with the price of a warning!
+        dependencies:
+          variableNames: uberscore: ['_B', 'uberscore']
+          bundleExports: # '<%= options.urequire.spec.dependencies.bundleExports %>' #@todo: why not working ? Missing something in grunt-urequire ?
+            chai: 'chai'
+            lodash: '_'
+            uberscore: '_B'
+            'spec-data': 'data'
         outputPath: "#{buildSpecDir}_combined/index-combined.js"
         template: 'combined'
 
@@ -137,15 +158,17 @@ gruntFunction = (grunt) ->
      "default": "clean build deploy test"
      "build":   "urequire:uberscoreUMD"
      "deploy":  "urequire:uberscore"
-     "test":    "urequire:spec urequire:specCombined mocha runBuildExample runAlmondBuildExample" #urequire:specCombined
+     "test":    "urequire:spec urequire:specCombined mocha run"
+     "run":     "runBuildExample runAlmondBuildExample"
 
     # generic shortcuts
      "cl":      "clean"
-     "cp":      "copy" #" todo: all ?
+     "cp":      "overwrite" #" todo: all ?
      "ur":      "urequire:uberscoreUMD"
      "urc":     "urequire:uberscore"
      "b":       "build"
      "d":       "deploy"
+     "t1":      "urequire:spec mocha"
      "t":       "test"
   }
 
@@ -153,7 +176,7 @@ gruntFunction = (grunt) ->
     "alt-c": "cp"
     "alt-b": "b"
     "alt-d": "d"
-    "alt-t": "t"
+    "alt-t": "t1"
   }
 
 

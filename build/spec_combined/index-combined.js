@@ -437,8 +437,8 @@ define('uberscore',[],function () {
 };
 });
 (function (window) {
-  define('spec-data',['require','exports','module'],
-  function (require, exports, module) {
+  define('spec-data',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 var data;
 
@@ -475,7 +475,40 @@ data = {
                 scanPrevent: true
             }
         }
-    }
+    },
+    persons: [ {
+        name: "agelos",
+        male: true
+    }, {
+        name: "AnoDyNoS"
+    } ],
+    personDetails: [ {
+        age: 37,
+        familyState: {
+            married: false
+        }
+    }, {
+        age: 33
+    } ],
+    personDetails2: [ {
+        surname: "Peakoulas",
+        name: "Agelos",
+        age: 42,
+        address: {
+            street: "1 Peak Str",
+            country: "Earth"
+        },
+        familyState: {
+            married: true,
+            children: 3
+        }
+    }, {
+        job: "Dreamer, developer, doer",
+        familyState: {
+            married: false,
+            children: 0
+        }
+    } ]
 };
 
 module.exports = data;
@@ -488,21 +521,15 @@ return module.exports;
 })(__global);
 (function (window) {
   define('arrayize-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
-  function (require, exports, module) {
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var assert, chai, data, expect, _, _B;
-
-chai = require("chai");
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref;
 
 assert = chai.assert;
 
 expect = chai.expect;
 
-_ = require("lodash");
-
-_B = require("uberscore");
-
-data = require("./spec-data");
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
 
 describe("arrayize :", function() {
     it("arrayize a String", function() {
@@ -537,28 +564,328 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('deepCloneDefaults-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
-  function (require, exports, module) {
+  define('blending/deepExtend-examples-SharedSpecs',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var assert, bundleDefaults, chai, data, expect, globalDefaults, projectDefaults, _, _B;
-
-chai = require("chai");
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref;
 
 assert = chai.assert;
 
 expect = chai.expect;
 
-_ = require("lodash");
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
 
-_B = require("uberscore");
+module.exports = function(deepExtendMergeBlend) {
+    describe("deepExtend source code examples : ", function() {
+        it("parentRE allows you to concatenate strings.", function() {
+            return expect(deepExtendMergeBlend({
+                url: "www.example.com"
+            }, {
+                url: "http://${_}/path/to/file.html"
+            })).to.deep.equal({
+                url: "http://www.example.com/path/to/file.html"
+            });
+        });
+        it("parentRE also acts as a placeholder, which can be useful when you need to change one value in an array, while leaving the others untouched", function() {
+            return expect(deepExtendMergeBlend([ 100, {
+                id: 1234
+            }, true, "foo", [ 250, 500 ] ], [ "${_}", "${_}", false, "${_}", "${_}" ])).to.deep.equal([ 100, {
+                id: 1234
+            }, false, "foo", [ 250, 500 ] ]);
+        });
+        it("parentRE also acts as a placeholder, #2 ", function() {
+            return expect(deepExtendMergeBlend([ 100, {
+                id: 1234
+            }, true, "foo", [ 250, 500 ] ], [ "${_}", {}, false, "${_}", [] ])).to.deep.equal([ 100, {
+                id: 1234
+            }, false, "foo", [ 250, 500 ] ]);
+        });
+        it("parentRE also acts as a placeholder, #3", function() {
+            return expect(deepExtendMergeBlend([ 100, {
+                id: 1234
+            }, true, "foo", [ 250, 500 ] ], [ "${_}", {}, false ])).to.deep.equal([ 100, {
+                id: 1234
+            }, false, "foo", [ 250, 500 ] ]);
+        });
+        it("Array order is important.", function() {
+            return expect(deepExtendMergeBlend([ 1, 2, 3, 4 ], [ 1, 4, 3, 2 ])).to.deep.equal([ 1, 4, 3, 2 ]);
+        });
+        return it("Remove Array element in destination object, by setting same index to null in a source object.", function() {
+            return expect(deepExtendMergeBlend({
+                arr: [ 1, 2, 3, 4 ]
+            }, {
+                arr: [ "${_}", null ]
+            })).to.deep.equal({
+                arr: [ 1, 3, 4 ]
+            });
+        });
+    });
+    return describe("more deepExtend examples: ", function() {
+        return it("Remove Object key in destination object, by setting same key to null in a source object, just like in Array!", function() {
+            return expect(deepExtendMergeBlend({
+                foo: "foo",
+                bar: {
+                    name: "bar",
+                    price: 20
+                }
+            }, {
+                foo: null,
+                bar: {
+                    price: null
+                }
+            })).to.deep.equal({
+                bar: {
+                    name: "bar"
+                }
+            });
+        });
+    });
+};
+// uRequire: end body of original nodejs module
 
-data = require("./spec-data");
 
-projectDefaults = _.clone(data.projectDefaults, true);
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/lodashMerge-tests-SharedSpecs',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, shadowed, _ref;
 
-globalDefaults = _.clone(data.globalDefaults, true);
+assert = chai.assert;
 
-bundleDefaults = _.clone(data.bundleDefaults, true);
+expect = chai.expect;
+
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
+
+shadowed = {
+    constructor: 1,
+    hasOwnProperty: 2,
+    isPrototypeOf: 3,
+    propertyIsEnumerable: 4,
+    toLocaleString: 5,
+    toString: 6,
+    valueOf: 7
+};
+
+module.exports = function(deepExtendMergeBlend) {
+    return describe("lodash.merge tests", function() {
+        it("should merge `source` into the destination object", function() {
+            var ages, expected, heights, names;
+            names = {
+                stooges: [ {
+                    name: "moe"
+                }, {
+                    name: "larry"
+                } ]
+            };
+            ages = {
+                stooges: [ {
+                    age: 40
+                }, {
+                    age: 50
+                } ]
+            };
+            heights = {
+                stooges: [ {
+                    height: "5'4\""
+                }, {
+                    height: "5'5\""
+                } ]
+            };
+            expected = {
+                stooges: [ {
+                    name: "moe",
+                    age: 40,
+                    height: "5'4\""
+                }, {
+                    name: "larry",
+                    age: 50,
+                    height: "5'5\""
+                } ]
+            };
+            return expect(deepExtendMergeBlend(names, ages, heights)).to.deep.equal(expected);
+        });
+        it("should merge sources containing circular references", function() {
+            var actual, object, source;
+            object = {
+                foo: {
+                    a: 1
+                },
+                bar: {
+                    a: 2
+                }
+            };
+            source = {
+                foo: {
+                    b: {
+                        foo: {
+                            c: {}
+                        }
+                    }
+                },
+                bar: {}
+            };
+            source.foo.b.foo.c = source;
+            source.bar.b = source.foo.b;
+            actual = deepExtendMergeBlend(object, source);
+            return expect(actual.bar.b === actual.foo.b && actual.foo.b.foo.c === actual.foo.b.foo.c.foo.b.foo.c).to.equal(true);
+        });
+        return it("should merge problem JScript properties (test in IE < 9)", function() {
+            var blended, object, source;
+            object = {
+                constructor: 1,
+                hasOwnProperty: 2,
+                isPrototypeOf: 3
+            };
+            source = {
+                propertyIsEnumerable: 4,
+                toLocaleString: 5,
+                toString: 6,
+                valueOf: 7
+            };
+            blended = deepExtendMergeBlend(object, source);
+            return expect(blended).to.deep.equal(shadowed);
+        });
+    });
+};
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/common-SharedSpecs',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, personDetails, personDetails2, persons, projectDefaults, _ref;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr, persons = _ref.persons, personDetails = _ref.personDetails, personDetails2 = _ref.personDetails2;
+
+module.exports = function(deepExtendMergeBlend) {
+    return describe("common (deepExtend, _.merge, _B.blend) examples", function() {
+        var blended;
+        blended = deepExtendMergeBlend(persons, personDetails, personDetails2);
+        it("'Persons' are deeply extended, overwriting from right to left.", function() {
+            return expect(blended).to.deep.equal([ {
+                surname: "Peakoulas",
+                name: "Agelos",
+                age: 42,
+                male: true,
+                address: {
+                    street: "1 Peak Str",
+                    country: "Earth"
+                },
+                familyState: {
+                    married: true,
+                    children: 3
+                }
+            }, {
+                name: "AnoDyNoS",
+                age: 33,
+                job: "Dreamer, developer, doer",
+                familyState: {
+                    married: false,
+                    children: 0
+                }
+            } ]);
+        });
+        return it("'Persons' === the destination/target/extended object", function() {
+            return expect(blended).to.equal(persons);
+        });
+    });
+};
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/deepExtend-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data', './deepExtend-examples-SharedSpecs', './lodashMerge-tests-SharedSpecs', './common-SharedSpecs'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("deepExtend :", function() {
+    require("./deepExtend-examples-SharedSpecs")(_B.deepExtend);
+    require("./lodashMerge-tests-SharedSpecs")(_B.deepExtend);
+    return require("./common-SharedSpecs")(_B.deepExtend);
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/blend-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data', './deepExtend-examples-SharedSpecs', './lodashMerge-tests-SharedSpecs', './common-SharedSpecs'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("Blender / blend :", function() {
+    require("./deepExtend-examples-SharedSpecs")(_B.Blender());
+    require("./lodashMerge-tests-SharedSpecs")(_B.Blender());
+    return require("./common-SharedSpecs")(_B.Blender());
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/lodash-merge-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data', './lodashMerge-tests-SharedSpecs', './common-SharedSpecs'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("lodash's `merge` :", function() {
+    require("./lodashMerge-tests-SharedSpecs")(_.merge);
+    return require("./common-SharedSpecs")(_.merge);
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('deepCloneDefaults-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
 
 describe("deepCloneDefaults:", function() {
     it("more 'specific' options eg. project, merged (taking precedence) to more 'global' defaults", function() {
@@ -603,116 +930,21 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('deepExtend-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
-  function (require, exports, module) {
-  // uRequire: start body of original nodejs module
-var assert, bundleDefaults, chai, data, expect, globalDefaults, projectDefaults, _, _B;
-
-chai = require("chai");
-
-assert = chai.assert;
-
-expect = chai.expect;
-
-_ = require("lodash");
-
-_B = require("uberscore");
-
-data = require("./spec-data");
-
-projectDefaults = _.clone(data.projectDefaults, true);
-
-globalDefaults = _.clone(data.globalDefaults, true);
-
-bundleDefaults = _.clone(data.bundleDefaults, true);
-
-describe("deepExtend :", function() {
-    it("parentRE allows you to concatenate strings.", function() {
-        return expect(_B.deepExtend({
-            url: "www.example.com"
-        }, {
-            url: "http://${_}/path/to/file.html"
-        })).to.deep.equal({
-            url: "http://www.example.com/path/to/file.html"
-        });
-    });
-    it("parentRE also acts as a placeholder, which can be useful when you need to change one value in an array, while leaving the others untouched", function() {
-        return expect(_B.deepExtend([ 100, {
-            id: 1234
-        }, true, "foo", [ 250, 500 ] ], [ "${_}", "${_}", false, "${_}", "${_}" ])).to.deep.equal([ 100, {
-            id: 1234
-        }, false, "foo", [ 250, 500 ] ]);
-    });
-    it("parentRE also acts as a placeholder, #2 ", function() {
-        return expect(_B.deepExtend([ 100, {
-            id: 1234
-        }, true, "foo", [ 250, 500 ] ], [ "${_}", {}, false, "${_}", [] ])).to.deep.equal([ 100, {
-            id: 1234
-        }, false, "foo", [ 250, 500 ] ]);
-    });
-    it("parentRE also acts as a placeholder, #3", function() {
-        return expect(_B.deepExtend([ 100, {
-            id: 1234
-        }, true, "foo", [ 250, 500 ] ], [ "${_}", {}, false ])).to.deep.equal([ 100, {
-            id: 1234
-        }, false, "foo", [ 250, 500 ] ]);
-    });
-    it("Array order is important.", function() {
-        return expect(_B.deepExtend([ 1, 2, 3, 4 ], [ 1, 4, 3, 2 ])).to.deep.equal([ 1, 4, 3, 2 ]);
-    });
-    return it("You can remove an array element set in a parent object by setting the same index value to null in a child object.", function() {
-        return expect(_B.deepExtend({
-            arr: [ 1, 2, 3, 4 ]
-        }, {
-            arr: [ "${_}", null ]
-        })).to.deep.equal({
-            arr: [ 1, 3, 4 ]
-        });
-    });
-});
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
   define('go-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
-  function (require, exports, module) {
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var arrInt, arrInt2, arrStr, assert, bundleDefaults, chai, data, expect, globalDefaults, obj, projectDefaults, _, _B, __indexOf = [].indexOf || function(item) {
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref, __indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
     }
     return -1;
 };
 
-chai = require("chai");
-
 assert = chai.assert;
 
 expect = chai.expect;
 
-_ = require("lodash");
-
-_B = require("uberscore");
-
-data = require("./spec-data");
-
-projectDefaults = _.clone(data.projectDefaults, true);
-
-globalDefaults = _.clone(data.globalDefaults, true);
-
-bundleDefaults = _.clone(data.bundleDefaults, true);
-
-obj = _.clone(data.obj, true);
-
-arrInt = _.clone(data.arrInt, true);
-
-arrInt2 = _.clone(data.arrInt2, true);
-
-arrStr = _.clone(data.arrStr, true);
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
 
 describe("go: version 0.0.3", function() {
     describe("go: Object passed, no params, ", function() {
@@ -1097,27 +1329,15 @@ return module.exports;
 })(__global);
 (function (window) {
   define('okv-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
-  function (require, exports, module) {
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var assert, bundleDefaults, chai, data, expect, globalDefaults, projectDefaults, _, _B;
-
-chai = require("chai");
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref;
 
 assert = chai.assert;
 
 expect = chai.expect;
 
-_ = require("lodash");
-
-_B = require("uberscore");
-
-data = require("./spec-data");
-
-projectDefaults = _.clone(data.projectDefaults, true);
-
-globalDefaults = _.clone(data.globalDefaults, true);
-
-bundleDefaults = _.clone(data.bundleDefaults, true);
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
 
 describe("okv :", function() {
     var weirdKeyName;
@@ -1145,11 +1365,11 @@ describe("okv :", function() {
         return it("add nested weird keyd bars on existing key", function() {
             var i;
             _B.okv(o[bar], "newbar" + weirdKeyName, "a new bar!", "bar" + function() {
-                var _i, _len, _ref, _results;
-                _ref = [ 1, 2, 3 ];
+                var _i, _len, _ref1, _results;
+                _ref1 = [ 1, 2, 3 ];
                 _results = [];
-                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                    i = _ref[_i];
+                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                    i = _ref1[_i];
                     _results.push("" + i);
                 }
                 return _results;
@@ -1175,21 +1395,13 @@ return module.exports;
 })(__global);
 (function (window) {
   define('mutate-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
-  function (require, exports, module) {
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var assert, chai, data, expect, _, _B;
-
-chai = require("chai");
+var assert, expect;
 
 assert = chai.assert;
 
 expect = chai.expect;
-
-_ = require("lodash");
-
-_B = require("uberscore");
-
-data = require("./spec-data");
 
 describe("mutate :", function() {
     var simpleCalc;
@@ -1245,8 +1457,8 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('type-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore'], 
-  function (require, exports, module) {
+  define('type-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 var assert, chai, expect, oOs, _, _B;
 
@@ -1302,12 +1514,10 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('uberscore-spec',['require', 'exports', 'module', 'chai', 'uberscore'], 
-  function (require, exports, module) {
+  define('uberscore-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var assert, chai, expect, _uB;
-
-chai = require("chai");
+var assert, expect, _uB;
 
 assert = chai.assert;
 
@@ -1318,13 +1528,13 @@ _uB = require("uberscore");
 describe("uRequire's `rootExports` & `noConflict()`\n   (running on " + (__isNode ? "nodsjs" : "Web") + " via " + (__isAMD ? "AMD" : "noAMD/script") + ")", function() {
     if (__isWeb) {
         it("registers globals '_B' & 'uberscore'", function() {
-            expect(_B).to.equal(_uB);
-            return expect(uberscore).to.equal(_uB);
+            expect(window._B).to.equal(_uB);
+            return expect(window.uberscore).to.equal(_uB);
         });
         return it("noConflict() returns module & sets old values to globals '_B' & 'uberscore'", function() {
-            expect(_B.noConflict()).to.equal(_uB);
-            expect(_B).to.equal("Old global `_B`");
-            return expect(uberscore).to.equal("Old global `uberscore`");
+            expect(window._B.noConflict()).to.equal(_uB);
+            expect(window._B).to.equal("Old global `_B`");
+            return expect(window.uberscore).to.equal("Old global `uberscore`");
         });
     } else {
         it("NOT TESTING `rootExports`, I am on node/" + (__isAMD ? "AMD" : "plain") + "!", function() {});
@@ -1339,14 +1549,18 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('index',['require', 'exports', 'module', './arrayize-spec', './deepCloneDefaults-spec', './deepExtend-spec', './go-spec', './okv-spec', './mutate-spec', './spec-data', './type-spec', './uberscore-spec'], 
-  function (require, exports, module) {
+  define('index',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data', './arrayize-spec', './blending/deepExtend-spec', './blending/blend-spec', './blending/lodash-merge-spec', './deepCloneDefaults-spec', './go-spec', './okv-spec', './mutate-spec', './type-spec', './uberscore-spec'], 
+  function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 require("./arrayize-spec");
 
-require("./deepCloneDefaults-spec");
+require("./blending/deepExtend-spec");
 
-require("./deepExtend-spec");
+require("./blending/blend-spec");
+
+require("./blending/lodash-merge-spec");
+
+require("./deepCloneDefaults-spec");
 
 require("./go-spec");
 

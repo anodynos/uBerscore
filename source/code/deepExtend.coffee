@@ -1,10 +1,12 @@
-#_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 prettify = (o)-> JSON.stringify o, null, ' '
 
-# Coffeescript adaptation by Agelos.Pikoulas@gmail.com
+# Coffeescript adaptation & changes/extra features by Agelos.Pikoulas@gmail.com
 # Original by Kurt Milam - follows below
-#
-# Changes: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
+
+# Changes/extra features
+# - extra: allow lodash'es 'shadowed' variables
+# - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
 
 #/**
 #   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
@@ -16,12 +18,21 @@ prettify = (o)-> JSON.stringify o, null, ' '
 #   *
 #   * You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
 #   **/
+shadowed = [
+  'constructor'
+  'hasOwnProperty'
+  'isPrototypeOf'
+  'propertyIsEnumerable'
+  'toLocaleString'
+  'toString'
+  'valueOf'
+  ]
 
 deepExtend = (obj, sources...) ->
   parentRE = /\${\s*?_\s*?}/
 
   #for source in sources
-  _.each sources, (source)->
+  for source in sources
     for own prop of source
       if _.isUndefined(obj[prop])
         obj[prop] = source[prop]
@@ -32,33 +43,73 @@ deepExtend = (obj, sources...) ->
         if _.isString(source[prop]) and parentRE.test(source[prop])
           if _.isString(obj[prop])
             obj[prop] = source[prop].replace parentRE, obj[prop]
+
         else
           ### Array ###
           if _.isArray(obj[prop]) or _.isArray(source[prop])
             if not _.isArray(obj[prop]) or not _.isArray(source[prop])
               throw """
-                      deepExtend: Error: Trying to combine an array with a non-array.
-                      Property: #{prop}
-                      destination[prop]: #{prettify obj[prop]}
-                      source[prop]: #{prettify source[prop]}
+                deepExtend: Error: Trying to combine an array with a non-array.
+
+                Property: #{prop}
+                destination[prop]: #{prettify obj[prop]}
+                source[prop]: #{prettify source[prop]}
+
+                #{(if _.isArray(source[prop])
+                    'source is Array: '
+                  else
+                    'source is NOT Array: ') + source[prop]
+                }
+
+                #{(if _.isArray(obj[prop])
+                    'destination is Array: '
+                  else
+                    'destination is NOT Array: ') + obj[prop]
+                }
                 """
             else
               obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), (item)->_.isNull item)
+
           else
             ### Object ###
-            if _.isObject(obj[prop]) or _.isObject(source[prop])
+            if ( _.isObject(obj[prop]) and
+                 not (_.isFunction(obj[prop]) and prop in shadowed)) or #lodash merge appears to have this behaviour
+                _.isObject(source[prop])
               if not _.isObject(obj[prop]) or not _.isObject(source[prop])
                 throw """
-                      deepExtend: Error trying to combine an object with a non-object.
-                      Property: #{prop}
-                      destination[prop]: #{prettify obj[prop]}
-                      source[prop]: #{prettify source[prop]}
+                  deepExtend: Error trying to combine an object with a non-object.
+
+                  Property: #{prop}
+                  destination[prop]: #{prettify obj[prop]}
+                  source[prop]: #{prettify source[prop]}
+
+                  #{(if _.isObject(source[prop])
+                      'source is Object: '
+                    else
+                      'source is NOT Object: ') + source[prop]
+                  }
+
+                  #{(if _.isObject(obj[prop])
+                      'destination is Object: '
+                    else
+                      'destination is NOT Object: ') + obj[prop]
+                  }
                 """
               else
                 obj[prop] = deepExtend(obj[prop], source[prop])
-            else
-              obj[prop] = source[prop]
 
+            # All non-nested sources
+            else
+              val = source[prop]
+              if (val is null) and (_.isPlainObject obj)
+                delete obj[prop]
+              else
+                obj[prop] = val
+
+  # _.reject(obj, (item)->_.isNull item)  # @todo: without this, its not consistent
+                                          # in `[1,2,3,4], ["${_}",null]`
+                                          # VS `{a:[1,2,3,4]}, {a:["${_}",null]}`
+                                          # but leave it to the outside user to decide!
   obj
 
 module.exports = deepExtend
@@ -67,8 +118,8 @@ module.exports = deepExtend
 ## Inline dev tests
 
 #console.log deepExtend(
-#            [100, {id: 1234}, true, "foo", [250, 500]],
-#            ['${_}', '${_}', false, '${_}', '${_}']
+#          [1,       2,        3,  4]
+#          ["${_}",  null]
 #        )
 
 #data = require '../spec/spec-data'

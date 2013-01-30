@@ -1,11 +1,10 @@
-chai = require 'chai'
 assert = chai.assert
 expect = chai.expect
+# clone to check mutability
+{ projectDefaults, globalDefaults, bundleDefaults
+  obj, arrInt, arrInt2, arrStr
+} = _.clone data, true
 
-_ = require 'lodash'
-_B = require 'uberscore' #
-
-data = require './spec-data'
 # @todo: use data + more examples
 
 describe 'arrayize :', ->

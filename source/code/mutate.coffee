@@ -1,5 +1,5 @@
-#_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
-# isAgree = require './agreement/isAgree' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+isAgree = require './agreement/isAgree' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 go = require './go'
 
 ###
@@ -15,7 +15,7 @@ mutate = (oa, mutator, fltr)->
   if _.isFunction mutator #todo:2 other non-function mutators ?
     go oa, iter:(v,k)->
       if isAgree v, fltr
-        oa[k] = mutator v
+        oa[k] = mutator v #@todo:(5 2 1) # also pass 'k, oa'
   oa
 
 module.exports = mutate

@@ -6,11 +6,11 @@
 (function (root,factory) {
   if (typeof exports === 'object') {
    var nr = new (require('urequire').NodeRequirer) ('spec-data', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module);
+   module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('./spec-data'));
  } else if (typeof define === 'function' && define.amd) {
-     define(factory);
+     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], factory);
  }
-})(this,function (require, exports, module) {
+})(this,function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 var data;
 
@@ -47,7 +47,40 @@ data = {
                 scanPrevent: true
             }
         }
-    }
+    },
+    persons: [ {
+        name: "agelos",
+        male: true
+    }, {
+        name: "AnoDyNoS"
+    } ],
+    personDetails: [ {
+        age: 37,
+        familyState: {
+            married: false
+        }
+    }, {
+        age: 33
+    } ],
+    personDetails2: [ {
+        surname: "Peakoulas",
+        name: "Agelos",
+        age: 42,
+        address: {
+            street: "1 Peak Str",
+            country: "Earth"
+        },
+        familyState: {
+            married: true,
+            children: 3
+        }
+    }, {
+        job: "Dreamer, developer, doer",
+        familyState: {
+            married: false,
+            children: 0
+        }
+    } ]
 };
 
 module.exports = data;

@@ -423,31 +423,36 @@ define('lodash',[],function () {
 };
 });
 (function (window) {
-  define('agreement/isAgree',['require', 'lodash', './isAgree'], 
-  function (require, _, isAgree) {
-  // uRequire: start body of original AMD module
-return function(o, agreement) {
-        if (_.isRegExp(agreement)) {
-            return agreement.test(o + "");
+  define('agreement/isAgree',['require', 'exports', 'module', 'lodash', './isAgree'], 
+  function (require, exports, module, _, isAgree) {
+  // uRequire: start body of original nodejs module
+var _;
+
+_ = require("lodash");
+
+module.exports = function(o, agreement) {
+    if (_.isRegExp(agreement)) {
+        return agreement.test(o + "");
+    } else {
+        if (_.isFunction(agreement)) {
+            return agreement(o);
         } else {
-            if (_.isFunction(agreement)) {
-                return agreement(o);
+            if (agreement === void 0) {
+                return true;
             } else {
-                if (agreement === void 0) {
+                if (_.isEqual(o, agreement)) {
                     return true;
                 } else {
-                    if (_.isEqual(o, agreement)) {
-                        return true;
-                    } else {
-                        return o + "" === agreement + "";
-                    }
+                    return o + "" === agreement + "";
                 }
             }
         }
-    };
-// uRequire: end body of original AMD module
+    }
+};
+// uRequire: end body of original nodejs module
 
 
+return module.exports;
 }
 );
 })(__global);
@@ -455,12 +460,14 @@ return function(o, agreement) {
   define('go',['require', 'exports', 'module', 'lodash', './agreement/isAgree'], 
   function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
-var go, __indexOf = [].indexOf || function(item) {
+var go, _, __indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
     }
     return -1;
 };
+
+_ = require("lodash");
 
 go = function(oa, actions, context) {
     var arrItem, fixForObj, fltr, grab, isObj, iter, keysOrder, newOA, resetResult, result, resultPush, sort, _i, _len;
@@ -591,59 +598,303 @@ return module.exports;
   define('deepExtend',['require', 'exports', 'module', 'lodash', './agreement/isAgree'], 
   function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
-var deepExtend, prettify, __slice = [].slice, __hasProp = {}.hasOwnProperty;
+var deepExtend, prettify, shadowed, _, __slice = [].slice, __hasProp = {}.hasOwnProperty, __indexOf = [].indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+        if (i in this && this[i] === item) return i;
+    }
+    return -1;
+};
+
+_ = require("lodash");
 
 prettify = function(o) {
     return JSON.stringify(o, null, " ");
 };
 
+shadowed = [ "constructor", "hasOwnProperty", "isPrototypeOf", "propertyIsEnumerable", "toLocaleString", "toString", "valueOf" ];
+
 deepExtend = function() {
-    var obj, parentRE, sources;
+    var obj, parentRE, prop, source, sources, val, _i, _len;
     obj = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
     parentRE = /\${\s*?_\s*?}/;
-    _.each(sources, function(source) {
-        var prop, _results;
-        _results = [];
+    for (_i = 0, _len = sources.length; _i < _len; _i++) {
+        source = sources[_i];
         for (prop in source) {
             if (!__hasProp.call(source, prop)) continue;
             if (_.isUndefined(obj[prop])) {
-                _results.push(obj[prop] = source[prop]);
+                obj[prop] = source[prop];
             } else {
                 if (_.isString(source[prop]) && parentRE.test(source[prop])) {
                     if (_.isString(obj[prop])) {
-                        _results.push(obj[prop] = source[prop].replace(parentRE, obj[prop]));
-                    } else {
-                        _results.push(void 0);
+                        obj[prop] = source[prop].replace(parentRE, obj[prop]);
                     }
                 } else {
                     if (_.isArray(obj[prop]) || _.isArray(source[prop])) {
                         if (!_.isArray(obj[prop]) || !_.isArray(source[prop])) {
-                            throw "deepExtend: Error: Trying to combine an array with a non-array.\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]);
+                            throw "deepExtend: Error: Trying to combine an array with a non-array.\n\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]) + "\n\n" + ((_.isArray(source[prop]) ? "source is Array: " : "source is NOT Array: ") + source[prop]) + "\n\n" + ((_.isArray(obj[prop]) ? "destination is Array: " : "destination is NOT Array: ") + obj[prop]);
                         } else {
-                            _results.push(obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), function(item) {
+                            obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), function(item) {
                                 return _.isNull(item);
-                            }));
+                            });
                         }
                     } else {
-                        if (_.isObject(obj[prop]) || _.isObject(source[prop])) {
+                        if (_.isObject(obj[prop]) && !(_.isFunction(obj[prop]) && __indexOf.call(shadowed, prop) >= 0) || _.isObject(source[prop])) {
                             if (!_.isObject(obj[prop]) || !_.isObject(source[prop])) {
-                                throw "deepExtend: Error trying to combine an object with a non-object.\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]);
+                                throw "deepExtend: Error trying to combine an object with a non-object.\n\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]) + "\n\n" + ((_.isObject(source[prop]) ? "source is Object: " : "source is NOT Object: ") + source[prop]) + "\n\n" + ((_.isObject(obj[prop]) ? "destination is Object: " : "destination is NOT Object: ") + obj[prop]);
                             } else {
-                                _results.push(obj[prop] = deepExtend(obj[prop], source[prop]));
+                                obj[prop] = deepExtend(obj[prop], source[prop]);
                             }
                         } else {
-                            _results.push(obj[prop] = source[prop]);
+                            val = source[prop];
+                            if (val === null && _.isPlainObject(obj)) {
+                                delete obj[prop];
+                            } else {
+                                obj[prop] = val;
+                            }
                         }
                     }
                 }
             }
         }
-        return _results;
-    });
+    }
     return obj;
 };
 
 module.exports = deepExtend;
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('type',['require', 'exports', 'module', 'lodash', './agreement/isAgree'], 
+  function (require, exports, module, _, isAgree) {
+  // uRequire: start body of original nodejs module
+var knownTypes, type, _;
+
+_ = require("lodash");
+
+knownTypes = [ "Arguments", "Array", "Function", "String", "Date", "RegExp", "Object", "Number", "Boolean", "Null", "Undefined" ];
+
+module.exports = type = function(o) {
+    var testType, _i, _len;
+    for (_i = 0, _len = knownTypes.length; _i < _len; _i++) {
+        testType = knownTypes[_i];
+        if (_["is" + testType](o)) {
+            return testType;
+        }
+    }
+    return "UNKNOWN";
+};
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('certain',['require', 'exports', 'module', 'lodash', './agreement/isAgree'], 
+  function (require, exports, module, _, isAgree) {
+  // uRequire: start body of original nodejs module
+var certain;
+
+certain = function(o, defaultKey) {
+    if (defaultKey == null) {
+        defaultKey = "*";
+    }
+    return function(key) {
+        var _ref;
+        return (_ref = o[key]) != null ? _ref : o[defaultKey];
+    };
+};
+
+module.exports = certain;
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('mutate',['require', 'exports', 'module', 'lodash', './agreement/isAgree', './go'], 
+  function (require, exports, module, _, isAgree) {
+  // uRequire: start body of original nodejs module
+var go, isAgree, mutate, _;
+
+_ = require("lodash");
+
+isAgree = require("./agreement/isAgree");
+
+go = require("./go");
+
+mutate = function(oa, mutator, fltr) {
+    if (_.isFunction(mutator)) {
+        go(oa, {
+            iter: function(v, k) {
+                if (isAgree(v, fltr)) {
+                    return oa[k] = mutator(v);
+                }
+            }
+        });
+    }
+    return oa;
+};
+
+module.exports = mutate;
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('Blender',['require', 'exports', 'module', 'lodash', './agreement/isAgree', './type', './certain', './mutate', './go'], 
+  function (require, exports, module, _, isAgree) {
+  // uRequire: start body of original nodejs module
+var Blender, blend, certain, go, knownTypes, l, mutate, parentRE, prettify, type, _, __slice = [].slice, __hasProp = {}.hasOwnProperty;
+
+_ = require("lodash");
+
+l = console;
+
+prettify = function(o) {
+    return JSON.stringify(o, null, "");
+};
+
+type = require("./type");
+
+certain = require("./certain");
+
+mutate = require("./mutate");
+
+go = require("./go");
+
+knownTypes = [ "Array", "Arguments", "Function", "String", "Number", "Date", "RegExp", "Boolean", "Null", "Undefined", "Object" ];
+
+parentRE = /\${\s*?_\s*?}/;
+
+Blender = function(extenderBehavior) {
+    var arrayToArrayPush, blend, blenderBehavior, certainExtenderBehavior, deepOverwrite, defaultBlenderBehavior, overwrite;
+    overwrite = function(src, dst, prop) {
+        if (parentRE.test(src[prop])) {
+            if (_.isString(dst[prop])) {
+                return src[prop].replace(parentRE, dst[prop]);
+            } else {
+                return dst[prop];
+            }
+        } else {
+            return src[prop];
+        }
+    };
+    deepOverwrite = function(src, dst, prop) {
+        return blend(dst[prop], src[prop]);
+    };
+    arrayToArrayPush = function(src, dst, prop) {
+        var s, _i, _len, _ref;
+        _ref = src[prop];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            s = _ref[_i];
+            dst[prop].push(s);
+        }
+        return dst[prop];
+    };
+    defaultBlenderBehavior = {
+        Undefined: {
+            "*": overwrite
+        },
+        String: {
+            String: overwrite,
+            Array: function(src, dst, prop) {
+                var i;
+                return "'" + dst[prop] + "' - the following Array landed on preceding String!\n" + function() {
+                    var _i, _len, _ref, _results;
+                    _ref = src[prop];
+                    _results = [];
+                    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                        i = _ref[_i];
+                        _results.push(i);
+                    }
+                    return _results;
+                }().join("|");
+            },
+            Number: overwrite,
+            "*": overwrite
+        },
+        Array: {
+            Array: function() {
+                var array;
+                array = deepOverwrite.apply(null, arguments);
+                return _.reject(array, function(v) {
+                    return _.isNull(v);
+                });
+            },
+            Undefined: function() {
+                return [];
+            },
+            "*": overwrite
+        },
+        Object: {
+            Object: deepOverwrite,
+            "*": overwrite
+        },
+        "*": {
+            "*": overwrite
+        }
+    };
+    if (!blenderBehavior) {
+        blenderBehavior = defaultBlenderBehavior;
+    }
+    certainExtenderBehavior = certain(mutate(blenderBehavior, certain));
+    blend = function() {
+        var action, dst, dstType, prop, sources, src, srcType, val, _i, _len;
+        dst = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+        for (_i = 0, _len = sources.length; _i < _len; _i++) {
+            src = sources[_i];
+            for (prop in src) {
+                if (!__hasProp.call(src, prop)) continue;
+                srcType = type(src[prop]);
+                dstType = type(dst[prop]);
+                action = certainExtenderBehavior(dstType)(srcType);
+                val = action(src, dst, prop);
+                if (val === null && _.isPlainObject(dst)) {
+                    delete dst[prop];
+                } else {
+                    dst[prop] = val;
+                }
+            }
+        }
+        return dst;
+    };
+    return blend;
+};
+
+module.exports = Blender;
+
+blend = Blender();
+
+console.log(prettify(blend({
+    arr: [ 10, 20, 30, 40 ]
+}, {
+    arr: [ "${_}", null, 35, 45, 55 ]
+})));
+
+console.log(prettify(blend({
+    foo: "foo",
+    bar: {
+        name: "bar",
+        price: 20
+    }
+}, {
+    foo: null,
+    bar: {
+        price: null
+    }
+})));
 // uRequire: end body of original nodejs module
 
 
@@ -767,87 +1018,7 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('certain',['require', 'exports', 'module', 'lodash', './agreement/isAgree'], 
-  function (require, exports, module, _, isAgree) {
-  // uRequire: start body of original nodejs module
-var certain;
-
-certain = function(o, defaultKey) {
-    if (defaultKey == null) {
-        defaultKey = "*";
-    }
-    return function(key) {
-        var _ref;
-        return (_ref = o[key]) != null ? _ref : o[defaultKey];
-    };
-};
-
-module.exports = certain;
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
-  define('mutate',['require', 'exports', 'module', 'lodash', './agreement/isAgree', './go'], 
-  function (require, exports, module, _, isAgree) {
-  // uRequire: start body of original nodejs module
-var go, mutate;
-
-go = require("./go");
-
-mutate = function(oa, mutator, fltr) {
-    if (_.isFunction(mutator)) {
-        go(oa, {
-            iter: function(v, k) {
-                if (isAgree(v, fltr)) {
-                    return oa[k] = mutator(v);
-                }
-            }
-        });
-    }
-    return oa;
-};
-
-module.exports = mutate;
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
-  define('type',['require', 'exports', 'module', 'lodash', './agreement/isAgree'], 
-  function (require, exports, module, _, isAgree) {
-  // uRequire: start body of original nodejs module
-var knownTypes, type, _;
-
-_ = require("lodash");
-
-knownTypes = [ "Array", "Arguments", "Function", "String", "Number", "Date", "RegExp", "Boolean", "Null", "Undefined", "Object" ];
-
-module.exports = type = function(o) {
-    var testType, _i, _len;
-    for (_i = 0, _len = knownTypes.length; _i < _len; _i++) {
-        testType = knownTypes[_i];
-        if (_["is" + testType](o)) {
-            return testType;
-        }
-    }
-    return "UNKNOWN";
-};
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
-  define('uberscore',['require', 'exports', 'module', 'lodash', './agreement/isAgree', './go', './deepExtend', './deepCloneDefaults', './okv', './arrayize', './agreement/inAgreements', './certain', './mutate', './type'], 
+  define('uberscore',['require', 'exports', 'module', 'lodash', './agreement/isAgree', './go', './deepExtend', './Blender', './deepCloneDefaults', './okv', './arrayize', './agreement/inAgreements', './certain', './mutate', './type'], 
   function (require, exports, module, _, isAgree) {
   
 var m = (function (require, exports, module, _, isAgree) {
@@ -865,6 +1036,7 @@ uberscore = function() {
     function uberscore() {}
     uberscore.prototype.go = require("./go");
     uberscore.prototype.deepExtend = require("./deepExtend");
+    uberscore.prototype.Blender = require("./Blender");
     uberscore.prototype.deepCloneDefaults = require("./deepCloneDefaults");
     uberscore.prototype.okv = require("./okv");
     uberscore.prototype.arrayize = require("./arrayize");

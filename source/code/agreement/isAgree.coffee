@@ -15,7 +15,9 @@
 # But leave it to illustrate
 #   * Bundle Dependency injection respects existing parameters as injected variable names
 #   * 'lodash' binding to '_' is infered from this file!
-define ['lodash'], (_)->
+#define ['lodash'], (_)->
+_ = require 'lodash'
+module.exports =
   (o, agreement)->
     if _.isRegExp agreement
       agreement.test (o + '')

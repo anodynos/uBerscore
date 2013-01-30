@@ -12,55 +12,65 @@
  }
 })(this,function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
-var deepExtend, prettify, __slice = [].slice, __hasProp = {}.hasOwnProperty;
+var deepExtend, prettify, shadowed, _, __slice = [].slice, __hasProp = {}.hasOwnProperty, __indexOf = [].indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+        if (i in this && this[i] === item) return i;
+    }
+    return -1;
+};
+
+_ = require("lodash");
 
 prettify = function(o) {
     return JSON.stringify(o, null, " ");
 };
 
+shadowed = [ "constructor", "hasOwnProperty", "isPrototypeOf", "propertyIsEnumerable", "toLocaleString", "toString", "valueOf" ];
+
 deepExtend = function() {
-    var obj, parentRE, sources;
+    var obj, parentRE, prop, source, sources, val, _i, _len;
     obj = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
     parentRE = /\${\s*?_\s*?}/;
-    _.each(sources, function(source) {
-        var prop, _results;
-        _results = [];
+    for (_i = 0, _len = sources.length; _i < _len; _i++) {
+        source = sources[_i];
         for (prop in source) {
             if (!__hasProp.call(source, prop)) continue;
             if (_.isUndefined(obj[prop])) {
-                _results.push(obj[prop] = source[prop]);
+                obj[prop] = source[prop];
             } else {
                 if (_.isString(source[prop]) && parentRE.test(source[prop])) {
                     if (_.isString(obj[prop])) {
-                        _results.push(obj[prop] = source[prop].replace(parentRE, obj[prop]));
-                    } else {
-                        _results.push(void 0);
+                        obj[prop] = source[prop].replace(parentRE, obj[prop]);
                     }
                 } else {
                     if (_.isArray(obj[prop]) || _.isArray(source[prop])) {
                         if (!_.isArray(obj[prop]) || !_.isArray(source[prop])) {
-                            throw "deepExtend: Error: Trying to combine an array with a non-array.\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]);
+                            throw "deepExtend: Error: Trying to combine an array with a non-array.\n\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]) + "\n\n" + ((_.isArray(source[prop]) ? "source is Array: " : "source is NOT Array: ") + source[prop]) + "\n\n" + ((_.isArray(obj[prop]) ? "destination is Array: " : "destination is NOT Array: ") + obj[prop]);
                         } else {
-                            _results.push(obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), function(item) {
+                            obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), function(item) {
                                 return _.isNull(item);
-                            }));
+                            });
                         }
                     } else {
-                        if (_.isObject(obj[prop]) || _.isObject(source[prop])) {
+                        if (_.isObject(obj[prop]) && !(_.isFunction(obj[prop]) && __indexOf.call(shadowed, prop) >= 0) || _.isObject(source[prop])) {
                             if (!_.isObject(obj[prop]) || !_.isObject(source[prop])) {
-                                throw "deepExtend: Error trying to combine an object with a non-object.\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]);
+                                throw "deepExtend: Error trying to combine an object with a non-object.\n\nProperty: " + prop + "\ndestination[prop]: " + prettify(obj[prop]) + "\nsource[prop]: " + prettify(source[prop]) + "\n\n" + ((_.isObject(source[prop]) ? "source is Object: " : "source is NOT Object: ") + source[prop]) + "\n\n" + ((_.isObject(obj[prop]) ? "destination is Object: " : "destination is NOT Object: ") + obj[prop]);
                             } else {
-                                _results.push(obj[prop] = deepExtend(obj[prop], source[prop]));
+                                obj[prop] = deepExtend(obj[prop], source[prop]);
                             }
                         } else {
-                            _results.push(obj[prop] = source[prop]);
+                            val = source[prop];
+                            if (val === null && _.isPlainObject(obj)) {
+                                delete obj[prop];
+                            } else {
+                                obj[prop] = val;
+                            }
                         }
                     }
                 }
             }
         }
-        return _results;
-    });
+    }
     return obj;
 };
 

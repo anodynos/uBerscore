@@ -6,44 +6,24 @@
 (function (root,factory) {
   if (typeof exports === 'object') {
    var nr = new (require('urequire').NodeRequirer) ('go-spec', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module);
+   module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('./spec-data'));
  } else if (typeof define === 'function' && define.amd) {
      define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], factory);
  }
-})(this,function (require, exports, module) {
+})(this,function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var arrInt, arrInt2, arrStr, assert, bundleDefaults, chai, data, expect, globalDefaults, obj, projectDefaults, _, _B, __indexOf = [].indexOf || function(item) {
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref, __indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
     }
     return -1;
 };
 
-chai = require("chai");
-
 assert = chai.assert;
 
 expect = chai.expect;
 
-_ = require("lodash");
-
-_B = require("uberscore");
-
-data = require("./spec-data");
-
-projectDefaults = _.clone(data.projectDefaults, true);
-
-globalDefaults = _.clone(data.globalDefaults, true);
-
-bundleDefaults = _.clone(data.bundleDefaults, true);
-
-obj = _.clone(data.obj, true);
-
-arrInt = _.clone(data.arrInt, true);
-
-arrInt2 = _.clone(data.arrInt2, true);
-
-arrStr = _.clone(data.arrStr, true);
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
 
 describe("go: version 0.0.3", function() {
     describe("go: Object passed, no params, ", function() {

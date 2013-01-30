@@ -12,7 +12,11 @@
  }
 })(this,function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
-var go, mutate;
+var go, isAgree, mutate, _;
+
+_ = require("lodash");
+
+isAgree = require("./agreement/isAgree");
 
 go = require("./go");
 

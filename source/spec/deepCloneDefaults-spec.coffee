@@ -1,17 +1,12 @@
-chai = require 'chai'
 assert = chai.assert
 expect = chai.expect
-
-_ = require 'lodash'
-_B = require 'uberscore' #
-
-data = require './spec-data'
 # clone to check mutability
-projectDefaults = _.clone data.projectDefaults, true
-globalDefaults = _.clone data.globalDefaults, true
-bundleDefaults = _.clone data.bundleDefaults, true
+{ projectDefaults, globalDefaults, bundleDefaults
+  obj, arrInt, arrInt2, arrStr
+} = _.clone data, true
 
-#@todo: test _.mixin deepExtend
+# @todo: rewrite this!!!!
+# @todo: test _.mixin deepExtend
 
 describe 'deepCloneDefaults:', ->
 

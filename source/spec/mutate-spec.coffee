@@ -1,16 +1,12 @@
-chai = require 'chai'
 assert = chai.assert
 expect = chai.expect
 
-_ = require 'lodash'
-_B = require 'uberscore' #
-
-data = require './spec-data'
 # @todo: use data + more examples
 
 describe 'mutate :', ->
 
   simpleCalc = (v)->if v<0 then v+10 else v+20
+
   it "mutate Object values", ->
     o = a:1, b:2, c:-1
     expect(

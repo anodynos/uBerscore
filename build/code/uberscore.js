@@ -8,7 +8,7 @@
    var nr = new (require('urequire').NodeRequirer) ('uberscore', module, __dirname, '.');
    module.exports = factory(nr.require, exports, module, nr.require('lodash'), nr.require('./agreement/isAgree'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'lodash', './agreement/isAgree', './go', './deepExtend', './deepCloneDefaults', './okv', './arrayize', './agreement/inAgreements', './certain', './mutate', './type'], function (require, exports, module, _, isAgree) {
+     define(['require', 'exports', 'module', 'lodash', './agreement/isAgree', './go', './deepExtend', './Blender', './deepCloneDefaults', './okv', './arrayize', './agreement/inAgreements', './certain', './mutate', './type'], function (require, exports, module, _, isAgree) {
   
 var m = factory(require, exports, module, _, isAgree);
 var old__B = root._B,
@@ -39,6 +39,7 @@ uberscore = function() {
     function uberscore() {}
     uberscore.prototype.go = require("./go");
     uberscore.prototype.deepExtend = require("./deepExtend");
+    uberscore.prototype.Blender = require("./Blender");
     uberscore.prototype.deepCloneDefaults = require("./deepCloneDefaults");
     uberscore.prototype.okv = require("./okv");
     uberscore.prototype.arrayize = require("./arrayize");

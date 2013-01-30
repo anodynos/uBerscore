@@ -1,8 +1,18 @@
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 
-knownTypes = ['Array', 'Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', # @todo: test those with Object.prototype.toString ?
-             'Boolean', 'Null', 'Undefined', 'Object'] # testTypes
-
+knownTypes = ['Arguments'
+              'Array',
+              'Function'
+              'String'
+              'Date'
+              'RegExp'
+              'Object' # due to order, Object is return only for REAL objects (i.e _.isPlainObject), not for [] or ->
+              'Number'
+              'Boolean'
+              'Null'
+              'Undefined'
+              ]
+# @todo: provide a more plausible implementation, instead of a looping hack hell!
 module.exports =
   type = (o)->
     for testType in knownTypes

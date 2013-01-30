@@ -6,17 +6,21 @@
 (function (root,factory) {
   if (typeof exports === 'object') {
    var nr = new (require('urequire').NodeRequirer) ('index', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module);
+   module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('./spec-data'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', './arrayize-spec', './deepCloneDefaults-spec', './deepExtend-spec', './go-spec', './okv-spec', './mutate-spec', './spec-data', './type-spec', './uberscore-spec'], factory);
+     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data', './arrayize-spec', './blending/deepExtend-spec', './blending/blend-spec', './blending/lodash-merge-spec', './deepCloneDefaults-spec', './go-spec', './okv-spec', './mutate-spec', './type-spec', './uberscore-spec'], factory);
  }
-})(this,function (require, exports, module) {
+})(this,function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 require("./arrayize-spec");
 
-require("./deepCloneDefaults-spec");
+require("./blending/deepExtend-spec");
 
-require("./deepExtend-spec");
+require("./blending/blend-spec");
+
+require("./blending/lodash-merge-spec");
+
+require("./deepCloneDefaults-spec");
 
 require("./go-spec");
 

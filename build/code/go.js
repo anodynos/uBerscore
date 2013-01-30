@@ -12,12 +12,14 @@
  }
 })(this,function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
-var go, __indexOf = [].indexOf || function(item) {
+var go, _, __indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
     }
     return -1;
 };
+
+_ = require("lodash");
 
 go = function(oa, actions, context) {
     var arrItem, fixForObj, fltr, grab, isObj, iter, keysOrder, newOA, resetResult, result, resultPush, sort, _i, _len;

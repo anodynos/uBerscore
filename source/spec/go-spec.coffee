@@ -1,20 +1,10 @@
-chai = require 'chai'
 assert = chai.assert
 expect = chai.expect
 
-_ = require 'lodash'
-_B = require 'uberscore' #
-
-
-data = require './spec-data'
 # clone to check mutability
-projectDefaults = _.clone data.projectDefaults, true
-globalDefaults = _.clone data.globalDefaults, true
-bundleDefaults = _.clone data.bundleDefaults, true
-obj = _.clone data.obj, true
-arrInt = _.clone data.arrInt, true
-arrInt2 = _.clone data.arrInt2, true
-arrStr = _.clone data.arrStr, true
+{ projectDefaults, globalDefaults, bundleDefaults
+  obj, arrInt, arrInt2, arrStr
+} = _.clone data, true
 
 # simple usage
 describe "go: version 0.0.3", ->

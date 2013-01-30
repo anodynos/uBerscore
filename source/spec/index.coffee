@@ -1,7 +1,9 @@
 # Should be automatically generated (but its not right now!)
 require "arrayize-spec"
+require "blending/deepExtend-spec"
+require "blending/blend-spec"
+require "blending/lodash-merge-spec"
 require "deepCloneDefaults-spec"
-require "deepExtend-spec"
 require "go-spec"
 require "okv-spec"
 require "mutate-spec"

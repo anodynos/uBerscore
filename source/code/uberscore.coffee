@@ -9,6 +9,7 @@ class uberscore
   # Collection related
   go: require 'go'
   deepExtend: require './deepExtend'
+  Blender: require './Blender'
   deepCloneDefaults: require 'deepCloneDefaults'
 
   # Object related

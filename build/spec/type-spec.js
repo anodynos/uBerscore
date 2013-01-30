@@ -6,11 +6,11 @@
 (function (root,factory) {
   if (typeof exports === 'object') {
    var nr = new (require('urequire').NodeRequirer) ('type-spec', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module);
+   module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('./spec-data'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore'], factory);
+     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], factory);
  }
-})(this,function (require, exports, module) {
+})(this,function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 var assert, chai, expect, oOs, _, _B;
 
