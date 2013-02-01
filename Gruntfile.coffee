@@ -53,7 +53,8 @@ gruntFunction = (grunt) ->
         outputPath: "#{buildDir}"
         # template: 'UMD' # 'UMD' is default
 
-      uberscore: # combined
+      uberscore-dev: # combined
+        main:uberscore
         dependencies:
           bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
             'lodash':"_",                               # precise syntax
@@ -64,6 +65,10 @@ gruntFunction = (grunt) ->
                            # grunt's @target (subtask name) i.e 'uberscore'
         outputPath: './build/dist/uberscore-dev.js'
         template: 'combined'
+
+#      uberscore-min:
+#        main: uberscore
+#        ignore: ['inspect', 'Logger'] #@todo: make this baby work (use moduleInjection?) !
 
       spec:
         bundlePath: "#{sourceSpecDir}"

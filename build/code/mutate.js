@@ -25,7 +25,7 @@ mutate = function(oa, mutator, fltr) {
         go(oa, {
             iter: function(v, k) {
                 if (isAgree(v, fltr)) {
-                    return oa[k] = mutator(v);
+                    return oa[k] = mutator(v, k, oa);
                 }
             }
         });

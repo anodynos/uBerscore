@@ -7,6 +7,8 @@ prettify = (o)-> JSON.stringify o, null, ' '
 # Changes/extra features
 # - extra: allow lodash'es 'shadowed' variables
 # - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
+# - null _deletes_ object key, as well as array item
+# - copying Function over Object should replace it first
 
 #/**
 #   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
@@ -55,50 +57,36 @@ deepExtend = (obj, sources...) ->
                 destination[prop]: #{prettify obj[prop]}
                 source[prop]: #{prettify source[prop]}
 
-                #{(if _.isArray(source[prop])
-                    'source is Array: '
-                  else
-                    'source is NOT Array: ') + source[prop]
-                }
+                #{(if _.isArray(source[prop]) then 'source is Array: ' else 'source is NOT Array: ') + source[prop]}
 
-                #{(if _.isArray(obj[prop])
-                    'destination is Array: '
-                  else
-                    'destination is NOT Array: ') + obj[prop]
-                }
+                #{(if _.isArray(obj[prop]) then 'destination is Array: ' else 'destination is NOT Array: ') + obj[prop]}
                 """
             else
               obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), (item)->_.isNull item)
 
           else
             ### Object ###
-            if ( _.isObject(obj[prop]) and
-                 not (_.isFunction(obj[prop]) and prop in shadowed)) or #lodash merge appears to have this behaviour
-                _.isObject(source[prop])
-              if not _.isObject(obj[prop]) or not _.isObject(source[prop])
+#            if ( _.isObject(obj[prop]) and
+#                 not (_.isFunction(obj[prop]) and prop in shadowed)) or #lodash.merge appears to have this behaviour: these functions are deleted
+#                _.isObject(source[prop])
+            #@todo : fix Functions as well: They are Objects, but the also need their properties _merged_
+            if _.isPlainObject(obj[prop]) or _.isPlainObject(source[prop])
+              if not _.isPlainObject(obj[prop]) or not _.isPlainObject(source[prop])
                 throw """
-                  deepExtend: Error trying to combine an object with a non-object.
+                  deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
 
                   Property: #{prop}
                   destination[prop]: #{prettify obj[prop]}
                   source[prop]: #{prettify source[prop]}
 
-                  #{(if _.isObject(source[prop])
-                      'source is Object: '
-                    else
-                      'source is NOT Object: ') + source[prop]
-                  }
+                  #{(if _.isObject(source[prop]) then 'source is Object: '  else 'source is NOT Object: ') + source[prop]}
 
-                  #{(if _.isObject(obj[prop])
-                      'destination is Object: '
-                    else
-                      'destination is NOT Object: ') + obj[prop]
-                  }
+                  #{(if _.isObject(obj[prop]) then 'destination is Object: ' else 'destination is NOT Object: ') + obj[prop]}
                 """
               else
                 obj[prop] = deepExtend(obj[prop], source[prop])
 
-            # All non-nested sources
+            # All non-nested sources (consider Functions as well, how naive!)
             else
               val = source[prop]
               if (val is null) and (_.isPlainObject obj)

@@ -9,13 +9,13 @@ go = require './go'
   @param Function mutator (v,k) is given the old val & key and returns a new value.
   @param Filter as in `_B.isAgree`, otherwise this key/value its not mutated. Note: isAgree allows "undefined" as a truthy filter
 
-  @todo: mutateKey() ?
+  @todo: (2 2 2) mutateKey() ?
 ###
-mutate = (oa, mutator, fltr)->
-  if _.isFunction mutator #todo:2 other non-function mutators ?
+mutate = (oa, mutator, fltr)-> # @todo: (4 4 4): make fltr an {option.fltr}, along with o.mode etc
+  if _.isFunction mutator #todo:(2 6 4) other non-function mutators ?
     go oa, iter:(v,k)->
       if isAgree v, fltr
-        oa[k] = mutator v #@todo:(5 2 1) # also pass 'k, oa'
+        oa[k] = mutator v, k, oa # @todo: (2 2 2): this is dangerous!
   oa
 
 module.exports = mutate

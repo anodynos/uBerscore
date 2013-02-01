@@ -696,7 +696,7 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('certain',['require', 'exports', 'module', 'lodash', './agreement/isAgree'], 
+  define('simpleMutateCertain',['require', 'exports', 'module', 'lodash', './agreement/isAgree'],
   function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
 var certain;
