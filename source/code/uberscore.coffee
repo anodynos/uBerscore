@@ -6,17 +6,25 @@ urequire:                        # uRequire Module Configuration
 ###
 class uberscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
+  # some libs are required as bundleRelative others as fileRelative,
+  # for uRequire's demonstration purposes!
+
   # Collection related
   go: require 'go'
+
+  # extending, the deep way
   deepExtend: require './deepExtend'
-  Blender: require './Blender'
   deepCloneDefaults: require 'deepCloneDefaults'
+  Blender: require './blending/Blender'
+  #blend: @todo: provide a default shortcut!
 
   # Object related
   okv: require 'okv'
+
+  #various
   arrayize: require './arrayize'
 
-  # agreement related - required both as bundleRelative & fileRelative for uRequire 's sake
+  # agreement related
   isAgree: require './agreement/isAgree'
   inAgreements: require 'agreement/inAgreements'
 
@@ -27,6 +35,10 @@ class uberscore
 
   # types
   type: require 'type'
+
+  # Logging / debugging
+  Logger: require './Logger'
+
 
 module.exports = new uberscore
 

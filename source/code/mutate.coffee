@@ -15,7 +15,7 @@ mutate = (oa, mutator, fltr)-> # @todo: (4 4 4): make fltr an {option.fltr}, alo
   if _.isFunction mutator #todo:(2 6 4) other non-function mutators ?
     go oa, iter:(v,k)->
       if isAgree v, fltr
-        oa[k] = mutator v, k, oa # @todo: (2 2 2): this is dangerous!
+        oa[k] = mutator v #, k, oa # @todo: (2 2 2): this is dangerous!
   oa
 
 module.exports = mutate

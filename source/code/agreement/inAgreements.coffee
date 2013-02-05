@@ -1,5 +1,5 @@
-#_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
-#isAgree = require './isAgree' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+isAgree = require './isAgree' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 
 arrayize = require './../arrayize'
 

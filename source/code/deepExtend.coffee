@@ -9,6 +9,7 @@ prettify = (o)-> JSON.stringify o, null, ' '
 # - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
 # - null _deletes_ object key, as well as array item
 # - copying Function over Object should replace it first
+# todo DEPRACATE it, once Blender is in place!
 
 #/**
 #   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
@@ -89,7 +90,7 @@ deepExtend = (obj, sources...) ->
             # All non-nested sources (consider Functions as well, how naive!)
             else
               val = source[prop]
-              if (val is null) and (_.isPlainObject obj)
+              if (val is undefined) and (_.isPlainObject obj)
                 delete obj[prop]
               else
                 obj[prop] = val

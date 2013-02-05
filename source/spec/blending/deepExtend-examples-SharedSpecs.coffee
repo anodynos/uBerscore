@@ -19,7 +19,8 @@ module.exports = (deepExtendMergeBlend)->
       ).to.deep.equal url:"http://www.example.com/path/to/file.html"
 
     it """
-       parentRE also acts as a placeholder, which can be useful when you need to change one value in an array, while leaving the others untouched
+       parentRE also acts as a placeholder, which can be useful when you need to change one value in an array,
+       while leaving the others untouched.
        """, ->
           expect(
             deepExtendMergeBlend(
@@ -61,20 +62,20 @@ module.exports = (deepExtendMergeBlend)->
       ).to.deep.equal arr: [1, 3, 4]
 
   describe 'more deepExtend examples: ', ->
-    it "Remove Object key in destination object, by setting same key to null in a source object, just like in Array!", ->
+    it "Remove Object key in destination object, by setting same key to undefined in a source object, similar to null in Array!", ->
       expect(
         deepExtendMergeBlend(
-          {
-            foo:"foo"
-            bar:
-              name:"bar"
-              price:20
-          }
-          ,
-          {
-            foo:null
-            bar:
-              price:null
-          }
+            {
+              foo:"foo"
+              bar:
+                name:"bar"
+                price:20
+            }
+            ,
+            {
+              foo:undefined
+              bar:
+                price:undefined
+            }
         )
       ).to.deep.equal bar:name:'bar'

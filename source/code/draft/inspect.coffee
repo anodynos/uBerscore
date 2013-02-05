@@ -117,7 +117,7 @@ inspect = (x) ->
   wrote = []
   stringify x, 0
 
-module.exports = {} #inspect
+module.exports = inspect
 
 
 #x = "123456767891011121314151617181920"

@@ -2,6 +2,14 @@ assert = chai.assert
 expect = chai.expect
 
 describe 'Blender / blend :', ->
-  require('./deepExtend-examples-SharedSpecs') _B.Blender()
-  require('./lodashMerge-tests-SharedSpecs') _B.Blender()
-  require('./common-SharedSpecs') _B.Blender()
+
+  deepExtendLike_blender = new _B.Blender [{
+    blend: ['src', 'dst']
+    Array: Array: (prop, src, dst)-> _.reject @deepOverwrite(prop, src, dst), (v)-> v is null
+  }]
+  require('./deepExtend-examples-SharedSpecs') deepExtendLike_blender.blend
+
+  blender = new _B.Blender()
+  require('./lodashMerge-tests-SharedSpecs') blender.blend
+
+  require('./common-SharedSpecs') blender.blend

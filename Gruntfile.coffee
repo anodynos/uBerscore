@@ -53,13 +53,14 @@ gruntFunction = (grunt) ->
         outputPath: "#{buildDir}"
         # template: 'UMD' # 'UMD' is default
 
-      uberscore-dev: # combined
-        main:uberscore
+      'uberscore': # combined
         dependencies:
           bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
             'lodash':"_",                               # precise syntax
             'agreement/isAgree': 'isAgree'
-        #main: "uberscore" # Needed only for 'combined'.
+            YouAreDaChef:'YADC'
+
+        main: "uberscore" # Needed only for 'combined'.
                            # Defaults to 'bundleName' if its a valid module.
                            # 'bundleName' it self defaults to
                            # grunt's @target (subtask name) i.e 'uberscore'
@@ -164,7 +165,7 @@ gruntFunction = (grunt) ->
      "build":   "urequire:uberscoreUMD"
      "deploy":  "urequire:uberscore"
      "test":    "urequire:spec urequire:specCombined mocha run"
-     "run":     "runBuildExample runAlmondBuildExample"
+     "run":     "runBuildExample" #runAlmondBuildExample
 
     # generic shortcuts
      "cl":      "clean"
