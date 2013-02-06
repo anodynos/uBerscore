@@ -39,10 +39,14 @@ gruntFunction = (grunt) ->
         bundle:
           bundlePath: "#{sourceDir}"
           ignore: [/^draft/]
+          dependencies:
+            noAMD: ['util']
+            variableNames:
+              util:"UTIL_NODE_NOT_AVAILABLE"
 
         build:
-          verbose: false
-          debugLevel: 0
+          verbose: true
+#          debugLevel: 60
 
       uberscoreUMD:
         dependencies:
@@ -58,7 +62,6 @@ gruntFunction = (grunt) ->
           bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
             'lodash':"_",                               # precise syntax
             'agreement/isAgree': 'isAgree'
-            YouAreDaChef:'YADC'
 
         main: "uberscore" # Needed only for 'combined'.
                            # Defaults to 'bundleName' if its a valid module.
@@ -165,7 +168,7 @@ gruntFunction = (grunt) ->
      "build":   "urequire:uberscoreUMD"
      "deploy":  "urequire:uberscore"
      "test":    "urequire:spec urequire:specCombined mocha run"
-     "run":     "runBuildExample" #runAlmondBuildExample
+     "run":     "runBuildExample runAlmondBuildExample"
 
     # generic shortcuts
      "cl":      "clean"

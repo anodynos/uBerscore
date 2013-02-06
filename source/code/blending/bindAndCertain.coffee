@@ -2,6 +2,8 @@ _ = require 'lodash'
 certain = require('../certain')
 Logger = require './../Logger'
 l = new Logger 'Blending/bindAndCertain', 0
+type = require '../type'
+mutate =  require '../mutate'
 
 ###
   Traverses and mutates a BlenderBehavior Object as follows:
@@ -9,7 +11,7 @@ l = new Logger 'Blending/bindAndCertain', 0
   a) converts all its 'non-terminal' Objects to 'certain' functions
     (that given a key, if key is found they return the value, else default value {keyed as '*'} )
 
-  b) Converts all Strings, that are function names in 'bindTo', to these Functions.
+  b) Converts all Strings, that exist as Functions in 'bindTo', to these Functions.
 
   c) Binds all final 'action' Functions with 'bindTo'.
 
@@ -20,7 +22,11 @@ l = new Logger 'Blending/bindAndCertain', 0
   # @todo:(5 6 1) Test spec it!
 ###
 bindAndCertain = (o, bindTo, path=['$'])->
-  for key, val of o when not _.isArray(val) # blendFlavour array - ignore
+  # convert to short type format, always use this internally
+  o = toShortTypeFormat o
+
+  for key, val of o when key isnt 'order' # ignore blendBehavior.order array
+
     path.push key
 
     if _.isPlainObject(val) #recurse
@@ -55,8 +61,18 @@ bindAndCertain = (o, bindTo, path=['$'])->
 
   certain o
 
-module.exports = bindAndCertain
+###
+  Changes all root keys named 'Array', 'Object' etc to '[]', '{}' etc
+###
+toShortTypeFormat = (o)->
+  for key of o
+    short = type.TYPES[key]
+    if short
+      o[short] = o[key]
+      delete o[key]
+  o
 
+module.exports = bindAndCertain
 
 #ba = {
 #    'blend': ['src', 'dst'] # @todo: rename to ""flavor" ? "aroma"
@@ -70,4 +86,5 @@ module.exports = bindAndCertain
 #baa = bindAndCertain ba, {}
 #
 #console.log "Finalle:\n", baa
-
+#
+#console.log toShortTypeFormat {"Array": [1,2,3], Object:{}, Malakies:"Paparia"}

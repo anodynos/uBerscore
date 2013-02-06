@@ -2,20 +2,38 @@
 _ = require 'lodash'
 inAgreements = require './agreement/inAgreements'
 
+
+###
+  The simplest possible Logger!
+
+  Use like this
+    `var l = new (require('./../Logger'))('MyModule', 0`)
+  or in coffee
+    `l = new (require './../Logger') 'MyModule', 0`
+###
 class Logger
   # default Logger::debugLevel
   @debugLevel = 0
   VERSION: if VERSION? then VERSION else '{NO_VERSION}' # 'VERSION' variable is added by grant:concat
 
   constructor:->@_constructor.apply @, arguments
-  _constructor: (@title, @debugLevel)->
+  _constructor: (@title, @debugLevel = 0, @newLine = true)->
+    _.bindAll @
 
   @getALog: (baseMsg, color, cons)->
     ->
       args = (@prettify(arg) for arg in Array.prototype.slice.call arguments)
-      args.unshift "[#{@title or '?title?'}] #{baseMsg}:"
+      title = "#{if @title is undefined
+                        'undefinedTitleogger'
+                      else
+                        if @title is ''
+                          ''
+                        else '[' + @title + '] '
+                }#{baseMsg}"
+      title = title + ":" if title
+      args.unshift title
       args.unshift "#{color}" if not (__isWeb? and __isWeb)
-      args.unshift "\n"
+      args.unshift "\n" if @newLine
       args.push '\u001b[0m' if not (__isWeb? and __isWeb) #reset color
       cons.apply null, args
       null
@@ -27,6 +45,7 @@ class Logger
 
   debug: do ->
     log = Logger.getALog "DEBUG", '\u001b[36m', console.log #blue
+
 
     return (level, msgs...)->
       if _.isString level
@@ -44,24 +63,24 @@ class Logger
 
   prettify:
 # @todo: fix this to run on all cases!
-#    if (__isNode? and __isNode) or not __isNode?
-#      utilDependency = 'util' # force NOT not to be added by uRequire,
-#                              # Could have used 'node!util' fake-plugin notation,
-#                              # that would work fine when converted to UMD.
-#                              # But what about running it as non-converted (ASIS) on nodejs?
-#                              # @todo: converted to 'combined' is also a problem - rjs/almond fails...
-#                              # This way we allow it to run as plain js script, usefull for dev/debuging it!
-#                              # @todo:(3 5 2) uRequire workaround ?
-#      do (inspect = require(utilDependency).inspect)->
-#        (o)->
-#          pretty = "\u001b[0m#{(inspect o, false, null, true)}"
-#          if _.isArray o
-#            pretty.replace /\n/g, ''
-#          if inAgreements o, [_.isObject]
-#            pretty
-#          else # _.isString, etc
-#            o
-#    else
+    if (__isNode? and __isNode) or not __isNode?
+      utilDependency = 'util' # force NOT not to be added by uRequire,
+                              # Could have used 'node!util' fake-plugin notation,
+                              # that would work fine when converted to UMD.
+                              # But what about running it as non-converted (ASIS) on nodejs?
+                              # @todo: converted to 'combined' is also a problem - rjs/almond fails...
+                              # This way we allow it to run as plain js script, usefull for dev/debuging it!
+                              # @todo:(3 5 2) uRequire workaround ?
+      do (inspect = require('util').inspect)->
+        (o)->
+          pretty = "\u001b[0m#{(inspect o, false, null, true)}"
+          if _.isArray o
+            pretty.replace /\n/g, ''
+          if inAgreements o, [_.isObject]
+            pretty
+          else # _.isString, etc
+            o
+    else
       (o)->o
 
   # static
@@ -89,6 +108,8 @@ module.exports = Logger
 #
 ## Object based
 #l = new Logger "MyLogger", 5
-#l.warn 'My logger logs...', (if o? and o then 'go' else 'dont go'), [{a:"b"}], [1,2,3]
+#l.log 'My logger logs...', (if o? and o then 'go' else 'dont go'), [{a:"b"}], [1,2,3]
+#l.err 'My logger errs...', (if o? and o then 'go' else 'dont go'), [{a:"b"}], [1,2,3]
+##l.warn 'My logger logs...', (if o? and o then 'go' else 'dont go'), [{a:"b"}], [1,2,3]
 #l.debug 10, 'Instance debug - NOT PRINTING, cause I am configured too high', 10, '\n', [{a:["b", "a"], b:[11,22,33]}], [1,2,3]
 #l.debug 5, 'Instance debug - PRINTING, cause I am configured low', 5, '\n', [{a:["b", "a"], b:[11,22,33]}], [1,2,3]

@@ -1,27 +1,48 @@
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 
-knownTypes = ['Arguments'
-              'Array',
-              'Function'
-              'String'
-              'Date'
-              'RegExp'
-              'Object' # due to order, Object is return only for REAL objects (i.e _.isPlainObject), not for [] or ->
-              'Number'
-              'Boolean'
-              'Null'
-              'Undefined'
-              ]
-# @todo: provide a more plausible implementation, instead of a looping hack hell!
-module.exports =
-  type = (o)->
-    for testType in knownTypes
-      if _["is#{testType}"] o
-        return testType
+# @todo: provide a more plausible implementation, instead of a looping ?
 
-    return 'UNKNOWN'
+type = (o, isShort=false)->
+  for long, shorts of type.TYPES
+    if _["is#{long}"] o
+      return if isShort then shorts[0] else long
 
-# inline tests
+  return 'UNKNOWN'
+
+type.short = (aType)->
+  if type.TYPES[aType]
+    type.TYPES[aType][0]
+  else
+    for longType, shorts of type.TYPES
+      if aType in shorts
+        return shorts[0]
+
+type.long = (aType)->
+  if type.TYPES[aType]
+    aType
+  else
+    for longType, shorts of type.TYPES
+      if aType in shorts
+        return longType
+
+type.TYPES = {
+  'Arguments': ['args', ".."] #
+  'Array'    : ['[]', 'A']
+  'Function' : ['->', 'F']
+  'String'   : ["''", 'S', '""'] # S
+  'Date'     : ['D']
+  'RegExp'   : ['//', 'R']
+  'Object'   : ['{}', 'O'] # due to order, Object is return only for PLAIN objects (i.e _.isPlainObject), not for [] or ->
+  'Number'   : ['N']
+  'Boolean'  : ['B']
+  'Null'     : ['null', "-"]  #
+  'Undefined': ['U', "~"]
+}
+
+
+module.exports = type
+
+#inline tests
 #oOs = {
 #  'Array': ['this', 'is', 1, 'array']
 #  #'Arguments':# todo: test this
@@ -34,7 +55,15 @@ module.exports =
 #  'Null': null
 #  'Undefined': undefined
 #  'Object': {a:1, b:2}
+#  'Arguments': arguments
 #}
 #
+#
 #for k, v of oOs
-#  console.log  (type v) is k
+#  console.log(
+#    type(v) is k
+#    type(v)
+#    type(v, true)
+#    type.long type(v, true)
+#    type.short (type.long type(v, true))
+#  )

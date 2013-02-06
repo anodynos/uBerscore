@@ -35,9 +35,12 @@ class uberscore
 
   # types
   type: require 'type'
+  isPlain: require 'isPlain'
 
   # Logging / debugging
   Logger: require './Logger'
+
+
 
 
 module.exports = new uberscore

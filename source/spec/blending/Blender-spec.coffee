@@ -4,9 +4,10 @@ expect = chai.expect
 describe 'Blender / blend :', ->
 
   deepExtendLike_blender = new _B.Blender [{
-    blend: ['src', 'dst']
-    Array: Array: (prop, src, dst)-> _.reject @deepOverwrite(prop, src, dst), (v)-> v is null
+    order: ['src', 'dst']
+    '[]': '[]': (prop, src, dst)-> _.reject @deepOverwrite(prop, src, dst), (v)-> v is null
   }]
+
   require('./deepExtend-examples-SharedSpecs') deepExtendLike_blender.blend
 
   blender = new _B.Blender()
