@@ -6,15 +6,6 @@ expect = chai.expect
   obj, arrInt, arrInt2, arrStr
 } = _.clone data, true
 
-shadowed =
-  constructor: 1
-  hasOwnProperty: 2
-  isPrototypeOf: 3
-  propertyIsEnumerable: 4
-  toLocaleString: 5
-  toString: 6
-  valueOf: 7
-
 module.exports = (deepExtendMergeBlend)->
 
   describe 'lodash.merge tests', ->
@@ -80,16 +71,19 @@ module.exports = (deepExtendMergeBlend)->
         valueOf: 7
 
       blended = deepExtendMergeBlend object, source
-#      solving the lodash 'shadowed' properties
-#      console.log '\n', blended
-#      console.log(
-#        '\nblended.propertyIsEnumerable=',
-#        blended.propertyIsEnumerable,
-#        '\n_.isFunction = ', _.isFunction blended.propertyIsEnumerable
-#      )
+
       expect(
         blended
-      ).to.deep.equal shadowed
+      ).to.deep.equal {
+          constructor: 1
+          hasOwnProperty: 2
+          isPrototypeOf: 3
+          propertyIsEnumerable: 4
+          toLocaleString: 5
+          toString: 6
+          valueOf: 7
+      }
+
 
 #
 #    it "", ->

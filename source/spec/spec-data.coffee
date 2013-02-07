@@ -28,45 +28,5 @@ data =
         'scanPrevent': true
 
 
-  persons: [
-    {
-      name: "agelos"
-      male:true
-    }
-
-    {name: "AnoDyNoS"}
-  ]
-
-  personDetails: [
-    {
-      age: 37
-      familyState:
-        married:false
-    }
-
-    {age: 33}
-  ]
-
-  personDetails2: [
-    {
-      surname: 'Peakoulas',
-      name: "Agelos"
-      age: 42
-      address:
-        street:'1 Peak Str'
-        country: "Earth"
-      familyState:
-        married: true
-        children: 3
-    }
-
-    {
-      job: "Dreamer, developer, doer"
-      familyState:
-        married:false
-        children:0
-    }
-  ]
-
 module.exports = data
 

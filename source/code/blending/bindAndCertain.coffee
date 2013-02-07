@@ -16,21 +16,24 @@ mutate =  require '../mutate'
   c) Binds all final 'action' Functions with 'bindTo'.
 
   @param {Object} o The BlenderBehavior Object to traverse
-  @param bindTo where to bind all terminal Functions in o
-  @param path is used only for debugging
+  @param {Object} bindTo where to bind all terminal Functions in o - should be the Blender instance
+
+  @param {Array} path used only insternally for debugging
+  @param {Object} root The root BlenderBehavior object as initially passed.
 
   # @todo:(5 6 1) Test spec it!
 ###
-bindAndCertain = (o, bindTo, path=['$'])->
-  # convert to short type format, always use this internally
-  o = toShortTypeFormat o
+bindAndCertain = (o, bindTo, path=['$'], root)->
+  root = o if _.isUndefined root
+
+  o = toShortTypeFormat o # convert to `type.short` format, always use this internally
 
   for key, val of o when key isnt 'order' # ignore blendBehavior.order array
 
-    path.push key
+    path.push key # just debuging
 
     if _.isPlainObject(val) #recurse
-      bindAndCertain(val, bindTo, path)
+      bindAndCertain val, bindTo, path, root
       o[key] = certain val
       o[key].isCertain = bindTo # just a note, used to identify it as a 'certain' function
 
@@ -39,10 +42,12 @@ bindAndCertain = (o, bindTo, path=['$'])->
         if _.isString val
           if _.isFunction bindTo[val] #
             action = bindTo[val] #get the action-function by that name!
+                                #@todo: (6 8 1) Can actions be 'local' to BlenderBehavior ?
           else
-            throw """
-              Error initializing blendBehaviour at '#{path.join('/')}'.
-              No action '#{l.prettify val}' was found either on Blender or your passed actions {}.
+            throw l.err "Error initializing blendBehaviour:\n", root, """
+              at '#{path.join('/')}'.
+
+              No action '#{l.prettify val}' was found either on blender or your passed actions.
             """
 
         else # _.isFunction
@@ -52,8 +57,9 @@ bindAndCertain = (o, bindTo, path=['$'])->
         o[key].isAction = bindTo # just a note, used to identify it as a 'final' action
 
       else # 'final' but not valid
-        throw """
-          Error: _.Blender: initializing blendBehaviour at '#{path.join('/')}'.
+        throw l.err "Error initializing blendBehaviour:\n", root, """
+          at '#{path.join('/')}'.
+
           Final action '#{l.prettify val}' is neither a Function, nor a String as functionName.
         """
 
@@ -66,8 +72,8 @@ bindAndCertain = (o, bindTo, path=['$'])->
 ###
 toShortTypeFormat = (o)->
   for key of o
-    short = type.TYPES[key]
-    if short
+    short = type.toShort key
+    if short and key isnt short
       o[short] = o[key]
       delete o[key]
   o
@@ -86,5 +92,9 @@ module.exports = bindAndCertain
 #baa = bindAndCertain ba, {}
 #
 #console.log "Finalle:\n", baa
-#
-#console.log toShortTypeFormat {"Array": [1,2,3], Object:{}, Malakies:"Paparia"}
+
+#console.log toShortTypeFormat {
+#  "Array": [1,2,3]
+#  Object: {}
+#  Malakies:"Paparia"
+#}

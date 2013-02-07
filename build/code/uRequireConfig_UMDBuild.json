@@ -1,0 +1,8 @@
+{
+ "build": {
+  "debugLevel": 0,
+  "verbose": false,
+  "template": "UMD",
+  "outputPath": "./build/code"
+ }
+}

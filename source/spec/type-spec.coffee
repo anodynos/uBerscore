@@ -21,8 +21,14 @@ oOs = {
 
 describe 'type :', ->
 
-  for k, v of oOs
-    do (k, v)->
-      it " recognises type '#{k}'", ->
-        expect( _B.type v ).to.equal k
+  for typeName, value of oOs
+    do (typeName
+        value
+        longType = _B.type(value)
+        shortType = _B.type(value, true)
+      )->
+        it "recognises type '#{typeName}', both as long='#{longType}' & short='#{shortType}'", ->
+          expect( longType ).to.equal _B.type.toLong(typeName)
+          expect( shortType ).to.equal _B.type.toShort(typeName)
+          expect( _B.type.areEqual longType, shortType).to.equal true
 

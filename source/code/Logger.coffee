@@ -36,7 +36,8 @@ class Logger
       args.unshift "\n" if @newLine
       args.push '\u001b[0m' if not (__isWeb? and __isWeb) #reset color
       cons.apply null, args
-      null
+
+      args.join('')
 
   err:  Logger.getALog "ERROR", '\u001b[31m', console.error #red
   log: Logger.getALog "", '\u001b[0m', console.log          #white
@@ -81,7 +82,7 @@ class Logger
           else # _.isString, etc
             o
     else
-      (o)->o
+      (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation.
 
   # static
   @logger = new Logger 'DefaultLogger'

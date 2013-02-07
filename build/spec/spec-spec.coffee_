@@ -1,0 +1,32 @@
+assert = chai.assert
+expect = chai.expect
+# clone to check mutability
+{ projectDefaults, globalDefaults, bundleDefaults
+  obj, arrInt, arrInt2, arrStr
+} = _.clone data, true
+
+
+describe ' :', ->
+
+  it "", ->
+    expect(
+
+    ).to.deep.equal {
+
+    }
+
+  describe "", ->#
+
+    it "oa ", ->
+      expect(
+
+      ).to.deep.equal {
+
+      }
+
+    it "oa ", ->
+      expect(
+
+      ).to.deep.equal {
+
+      }

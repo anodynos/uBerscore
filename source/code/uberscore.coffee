@@ -12,11 +12,14 @@ class uberscore
   # Collection related
   go: require 'go'
 
-  # extending, the deep way
-  deepExtend: require './deepExtend'
-  deepCloneDefaults: require 'deepCloneDefaults'
+  # extending, the deep way, TO BE DEPRACATED when Blender comes properly into play
+  deepExtend: require './blending/deepExtend'
+  deepCloneDefaults: require 'blending/deepCloneDefaults'
+
   Blender: require './blending/Blender'
-  #blend: @todo: provide a default shortcut!
+
+  #blendXXX: @todo:(6 5 5) provide default/predefined/common Blender instances,
+  #                        for different purposes!
 
   # Object related
   okv: require 'okv'
@@ -41,16 +44,4 @@ class uberscore
   Logger: require './Logger'
 
 
-
-
 module.exports = new uberscore
-
-#ao = a:1, b:2, c:-1
-#
-#ao = module.exports.go ao, fltr:'a'
-#console.log ao
-
-#! extendIf (maybe noit, you can achivie it with a chain. Still worth a shortcut?)
-
-# value (propertyOrFunction, context)-> like _.result(), but used as ref, without an object... ??/ Is it meaningfull ?
-

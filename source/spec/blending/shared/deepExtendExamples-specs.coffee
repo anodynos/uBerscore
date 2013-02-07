@@ -10,7 +10,7 @@ module.exports = (deepExtendMergeBlend)->
 
   describe 'deepExtend source code examples : ', ->
 
-    it "parentRE allows you to concatenate strings.", ->
+    it "replaceRE allows you to concatenate strings.", ->
       expect(
         deepExtendMergeBlend(
           {url: "www.example.com"},
@@ -19,7 +19,7 @@ module.exports = (deepExtendMergeBlend)->
       ).to.deep.equal url:"http://www.example.com/path/to/file.html"
 
     it """
-       parentRE also acts as a placeholder, which can be useful when you need to change one value in an array,
+       replaceRE also acts as a placeholder, which can be useful when you need to change one value in an array,
        while leaving the others untouched.
        """, ->
           expect(
@@ -29,7 +29,7 @@ module.exports = (deepExtendMergeBlend)->
             )
           ).to.deep.equal [100, {id: 1234}, false, "foo", [250, 500]]
 
-    it "parentRE also acts as a placeholder, #2 ", ->
+    it "replaceRE also acts as a placeholder, #2 ", ->
       expect(
         deepExtendMergeBlend(
           [100,     {id:1234},  true,   "foo",    [250, 500]],
@@ -37,7 +37,7 @@ module.exports = (deepExtendMergeBlend)->
         )
       ).to.deep.equal [100, {id: 1234}, false, "foo", [250, 500]]
 
-    it "parentRE also acts as a placeholder, #3", ->
+    it "replaceRE also acts as a placeholder, #3", ->
       expect(
         deepExtendMergeBlend(
           [100,      {id:1234},   true,       "foo",    [250, 500]],
@@ -57,9 +57,9 @@ module.exports = (deepExtendMergeBlend)->
       expect(
         deepExtendMergeBlend(
           {arr: [1,       2,        3,  4]},
-          {arr: ["${_}",  null]}
+          {arr: ["${_}",  null, undefined]}
         )
-      ).to.deep.equal arr: [1, 3, 4]
+      ).to.deep.equal arr: [1, 4]
 
   describe 'more deepExtend examples: ', ->
     it "Remove Object key in destination object, by setting same key to undefined in a source object, similar to null in Array!", ->
@@ -73,9 +73,9 @@ module.exports = (deepExtendMergeBlend)->
             }
             ,
             {
-              foo:undefined
+              foo: undefined
               bar:
-                price:undefined
+                price: null
             }
         )
       ).to.deep.equal bar:name:'bar'

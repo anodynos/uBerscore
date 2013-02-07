@@ -171,7 +171,7 @@ go = (oa, actions, context) -> #map#
   if not (sort is undefined) #  map and sort needed ONLY if sort is used.
     resetResult()
     keysOrder = [] #todo: store keysOrder
-    _(oa).chain()
+    _(oa)#.chain()
       .map( (val, key)-> if isObj then key else val) #  a list of *key* for objects or *value* for arrays
       .sortBy(
         if _.isFunction sort

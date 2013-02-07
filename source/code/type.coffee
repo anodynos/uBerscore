@@ -9,7 +9,7 @@ type = (o, isShort=false)->
 
   return 'UNKNOWN'
 
-type.short = (aType)->
+type.toShort = (aType)->
   if type.TYPES[aType]
     type.TYPES[aType][0]
   else
@@ -17,13 +17,16 @@ type.short = (aType)->
       if aType in shorts
         return shorts[0]
 
-type.long = (aType)->
+type.toLong = (aType)->
   if type.TYPES[aType]
     aType
   else
     for longType, shorts of type.TYPES
       if aType in shorts
         return longType
+
+type.areEqual = (aType, bType)->
+  type.toShort(aType) is type.toShort(bType)
 
 type.TYPES = {
   'Arguments': ['args', ".."] #
@@ -59,11 +62,3 @@ module.exports = type
 #}
 #
 #
-#for k, v of oOs
-#  console.log(
-#    type(v) is k
-#    type(v)
-#    type(v, true)
-#    type.long type(v, true)
-#    type.short (type.long type(v, true))
-#  )

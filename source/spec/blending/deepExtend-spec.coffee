@@ -2,7 +2,7 @@ assert = chai.assert
 expect = chai.expect
 
 describe 'deepExtend :', ->
-  require('./deepExtend-examples-SharedSpecs') _B.deepExtend
-  require('./lodashMerge-tests-SharedSpecs') _B.deepExtend # shadowed properties are supported in coffeescript adaptation
-  require('./common-SharedSpecs') _B.deepExtend
+  require('./shared/deepExtendExamples-specs') _B.deepExtend
+  require('./shared/lodashMerge-specs') _B.deepExtend # shadowed properties are supported in deepExtend's coffeescript adaptation
+  #require('./shared/lodashMerge_Blender-specs') _B.deepExtend # Does it work ?
 

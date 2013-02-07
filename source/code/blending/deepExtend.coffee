@@ -1,5 +1,6 @@
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
-prettify = (o)-> JSON.stringify o, null, ' '
+
+l = new (require './../Logger') 'Blender', if debugLevel? then debugLevel else 0
 
 # Coffeescript adaptation & changes/extra features by Agelos.Pikoulas@gmail.com
 # Original by Kurt Milam - follows below
@@ -55,15 +56,11 @@ deepExtend = (obj, sources...) ->
                 deepExtend: Error: Trying to combine an array with a non-array.
 
                 Property: #{prop}
-                destination[prop]: #{prettify obj[prop]}
-                source[prop]: #{prettify source[prop]}
-
-                #{(if _.isArray(source[prop]) then 'source is Array: ' else 'source is NOT Array: ') + source[prop]}
-
-                #{(if _.isArray(obj[prop]) then 'destination is Array: ' else 'destination is NOT Array: ') + obj[prop]}
+                destination[prop]: #{l.prettify obj[prop]}
+                source[prop]: #{l.prettify source[prop]}
                 """
             else
-              obj[prop] = _.reject(deepExtend(obj[prop], source[prop]), (item)->_.isNull item)
+              obj[prop] = _.reject deepExtend(obj[prop], source[prop]), (item)-> item in [null, undefined]
 
           else
             ### Object ###
@@ -77,12 +74,8 @@ deepExtend = (obj, sources...) ->
                   deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
 
                   Property: #{prop}
-                  destination[prop]: #{prettify obj[prop]}
-                  source[prop]: #{prettify source[prop]}
-
-                  #{(if _.isObject(source[prop]) then 'source is Object: '  else 'source is NOT Object: ') + source[prop]}
-
-                  #{(if _.isObject(obj[prop]) then 'destination is Object: ' else 'destination is NOT Object: ') + obj[prop]}
+                  destination[prop]: #{l.prettify obj[prop]}
+                  source[prop]: #{l.prettify source[prop]}
                 """
               else
                 obj[prop] = deepExtend(obj[prop], source[prop])
@@ -90,7 +83,7 @@ deepExtend = (obj, sources...) ->
             # All non-nested sources (consider Functions as well, how naive!)
             else
               val = source[prop]
-              if (val is undefined) and (_.isPlainObject obj)
+              if (val in [null, undefined]) and (_.isPlainObject obj)
                 delete obj[prop]
               else
                 obj[prop] = val

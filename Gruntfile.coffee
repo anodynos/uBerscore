@@ -40,12 +40,10 @@ gruntFunction = (grunt) ->
           bundlePath: "#{sourceDir}"
           ignore: [/^draft/]
           dependencies:
-            noAMD: ['util']
-            variableNames:
-              util:"UTIL_NODE_NOT_AVAILABLE"
+            noWeb: ['util']
 
         build:
-          verbose: true
+          verbose: false
 #          debugLevel: 60
 
       uberscoreUMD:
@@ -124,7 +122,10 @@ gruntFunction = (grunt) ->
 #        command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
 
       mocha:
-        command: "mocha #{buildSpecDir} --recursive --bail --reporter spec"
+        command: "mocha #{buildSpecDir}/index --recursive --bail --reporter spec"
+
+      mochaBlending:
+        command: "mocha #{buildSpecDir}/blending --recursive --bail --reporter spec"
 
       doc:
         command: "codo source/code --title 'uberscore #{pkg.version} API documentation' --cautious"
@@ -178,6 +179,7 @@ gruntFunction = (grunt) ->
      "b":       "build"
      "d":       "deploy"
      "t1":      "urequire:spec mocha"
+     "tb":      "urequire:spec mochaBlending"
      "t":       "test"
   }
 
