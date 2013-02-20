@@ -28,6 +28,8 @@ type.toLong = (aType)->
 type.areEqual = (aType, bType)->
   type.toShort(aType) is type.toShort(bType)
 
+type.isType = (aType)->  type.toLong(aType) in _.keys type.TYPES
+# {longType : [shortType, others...]
 type.TYPES = {
   'Arguments': ['args', ".."] #
   'Array'    : ['[]', 'A']

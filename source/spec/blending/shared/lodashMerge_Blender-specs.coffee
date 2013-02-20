@@ -112,36 +112,49 @@ module.exports = (deepExtendMergeBlend)->
 
       expect( result ).to.deep.equal expected
 
-# @todo: uncomment these when lodash #180 is solved
-# Does it overwrite 'Any <-- null' or 'Undefined' ? Unsure! https://github.com/bestiejs/lodash/issues/180
-#    it "Null / Undefined as source are ignored", ->
-#      result = deepExtendMergeBlend(
-#         ['I am', 'an', 'Array']
-#         [111, null, undefined, objProp: "Object Property"]
-#         [null, undefined, null, anotherProp: "Another Object Property" ]
-#      )
-#
-#      expect( result ).to.deep.equal [
-#        111, 'an', 'Array',
-#        {
-#          objProp: "Object Property"
-#          anotherProp: "Another Object Property"
-#        }
-#      ]
-#
-#    it "Null / Undefined as overwritten as destination ", ->
-#      result = deepExtendMergeBlend(
-#         [null, undefined, null, anotherProp: "Another Object Property" ]
-#         [111, null, undefined, objProp: "Object Property"]
-#         [null, 'I am', 'an']
-#      )
-#
-#      expect( result ).to.deep.equal [
-#        111, 'I am', 'an', {
-#          objProp: "Object Property"
-#          anotherProp: "Another Object Property"
-#        }
-#      ]
+    it "'Undefined' as source is ignored", ->
+      result = deepExtendMergeBlend(
+         ['I am', 'an', { objProp: 'Object property', anotherProp: "Another Object Property"} ]
+         [undefined, "another", {objProp: "Object Property2", anotherProp: undefined}]
+         ["You are", undefined, {objProp: undefined}]
+      )
+
+      expect( result ).to.deep.equal [
+        'You are', 'another',
+        {
+          objProp: "Object Property2"
+          anotherProp: "Another Object Property"
+        }
+      ]
+
+    it "'Null' as source IS NOT ignored, it overwrites", ->
+      result = deepExtendMergeBlend(
+         ['I am', 'an', { objProp: 'Object property', anotherProp: "Another Object Property"} ]
+         [null, undefined, { objProp: 'Object property', anotherProp: null} ]
+      )
+
+      expect( result ).to.deep.equal [
+        null, 'an',
+        {
+          objProp: "Object property"
+          anotherProp: null
+        }
+      ]
+
+
+    it "Null / Undefined as overwritten destination", ->
+      result = deepExtendMergeBlend(
+         [null, undefined, null, {objProp: "Undefined doesn't hurt me!", anotherProp: "null kills me!"} ]
+         [111, null, undefined, undefined]
+         [null, 'I am', 'an', {objProp: undefined, anotherProp: null}]
+      )
+
+      expect( result ).to.deep.equal [
+        null, 'I am', 'an', {
+          objProp: "Undefined doesn't hurt me!"
+          anotherProp: null
+        }
+      ]
 
 
 #    it "", ->

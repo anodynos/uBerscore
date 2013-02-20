@@ -29,6 +29,10 @@ describe 'type :', ->
       )->
         it "recognises type '#{typeName}', both as long='#{longType}' & short='#{shortType}'", ->
           expect( longType ).to.equal _B.type.toLong(typeName)
+          expect(_B.type.isType longType ).to.be.true
+
           expect( shortType ).to.equal _B.type.toShort(typeName)
+          expect(_B.type.isType shortType ).to.be.true
+
           expect( _B.type.areEqual longType, shortType).to.equal true
 
