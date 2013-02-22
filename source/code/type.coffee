@@ -38,10 +38,11 @@ type.TYPES = {
   'Date'     : ['D']
   'RegExp'   : ['//', 'R']
   'Object'   : ['{}', 'O'] # due to order, Object is return only for PLAIN objects (i.e _.isPlainObject), not for [] or ->
+                           # @todo: (5 7 2) ammend to work irrespective of order
   'Number'   : ['N']
   'Boolean'  : ['B']
   'Null'     : ['null', "-"]  #
-  'Undefined': ['U', "~"]
+  'Undefined': ['U', "?"]
 }
 
 

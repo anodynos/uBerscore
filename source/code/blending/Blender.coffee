@@ -1,13 +1,11 @@
 ###DEV ONLY ###
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 #__isNode = true
-debugLevel =  0
+debugLevel =  100
 ###DEV ONLY ###
 
 l = new (require './../Logger') 'Blender', if debugLevel? then debugLevel else 0
-
 type = require '../type'
-shortify = require './shortify'
 
 ###
   A highly configurable variant of deepExtend / jQuery.extend / lodash.merge
@@ -38,32 +36,48 @@ class Blender
         # @todo: use the existing ones if they're set in some SubClass ?
         order: ['src', 'dst']
 
-        Array:
-          A: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
-          '{}': 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
+        '|': # our src <--> dst spec
+          Array:
+            A: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
+            '{}': 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
 
-        Object:
-          O: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
-          '[]': 'deepOverwrite'
+          Object:
+            O: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
+            '[]': 'deepOverwrite'
 
-        #'Function' # Aren't Functions Objects ?
-                    # How do we copy them ? They aren't just properties !
+          #'Function' # Aren't Functions Objects ?
+                      # How do we copy them ?
+                      # They aren't just properties - how do you clone a function ?
 
-        "*": "*": 'overwrite'
+          "*": "*": 'overwrite'
     }
 
-    # add default '*':"*" behaviour (@overwrite) to all destinations for the last BB
+
     lastDBB = _.last @defaultBlenderBehaviors
-    for k, dbb of lastDBB when type.isType(k)
+    # add defaultAction to all destinations for the last BB
+    for typeName, dbb of lastDBB['|'] # when type.isType(typeName) # assumed
       if (_.isUndefined dbb["*"])
-        dbb["*"] = lastDBB['*']['*'] # Anything placed at "*": "*" of lastDBB is default
-
-    # treat them as normal blenderBehaviours: they go at the end, presenting the last resort
+        dbb["*"] = lastDBB['|']['*']['*'] # Anything placed at '|':'*':'*' of lastDBB is default
+    # treat defaulBBs as normal blenderBehaviours:
+    # they just go at the end, being the last resort
     @blenderBehaviors.push bb for bb in @defaultBlenderBehaviors
-
-    @blenderBehaviors[bbi] = shortify bb for bb, bbi in @blenderBehaviors
-
+    # shortify 'em
+    @blenderBehaviors[bbi]['|'] = Blender.shortifyTypeNames bb['|'] for bb, bbi in @blenderBehaviors
     @path = []
+
+  # Recursivelly convert all isType(keys) to `type.short` format
+  # i.e it changes all nested keys named 'Array', 'Object' etc to '[]', '{}' etc
+  # Blender always use short format internally
+  @shortifyTypeNames: (bbSrcDstSpec)->
+    for key, val of bbSrcDstSpec when type.isType(key) # ignore non-types (eg blendBehavior.order & actions)
+      short = type.toShort key
+      if short and (key isnt short)
+        bbSrcDstSpec[short] = bbSrcDstSpec[key]
+        delete bbSrcDstSpec[key]
+      if _.isPlainObject(val) #recurse
+        Blender.shortifyTypeNames val
+
+    bbSrcDstSpec
 
   # Find the actionName as Function and return it.
   # Starts looking in BlenderBehaviours preceding currentBlenderBehaviour, and Blender it self as last resort
@@ -76,11 +90,13 @@ class Blender
       if _.isFunction bb[actionName]
         return bb[actionName]
 
+    # last resort, check this blender instance
     if _.isFunction @[actionName]
       return @[actionName]
     else
       throw l.err "_B.Blender.blend: Error: Invalid BlenderBehaviour `actionName` = ", actionName,
                 " - no Function by that name is found in a preceding BlenderBehaviour or Blender it self.",
+                " belowBlenderBehaviorIndex=#{belowBlenderBehaviorIndex}",
                 " @currentBlenderBehaviorIndex=#{@currentBlenderBehaviorIndex}",
                 " @blenderBehaviors=", @blenderBehaviors
 
@@ -112,6 +128,7 @@ class Blender
         # go through @certainBlenderBehaviors, until an 'action' match is found.
         visitNextBB = true
         for bb, bbi in @blenderBehaviors when visitNextBB
+          nextBBSrcDstSpec = bb['|']
           for bbOrder in (bb.order or defaultBBOrder) # bbOrder is either 'src' or 'dst' @todo: or 'path'
 
             if _.isUndefined types[bbOrder]
@@ -122,19 +139,19 @@ class Blender
                 "\n\nDefault BlenderBehaviour order is ", defaultBBOrder
                 # Invlaid type is excluded as a case
             else
-              l.debug "Looking @ bbi=#{bbi}, bb=", bb, " for", bbOrder, '=', types[bbOrder]
-              bb = bb[types[bbOrder]] or bb['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
-              l.debug 'Found bb', bb
+              l.debug "Looking @ bbi=#{bbi}", " bbOrder=", bbOrder, ' types[bbOrder]=', types[bbOrder], ' nextBBSrcDstSpec=', nextBBSrcDstSpec
+              nextBBSrcDstSpec = nextBBSrcDstSpec[types[bbOrder]] or nextBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
+              l.debug 'Found nextBBSrcDstSpec', nextBBSrcDstSpec
 
-            if (bb is undefined) or
-               (not _.isObject bb) or
-                _.isString(bb)
+            if (nextBBSrcDstSpec is undefined) or
+               (not _.isObject nextBBSrcDstSpec ) or
+                _.isString nextBBSrcDstSpec
               break
 
-          if bb is undefined
+          if nextBBSrcDstSpec is undefined
             continue # go to next bb
           else
-            action = bb # found an action (candidate)
+            action = nextBBSrcDstSpec # found an action (candidate)
 
             if not _.isFunction action
               if not _.isString action
@@ -159,10 +176,10 @@ class Blender
               result = result[1]
               visitNextBB = true
 
-#            l.debug 50, """
-#              Value assigning, Path='#{@path.join '/'}'
-#              value = #{(l.prettify(result)+'').replace(/,\n\s*/g,', ')[0..150]}...
-#            """
+            l.debug 80, """
+              Value assigning, Path='#{@path.join '/'}'
+              value = #{(l.prettify(result)+'').replace(/,\n\s*/g,', ')[0..150]}...
+            """
             dst[prop] = result # actually assign, by default all values
 
           else # we have some special ActionResult:
@@ -172,11 +189,12 @@ class Blender
 #              l.debug 70, "DELETEd prop = #{l.prettify prop}"
 
             if result in [Blender.NEXT, Blender.DELETE_NEXT]
-#              l.debug 60, "Going to next BlenderBehaviour"
+              l.debug 60, "Blender.XXX_NEXT: Going to NEXT BlenderBehaviour"
               visitNextBB = true
 
         @path.pop()
     dst
+
 
   ###
   **Action() result handling**: How to process the decision (result) of an Action() call.
@@ -255,4 +273,5 @@ YADC(Blender)
 
   .before /getAction/, (match, actionName)->
     l.debug "getAction(actionName = #{actionName})"
+
 

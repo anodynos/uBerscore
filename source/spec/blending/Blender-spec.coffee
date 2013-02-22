@@ -8,36 +8,37 @@ describe 'Blender / blend :', ->
   deepExtendLike_blender = new _B.Blender {
     order: ['src', 'dst']
 
-    String:'*':'overwriteOrReplace'
+    '|':
+      String:'*':'overwriteOrReplace'
 
-    Array:
-      '[]': (prop, src, dst, blender)-> # Filter null / undefined. (note `type.areEqual('[]', 'Array') is true`)
-              _.reject blender.deepOverwrite(prop, src, dst, blender), (v)-> v in [null, undefined]
+      Array:
+        '[]': (prop, src, dst, blender)-> # Filter null / undefined. (note `type.areEqual('[]', 'Array') is true`)
+                _.reject blender.deepOverwrite(prop, src, dst, blender), (v)-> v in [null, undefined]
 
-      '*': (prop, src, dst)->
-          throw """
-            deepExtend: Error: Trying to combine an array with a non-array.
-
-            Property: #{prop}
-            destination[prop]: #{l.prettify dst[prop]}
-            source[prop]: #{l.prettify src[prop]}
-          """
-
-    Object:
-      '{}': (prop, src, dst, blender)-> # Delete null / undefined (note `type.areEqual('{}', 'Object') is true`)
-              for key, val of deepBlended = blender.getAction('deepOverwrite')(prop, src, dst, blender)
-                if (val is null) or (val is undefined)
-                  delete deepBlended[key]
-              deepBlended
-
-      '*': (prop, src, dst)->
+        '*': (prop, src, dst)->
             throw """
-              deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
+              deepExtend: Error: Trying to combine an array with a non-array.
 
               Property: #{prop}
               destination[prop]: #{l.prettify dst[prop]}
               source[prop]: #{l.prettify src[prop]}
             """
+
+      Object:
+        '{}': (prop, src, dst, blender)-> # Delete null / undefined (note `type.areEqual('{}', 'Object') is true`)
+                for key, val of deepBlended = blender.getAction('deepOverwrite')(prop, src, dst, blender)
+                  if (val is null) or (val is undefined)
+                    delete deepBlended[key]
+                deepBlended
+
+        '*': (prop, src, dst)->
+              throw """
+                deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
+
+                Property: #{prop}
+                destination[prop]: #{l.prettify dst[prop]}
+                source[prop]: #{l.prettify src[prop]}
+              """
 
     # Actions - local to this blenderBehavior
     ###
@@ -66,8 +67,9 @@ describe 'Blender / blend :', ->
   # with the exception of ignoring undefined:
   lodashMergeLike_blender = new _B.Blender(
     order: ['src']
-    'Undefined':-> _B.Blender.SKIP
-#    'Null':-> @SKIP
+    '|':
+      'Undefined':-> _B.Blender.SKIP
+      #'Null':-> @SKIP _.merge changed this - it overwrites normally.
   )
   require('./shared/lodashMerge-specs') lodashMergeLike_blender.blend
   require('./shared/lodashMerge_Blender-specs') lodashMergeLike_blender.blend
@@ -89,3 +91,30 @@ describe 'Blender / blend :', ->
 #                           #{(i for i in src[prop]).join '|'}
 #        """]
 #  }
+
+
+describe 'Blender.shortifyTypeNames : ', ->
+
+  it "corectly transforms nested types of srcDstSpecs to short format", ->
+    long = {
+      order: ['src', 'dst']
+      Array: String:'someAction'
+      Object:
+        "Array": "doSomeAction"
+        "Null": ->
+
+      doSomeAction:->
+    }
+
+    expectedShortified = {
+      order: [ 'src', 'dst' ]
+      doSomeAction: long.doSomeAction # copy function ref
+      '[]': "''": 'someAction'
+      '{}':
+        '[]': 'doSomeAction'
+        'null': long.Object.Null
+    }
+
+    expect(
+      _B.Blender.shortifyTypeNames long
+    ).to.deep.equal expectedShortified

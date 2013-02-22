@@ -17,18 +17,17 @@ class Logger
   VERSION: if VERSION? then VERSION else '{NO_VERSION}' # 'VERSION' variable is added by grant:concat
 
   constructor:->@_constructor.apply @, arguments
+
   _constructor: (@title, @debugLevel = 0, @newLine = true)->
-    _.bindAll @
+    Logger.loggerCount = (Logger.loggerCount or 0) + 1
 
   @getALog: (baseMsg, color, cons)->
     ->
       args = (@prettify(arg) for arg in Array.prototype.slice.call arguments)
-      title = "#{if @title is undefined
-                        'undefinedTitleogger'
-                      else
-                        if @title is ''
-                          ''
-                        else '[' + @title + '] '
+      title = "#{if not @title
+                  'Logger' + Logger.loggerCount
+                 else
+                  '[' + @title + '] '
                 }#{baseMsg}"
       title = title + ":" if title
       args.unshift title
@@ -63,16 +62,8 @@ class Logger
             log.apply @, msgs
 
   prettify:
-# @todo: fix this to run on all cases!
     if (__isNode? and __isNode) or not __isNode?
-      utilDependency = 'util' # force NOT not to be added by uRequire,
-                              # Could have used 'node!util' fake-plugin notation,
-                              # that would work fine when converted to UMD.
-                              # But what about running it as non-converted (ASIS) on nodejs?
-                              # @todo: converted to 'combined' is also a problem - rjs/almond fails...
-                              # This way we allow it to run as plain js script, usefull for dev/debuging it!
-                              # @todo:(3 5 2) uRequire workaround ?
-      do (inspect = require('util').inspect)->
+      do (inspect = require('util').inspect)-> # 'util' is NOT added by uRequire, using a 'noWeb' declaration
         (o)->
           pretty = "\u001b[0m#{(inspect o, false, null, true)}"
           if _.isArray o
