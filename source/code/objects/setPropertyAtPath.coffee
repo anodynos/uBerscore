@@ -39,6 +39,6 @@ blenderBehavior =
         variableNames:
             '|' : "Bingo"
 
-path = '$/bundle/dependencies/variableNames'
-l.log setPropertyAtPath blenderBehavior, path, 'JOKER', true
+path = '$/bundle/dependencies/variableNames/hi'
+l.log setPropertyAtPath blenderBehavior, path, "joke": "joke2":'JOKER', false
 l.log blenderBehavior

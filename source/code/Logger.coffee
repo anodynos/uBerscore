@@ -36,7 +36,13 @@ class Logger
       args.push '\u001b[0m' if not (__isWeb? and __isWeb) #reset color
       cons.apply null, args
 
-      args.join('')
+      try
+        return args.join('')
+      catch err
+        retString = ""
+        for arg in args
+          retString += Object.prototype.toString arg
+        return retString
 
   err:  Logger.getALog "ERROR", '\u001b[31m', console.error #red
   log: Logger.getALog "", '\u001b[0m', console.log          #white
@@ -73,7 +79,7 @@ class Logger
           else # _.isString, etc
             o
     else
-      (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation.
+      (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation. http://docstore.mik.ua/orelly/webprog/jscript/ch03_12.htm
 
   # static
   @logger = new Logger 'DefaultLogger'

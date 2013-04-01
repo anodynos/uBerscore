@@ -2,13 +2,13 @@ assert = chai.assert
 expect = chai.expect
 
 # clone to check mutability
-{ projectDefaults, globalDefaults, bundleDefaults
+{ projectDefaults, globalDefaults, bundleDefaults,
   obj, arrInt, arrInt2, arrStr
 } = _.clone data, true
 
 module.exports = (deepExtendMergeBlend)->
 
-  describe 'lodash.merge tests', ->
+  describe 'lodash.merge specs', ->
 
     it "should merge `source` into the destination object", ->
       names = stooges: [

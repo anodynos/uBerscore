@@ -1,7 +1,7 @@
 ###DEV ONLY ###
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 #__isNode = true
-debugLevel =  100
+debugLevel =  80
 ###DEV ONLY ###
 
 l = new (require './../Logger') 'Blender', if debugLevel? then debugLevel else 0
@@ -178,8 +178,8 @@ class Blender
 
             l.debug 80, """
               Value assigning, Path='#{@path.join '/'}'
-              value = #{(l.prettify(result)+'').replace(/,\n\s*/g,', ')[0..150]}...
-            """
+              value = """, l.prettify(result)
+
             dst[prop] = result # actually assign, by default all values
 
           else # we have some special ActionResult:

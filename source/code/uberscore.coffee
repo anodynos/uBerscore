@@ -16,7 +16,9 @@ class uberscore
   deepExtend: require './blending/deepExtend'
   deepCloneDefaults: require 'blending/deepCloneDefaults'
 
+
   Blender: require './blending/Blender'
+  DeepExtendBlender: require './blending/blenders/DeepExtendBlender'
 
   #blendXXX: @todo:(6 5 5) provide default/predefined/common Blender instances,
   #                        for different purposes!
