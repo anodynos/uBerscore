@@ -26,6 +26,9 @@ class uberscore
   # Object related
   okv: require 'okv'
 
+  setValueAtPath: require './objects/setValueAtPath'
+  getValueAtPath: require './objects/getValueAtPath'
+
   #various
   arrayize: require './arrayize'
 

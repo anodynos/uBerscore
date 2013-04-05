@@ -13,7 +13,7 @@ type = require '../type'
 ###
 class Blender
 
-  defaultBBOrder = ['src', 'dst']       # `action` is stored in {dst:src} objects
+  defaultBBOrder = ['src', 'dst'] # `action` is stored in {dst:src} objects
 
   constructor:-> @_constructor.apply @, arguments
 
@@ -40,12 +40,15 @@ class Blender
           Array:
             A: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
             '{}': 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
+            #'Undefined': 'deepOverwrite' #todo: move to a 'CloneBlender'
+                                          # note: it breaks on `dst: type(dst[prop], true)`, we need to create {}
 
           Object:
             O: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
             '[]': 'deepOverwrite'
+            #'Undefined': 'deepOverwrite' #todo: move to a 'CloneBlender'
 
-          #'Function' # Aren't Functions Objects ?
+          #'Function' # todo: Aren't Functions Objects ?
                       # How do we copy them ?
                       # They aren't just properties - how do you clone a function ?
 
@@ -119,17 +122,31 @@ class Blender
   _blend: (dst, sources...)=>
     for src in sources
       for own prop of src
+
         @path.push prop
         types =  # just a shortcut: `scr:'[]', dst: '{}'`
           dst: type(dst[prop], true) # get short version of type, thats how we always handle it internally
           src: type(src[prop], true)
           #path: ? if path
 
+        if l.debugLevel >= 50
+          l.debug 50, """
+            /#{@path.join('/')} : '#{type dst[prop]}'    <--  '#{type src[prop]}'
+          """, dst[prop], '    <--  ', src[prop]
+
         # go through @certainBlenderBehaviors, until an 'action' match is found.
         visitNextBB = true
         for bb, bbi in @blenderBehaviors when visitNextBB
+          l.debug 60, "Looking @ bbi=#{bbi}, bb =", bb
+
           nextBBSrcDstSpec = bb['|']
+
           for bbOrder in (bb.order or defaultBBOrder) # bbOrder is either 'src' or 'dst' @todo: or 'path'
+
+            if l.debugLevel >= 60
+              l.debug 60, "At bbOrder =", bbOrder,
+                    " nextBBSrcDstSpec=\n", nextBBSrcDstSpec,
+                    " types[bbOrder]=", "'" + types[bbOrder] + "'"
 
             if _.isUndefined types[bbOrder]
               #@todo: check for path
@@ -138,20 +155,47 @@ class Blender
                 while reading BlenderBehaviour ##{bbi} :\n""", @blenderBehaviors[bbi],
                 "\n\nDefault BlenderBehaviour order is ", defaultBBOrder
                 # Invlaid type is excluded as a case
-            else
-              l.debug "Looking @ bbi=#{bbi}", " bbOrder=", bbOrder, ' types[bbOrder]=', types[bbOrder], ' nextBBSrcDstSpec=', nextBBSrcDstSpec
-              nextBBSrcDstSpec = nextBBSrcDstSpec[types[bbOrder]] or nextBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
-              l.debug 'Found nextBBSrcDstSpec', nextBBSrcDstSpec
 
-            if (nextBBSrcDstSpec is undefined) or
-               (not _.isObject nextBBSrcDstSpec ) or
-                _.isString nextBBSrcDstSpec
-              break
+            else
+
+              nextBBSrcDstSpec = nextBBSrcDstSpec[types[bbOrder]] or nextBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
+
+              if l.debugLevel >= 50
+
+                  l.debug(50,
+                    if nextBBSrcDstSpec is undefined
+                      "Found NO nextBBSrcDstSpec at all - go to NEXT BlenderBehaviour"
+                    else
+                      if nextBBSrcDstSpec[types[bbOrder]]
+                        "Found "
+                      else
+                        if nextBBSrcDstSpec['*']
+                          "Found NOT exact nextBBSrcDstSpec, but a '*'"
+                        else
+                          if _.isString nextBBSrcDstSpec
+                            "Found a String "
+                          else
+                            if _.isFunction nextBBSrcDstSpec
+                              "Found a Function "
+                            else
+                              throw "Unknown nextBBSrcDstSpec = " + nextBBSrcDstSpec
+                  ,
+                    " nextBBSrcDstSpec =", nextBBSrcDstSpec,
+                    " bbOrder=", "'" + bbOrder + "'",
+                    " types[bbOrder]=", "'" + types[bbOrder] + "'"
+                  )
+              # is nextBBSrcDstSpec terminal ?
+              if (nextBBSrcDstSpec is undefined ) or
+                  _.isString(nextBBSrcDstSpec) or
+                  _.isFunction(nextBBSrcDstSpec) # or (not _.isObject nextBBSrcDstSpec ) #todo: need this ?
+
+                break # skip all other bbOrder, if it was terminal.
 
           if nextBBSrcDstSpec is undefined
-            continue # go to next bb
-          else
-            action = nextBBSrcDstSpec # found an action (candidate)
+            continue # go to next BlenderBehaviour
+
+          else # found an `action` candidate - either a String or a Function
+            action = nextBBSrcDstSpec
 
             if not _.isFunction action
               if not _.isString action
@@ -161,7 +205,8 @@ class Blender
                 action = @getAction action, bbi # throws error if none is found, hence no other check needed
 
           # should have an _.isFunction(action) by now.
-          @currentBlenderBehaviorIndex = bbi
+          @currentBlenderBehaviorIndex = bbi # todo: why do we need this ?
+
           # execute the action and retrieve the ActionResult (value or otherwise)
           result = action prop, src, dst, @  # assume _.isFunction action
 #          result = action prop, src, dst, @blenderBehaviors[bbi], @path
@@ -177,19 +222,19 @@ class Blender
               visitNextBB = true
 
             l.debug 80, """
-              Value assigning, Path='#{@path.join '/'}'
-              value = """, l.prettify(result)
+              Action Called: Value assigning:
+                Path =""", @path.join('/'), """
+                value =""", l.prettify(result)
 
             dst[prop] = result # actually assign, by default all values
 
           else # we have some special ActionResult:
-#            l.debug 50, "#{l.prettify result}"
+            l.debug 60, "Action Called: ActionResult: ", result
             if result in [Blender.DELETE, Blender.DELETE_NEXT]
               delete dst[prop]
 #              l.debug 70, "DELETEd prop = #{l.prettify prop}"
 
             if result in [Blender.NEXT, Blender.DELETE_NEXT]
-              l.debug 60, "Blender.XXX_NEXT: Going to NEXT BlenderBehaviour"
               visitNextBB = true
 
         @path.pop()

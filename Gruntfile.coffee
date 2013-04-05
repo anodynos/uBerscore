@@ -75,7 +75,7 @@ gruntFunction = (grunt) ->
       spec:
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
-        # template: 'UMD' # 'UMD' is default
+        #template: 'UMD' # 'UMD' is default
         dependencies:
           bundleExports:
             chai: 'chai'

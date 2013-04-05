@@ -25,7 +25,7 @@ class Logger
     ->
       args = (@prettify(arg) for arg in Array.prototype.slice.call arguments)
       title = "#{if not @title
-                  'Logger' + Logger.loggerCount
+                  'Logger' + Logger.loggerCount + ' '
                  else
                   '[' + @title + '] '
                 }#{baseMsg}"
@@ -36,9 +36,10 @@ class Logger
       args.push '\u001b[0m' if not (__isWeb? and __isWeb) #reset color
       cons.apply null, args
 
+      # return printable args
       try
         return args.join('')
-      catch err
+      catch err # something wrong casting to string
         retString = ""
         for arg in args
           retString += Object.prototype.toString arg
