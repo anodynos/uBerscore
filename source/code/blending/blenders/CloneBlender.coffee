@@ -1,17 +1,17 @@
-l = new (require '../../Logger') 'DeepExtendBlender'
+l = new (require '../../Logger') 'CloneBlender'
 Blender = require '../Blender'
 _ = require 'lodash'
 
 ###
   Todo: improvise improvement of this pattern :
 ###
-class DeepExtendBlender extends Blender
+class CloneBlender extends Blender
 
   constructor: (@blenderBehaviors...)->
-    (@defaultBlenderBehaviors or= []).push require('../blenderBehaviors/DeepExtendBlenderBehavior')
+    (@defaultBlenderBehaviors or= []).push require('../blenderBehaviors/CloneBlenderBehavior')
     super
 
-module.exports = DeepExtendBlender
+module.exports = CloneExtendBlender
 
 #deepExtendLike_blender = new DeepExtendBlender
 #

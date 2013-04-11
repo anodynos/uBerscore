@@ -1,7 +1,7 @@
 ###DEV ONLY ###
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 #__isNode = true
-debugLevel =  80
+debugLevel =  0
 ###DEV ONLY ###
 
 l = new (require './../Logger') 'Blender', if debugLevel? then debugLevel else 0
@@ -11,11 +11,10 @@ type = require '../type'
   A highly configurable variant of deepExtend / jQuery.extend / lodash.merge
   (as a poor man's B, since that's a bit far from now... ?)
 ###
+l.log 'Blender'
 class Blender
 
   defaultBBOrder = ['src', 'dst'] # `action` is stored in {dst:src} objects
-
-  constructor:-> @_constructor.apply @, arguments
 
   ###
   @param benderBehaviors {Array<BlenderBehavior>}
@@ -30,7 +29,7 @@ class Blender
                           Note: If benderBehaviors arg is not [], then all args are assumed to be BBs, hence no `actions`!
                           Note: DONT overwrite `blend` or `_blend` !
   ###
-  _constructor: (@blenderBehaviors...)=>
+  constructor: (@blenderBehaviors...)->
 
     (@defaultBlenderBehaviors or= []).push {
         # @todo: use the existing ones if they're set in some SubClass ?
@@ -40,19 +39,22 @@ class Blender
           Array:
             A: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
             '{}': 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
+            #'*': 'deepOverwrite'
             #'Undefined': 'deepOverwrite' #todo: move to a 'CloneBlender'
                                           # note: it breaks on `dst: type(dst[prop], true)`, we need to create {}
 
           Object:
             O: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
             '[]': 'deepOverwrite'
+            #'*': 'deepOverwrite'
             #'Undefined': 'deepOverwrite' #todo: move to a 'CloneBlender'
 
           #'Function' # todo: Aren't Functions Objects ?
                       # How do we copy them ?
                       # They aren't just properties - how do you clone a function ?
 
-          "*": "*": 'overwrite'
+          "*":
+            "*": 'overwrite'
     }
 
 
@@ -60,7 +62,7 @@ class Blender
     # add defaultAction to all destinations for the last BB
     for typeName, dbb of lastDBB['|'] # when type.isType(typeName) # assumed
       if (_.isUndefined dbb["*"])
-        dbb["*"] = lastDBB['|']['*']['*'] # Anything placed at '|':'*':'*' of lastDBB is default
+        dbb["*"] or= lastDBB['|']['*']['*'] # Anything placed at '|':'*':'*' of lastDBB is default
     # treat defaulBBs as normal blenderBehaviours:
     # they just go at the end, being the last resort
     @blenderBehaviors.push bb for bb in @defaultBlenderBehaviors
@@ -131,22 +133,24 @@ class Blender
 
         if l.debugLevel >= 50
           l.debug 50, """
-            /#{@path.join('/')} : '#{type dst[prop]}'    <--  '#{type src[prop]}'
+            @path = /#{@path.join('/')}
+            '#{type dst[prop]}'    <--  '#{type src[prop]}'
           """, dst[prop], '    <--  ', src[prop]
 
         # go through @certainBlenderBehaviors, until an 'action' match is found.
         visitNextBB = true
         for bb, bbi in @blenderBehaviors when visitNextBB
-          l.debug 60, "Looking @ bbi=#{bbi}, bb =", bb
+          l.debug 60, "Looking @ bbi=#{bbi}, blenderBehaviors =\n", bb
 
           nextBBSrcDstSpec = bb['|']
 
           for bbOrder in (bb.order or defaultBBOrder) # bbOrder is either 'src' or 'dst' @todo: or 'path'
 
             if l.debugLevel >= 60
-              l.debug 60, "At bbOrder =", bbOrder,
-                    " nextBBSrcDstSpec=\n", nextBBSrcDstSpec,
-                    " types[bbOrder]=", "'" + types[bbOrder] + "'"
+              l.debug 60, "At bbOrder='#{bbOrder}'",
+                    " types[bbOrder]='#{types[bbOrder]}'",
+                    " nextBBSrcDstSpec=\n", nextBBSrcDstSpec
+
 
             if _.isUndefined types[bbOrder]
               #@todo: check for path
@@ -180,9 +184,9 @@ class Blender
                             else
                               throw "Unknown nextBBSrcDstSpec = " + nextBBSrcDstSpec
                   ,
-                    " nextBBSrcDstSpec =", nextBBSrcDstSpec,
-                    " bbOrder=", "'" + bbOrder + "'",
-                    " types[bbOrder]=", "'" + types[bbOrder] + "'"
+                    " bbOrder='#{bbOrder}'",
+                    " types[bbOrder]='#{types[bbOrder]}'",
+                    " nextBBSrcDstSpec=\n", nextBBSrcDstSpec
                   )
               # is nextBBSrcDstSpec terminal ?
               if (nextBBSrcDstSpec is undefined ) or
@@ -221,15 +225,14 @@ class Blender
               result = result[1]
               visitNextBB = true
 
-            l.debug 80, """
-              Action Called: Value assigning:
-                Path =""", @path.join('/'), """
+            l.debug 20, """
+              Action Called: Value assigning:  @path =""", @path.join('/'), """
                 value =""", l.prettify(result)
 
             dst[prop] = result # actually assign, by default all values
 
           else # we have some special ActionResult:
-            l.debug 60, "Action Called: ActionResult: ", result
+            l.debug 30, "Action Called: ActionResult: ", result
             if result in [Blender.DELETE, Blender.DELETE_NEXT]
               delete dst[prop]
 #              l.debug 70, "DELETEd prop = #{l.prettify prop}"
@@ -271,12 +274,12 @@ class Blender
   @NEXT: {ActionResult: "NEXT"}
 
   ###
-  DELETE the `dst[prop]`. Can be done in Action, but why not doit by contract ?
+    DELETE the `dst[prop]`. Can be done in Action, but why not doit by contract ?
   ###
   @DELETE: {ActionResult: "DELETE"}
 
   ###
-  DELETE_NEXT - Like @DELETE, but also skip to next BlenderBehaviour in line.
+    DELETE_NEXT - Like @DELETE, but also skip to next BlenderBehaviour in line.
   ###
   @DELETE_NEXT: {ActionResult: "DELETE_NEXT"}
 
@@ -294,6 +297,8 @@ class Blender
 
   ### Copy all properties of nested Objects (or Arrays) recursivelly. ###
   deepOverwrite: (prop, src, dst, blender)->
+    if not _.isObject(dst[prop])
+      dst[prop] = {}
     blender.blend dst[prop], src[prop] # @todo: try _blend ?
 
   ###
@@ -312,11 +317,11 @@ YADC = require('YouAreDaChef').YouAreDaChef
 YADC(Blender)
   .before /overwriteOrReplace|deepOverwrite|overwrite|print/, (match, prop, src, dst, blender)->
     l.debug """
-     YADC:#{match}
-     '#{type dst[prop]}'    <--  '#{type src[prop]}'   /#{blender.path.join('/')}
+     YADC:#{match} @path = /#{blender.path.join('/')}
+     '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
     """, dst[prop],'    <--  ', src[prop]
 
   .before /getAction/, (match, actionName)->
-    l.debug "getAction(actionName = #{actionName})"
+    l.debug 50, "getAction(actionName = #{actionName})"
 
 

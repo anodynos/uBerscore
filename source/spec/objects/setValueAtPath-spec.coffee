@@ -21,7 +21,7 @@ describe 'objects/setValueAtPath:', ->
           anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
           dependencies:
             variableNames: 'just_a_String'
-      expect(isSet).to.equal true
+      expect(isSet).to.be.true
 
     it "object, with sep at end & alt sep", ->
       oClone = _.clone o, true
@@ -32,7 +32,7 @@ describe 'objects/setValueAtPath:', ->
         '$': bundle:
             anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
             dependencies: variableNames: property: 'just_a_String'
-      expect(isSet).to.equal true
+      expect(isSet).to.be.true
 
     it "object, overwriting object property", ->
       oClone = _.clone o, true
@@ -43,7 +43,7 @@ describe 'objects/setValueAtPath:', ->
         '$': bundle:
           anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
           dependencies: property: 'just_a_String'
-      expect(isSet).to.equal true
+      expect(isSet).to.be.true
 
     it "array item, overwriting object property", ->
       oClone = _.clone o, true
@@ -54,7 +54,7 @@ describe 'objects/setValueAtPath:', ->
         '$': bundle:
           anArray: ['arrayItem1', 2, 'arrayItem3': {'3_is_now': 33} ]
           dependencies: variableNames: "Bingo"
-      expect(isSet).to.equal true
+      expect(isSet).to.be.true
 
   describe 'inexistent key paths:', ->
 
@@ -62,7 +62,7 @@ describe 'objects/setValueAtPath:', ->
       oClone = _.clone o, true
       isSet = _B.setValueAtPath oClone, '$/bundle/dependencies/variableNames/hi', {joke: {joke2:'JOKER'}}
       expect(oClone).to.deep.equal o
-      expect(isSet).to.equal false
+      expect(isSet).to.be.false
 
     describe 'forceCreate:', ->
 
@@ -77,7 +77,7 @@ describe 'objects/setValueAtPath:', ->
             dependencies:
               variableNames: "Bingo"
               moreDeps: evenMoreDeps: {property: 'just_a_String'}
-        expect(isSet).to.equal true
+        expect(isSet).to.be.true
 
       it "create new objects, overwritting primitives", ->
         oClone = _.clone o, true
@@ -90,7 +90,7 @@ describe 'objects/setValueAtPath:', ->
               anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
               dependencies: variableNames: newKey: {joke: {joke2:'JOKER'}}
 
-        expect(isSet).to.equal true
+        expect(isSet).to.be.true
 
       it "create new objects, preserving `oldValue`", ->
         oClone = _.clone o, true
@@ -105,4 +105,4 @@ describe 'objects/setValueAtPath:', ->
                 _oldValue: 'Bingo'
                 newKey: anotherNewKey: {joke: {joke2:'JOKER'}}
 
-        expect(isSet).to.equal true
+        expect(isSet).to.be.true

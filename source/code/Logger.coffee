@@ -16,9 +16,7 @@ class Logger
   @debugLevel = 0
   VERSION: if VERSION? then VERSION else '{NO_VERSION}' # 'VERSION' variable is added by grant:concat
 
-  constructor:->@_constructor.apply @, arguments
-
-  _constructor: (@title, @debugLevel = 0, @newLine = true)->
+  constructor: (@title, @debugLevel = 0, @newLine = true)->
     Logger.loggerCount = (Logger.loggerCount or 0) + 1
 
   @getALog: (baseMsg, color, cons)->

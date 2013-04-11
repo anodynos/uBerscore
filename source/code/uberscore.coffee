@@ -28,6 +28,8 @@ class uberscore
 
   setValueAtPath: require './objects/setValueAtPath'
   getValueAtPath: require './objects/getValueAtPath'
+  isDisjoint: require './objects/isDisjoint'
+  getRefs: require './objects/getRefs'
 
   #various
   arrayize: require './arrayize'

@@ -4,8 +4,12 @@ require "blending/deepExtend-spec"
 require "blending/Blender-spec"
 require "blending/lodash-merge-spec"
 require "blending/deepCloneDefaults-spec"
+
 require "objects/getValueAtPath-spec"
 require "objects/setValueAtPath-spec"
+require "objects/isDisjoint-spec"
+require "objects/getRefs-spec"
+
 require "go-spec"
 require "okv-spec"
 require "mutate-spec"

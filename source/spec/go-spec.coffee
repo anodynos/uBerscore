@@ -15,7 +15,7 @@ describe "go: version 0.0.3", ->
 
     it "but should NOT be the *identical* object, but a clone of it", ->
      expect( result ).to.not.equal obj
-     expect( result isnt obj ).to.equal true # is / === check equality ?
+     expect( result isnt obj ).to.be.true # is / === check equality ?
 
   describe "go: Array<int> passed, no params, ", ->
     result = _B.go arrInt

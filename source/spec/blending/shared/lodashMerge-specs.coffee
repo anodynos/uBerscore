@@ -55,7 +55,7 @@ module.exports = (deepExtendMergeBlend)->
 
       expect(
         actual.bar.b is actual.foo.b and actual.foo.b.foo.c is actual.foo.b.foo.c.foo.b.foo.c
-      ).to.equal true
+      ).to.be.true
 
 
     it "should merge problem JScript properties (test in IE < 9)", ->

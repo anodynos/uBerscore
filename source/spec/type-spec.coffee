@@ -34,5 +34,5 @@ describe 'type :', ->
           expect( shortType ).to.equal _B.type.toShort(typeName)
           expect(_B.type.isType shortType ).to.be.true
 
-          expect( _B.type.areEqual longType, shortType).to.equal true
+          expect( _B.type.areEqual longType, shortType).to.be.true
 
