@@ -32,7 +32,7 @@ class Blender
   constructor: (@blenderBehaviors...)->
 
     # add the defaultBlenderBehavior
-    (@defaultBlenderBehaviors or= []).push require './blenderBehaviors/DefaultBlenderBehavior'
+    (@defaultBlenderBehaviors or= []).push require('./blenderBehaviors/DefaultBlenderBehavior')
 
     lastDBB = _.last @defaultBlenderBehaviors
     # add defaultAction to all destinations for the last BB
@@ -269,12 +269,14 @@ class Blender
   ### Simply overwrites dst value with src value ###
   overwrite: (prop, src, dst, blender)-> src[prop]
 
+  ###
+    Copy all properties of nested Objects (or Arrays) recursivelly.
 
+    It (vaguely) assumes that dst[prop] is already an Object type ({}, [], ->)
+    than really endorses keys (not merely accepts them eg. String accepts keys, but aren't really visible)
 
-  ### Copy all properties of nested Objects (or Arrays) recursivelly. ###
+  ###
   deepOverwrite: (prop, src, dst, blender)->
-    if not _.isObject(dst[prop])
-      dst[prop] = {}
     blender.blend dst[prop], src[prop] # @todo: try _blend ?
 
   ###
