@@ -1,6 +1,6 @@
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
-isAgree = require './agreement/isAgree' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
-go = require './go'
+isAgree = require './../agreement/isAgree' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+go = require './../collections/go'
 
 ###
   Mutates the `Value` for each of the `Keys` of a given Object or Array

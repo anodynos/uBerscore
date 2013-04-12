@@ -1,15 +1,9 @@
 assert = chai.assert
 expect = chai.expect
 
-isEqualArraySet = (a1, a2)->
-  if _.difference(a1, a2).length is 0
-    _.difference(a2, a1).length is 0
-  else
-    false
-
 describe 'getRefs:', ->
 
-  it "from array", ->
+  it "from array, deep = false", ->
     oa = [  0
             1
             {p:[PP:3]}
@@ -18,8 +12,7 @@ describe 'getRefs:', ->
           ]
     refs = _B.getRefs oa
 
-    expect(
-      isEqualArraySet refs, [
+    expect( _B.isEqualArraySet refs, [
         oa[3] #order doesn't matter
         oa[2]
       ]).to.be.true
@@ -32,8 +25,7 @@ describe 'getRefs:', ->
             4
           ]
     refs = _B.getRefs(oa, true)
-    expect(
-      isEqualArraySet refs, [
+    expect(_B.isEqualArraySet refs, [
         oa[2]
         oa[2].p
         oa[2].p[0]
@@ -51,7 +43,7 @@ describe 'getRefs:', ->
         p4:4
       }
       refs = _B.getRefs(oa, true)
-      expect(isEqualArraySet refs, [
+      expect(_B.isEqualArraySet refs, [
           oa.p2.p
           oa.p2.p[0]
 

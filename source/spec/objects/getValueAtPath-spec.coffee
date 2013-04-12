@@ -10,7 +10,6 @@ describe 'objects/getValueAtPath ', ->
         dependencies:
           variableNames: "Bingo"
 
-
   describe 'retrieving value: ', ->
 
     it "primitive", ->

@@ -9,46 +9,50 @@ class uberscore
   # some libs are required as bundleRelative others as fileRelative,
   # for uRequire's demonstration purposes!
 
-  # Collection related
-  go: require 'go'
-
-  # extending, the deep way, TO BE DEPRACATED when Blender comes properly into play
-  deepExtend: require './blending/deepExtend'
-  deepCloneDefaults: require 'blending/deepCloneDefaults'
-
-
+  # Blender - blending Objects
   Blender: require './blending/Blender'
   DeepExtendBlender: require './blending/blenders/DeepExtendBlender'
 
   #blendXXX: @todo:(6 5 5) provide default/predefined/common Blender instances,
   #                        for different purposes!
 
-  # Object related
-  okv: require 'okv'
+  # extending, the deep way, TO BE DEPRACATED when Blender comes properly into play
+  deepExtend: require './blending/deepExtend'
+  deepCloneDefaults: require 'blending/deepCloneDefaults'
 
+
+
+  # Objects
+  okv: require './objects/okv'
+  # mutators
+  mutate: require './objects/mutate'
   setValueAtPath: require './objects/setValueAtPath'
   getValueAtPath: require './objects/getValueAtPath'
   isDisjoint: require './objects/isDisjoint'
+  isRefDisjoint: require './objects/isRefDisjoint'
   getRefs: require './objects/getRefs'
+  getInheritedPropertyNames: require "objects/getInheritedPropertyNames"
+  isEqual: require "objects/isEqual"
+  isEqualInherited: require "objects/isEqualInherited"
 
-  #various
-  arrayize: require './arrayize'
+  # Collections
+  go: require './collections/go'
+  isEqualArraySet: require "collections/array/isEqualArraySet"
+  arrayize: require './collections/array/arrayize'
 
-  # agreement related
+  # Agreements
   isAgree: require './agreement/isAgree'
   inAgreements: require 'agreement/inAgreements'
 
-  certain: require 'certain'
-
-  # mutators
-  mutate: require 'mutate'
-
-  # types
+  # typing
   type: require 'type'
   isPlain: require 'isPlain'
 
   # Logging / debugging
   Logger: require './Logger'
+
+  # various
+  certain: require './certain'
 
 
 module.exports = new uberscore
