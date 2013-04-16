@@ -1,41 +1,44 @@
 ###
-  shortcut of isEqual = (a, b, callback, thisArg, options={
-                            inherited:false
+  shortcut of isEqual with default options = {
+                            inherited: true
                             exclude: ['constructor']
-                        })->
+                        }
 ###
 isEqual = (require './isEqual')
 
 isEqualInherited = (a, b, callback, thisArg, options={})->
   options.inherited = true
   (options.exclude or= []).push 'constructor'
-  isEqual.apply [a, b, callback, thisArg, options]
+  isEqual.apply undefined, [a, b, callback, thisArg, options]
 
 module.exports = isEqualInherited
-
+#
 #l = (new (require './../Logger') '', 40, true)
 #_ = require 'lodash'
-#{ objectWithPrototypeInheritedProps, Class3, expectedPropertyValues } = require '../../spec/spec-data'
-#c3 = new Class3
+#{ objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = require '../../spec/spec-data'
+
+
+#l.warn 'objectWithProtoInheritedProps : ##########################'
+#l.log 'true?',isEqual objectWithProtoInheritedProps, expectedPropertyValues, undefined, undefined, inherited:true
+#l.log 'true?',isEqualInherited objectWithProtoInheritedProps, expectedPropertyValues
+#l.log _.isEqual objectWithProtoInheritedProps, expectedPropertyValues #false
 #
-#l.warn 'objectWithPrototypeInheritedProps :'
-#l.log isEqual objectWithPrototypeInheritedProps, expectedPropertyValues, undefined, undefined, inherited:true
-#l.log isEqualInherited objectWithPrototypeInheritedProps, expectedPropertyValues
-#l.log _.isEqual objectWithPrototypeInheritedProps,expectedPropertyValues #false
-#
-#l.warn 'c3 :'
-#l.log isEqual c3, expectedPropertyValues, undefined, undefined, inherited:true
-#l.log isEqualInherited c3, expectedPropertyValues
+#l.warn 'c3 : ##########################'
+#l.log 'true?',isEqual c3, expectedPropertyValues, undefined, undefined, inherited:true
+#l.log 'true?', isEqualInherited c3, expectedPropertyValues
 #l.log _.isEqual c3, expectedPropertyValues #false
 #
-#l.warn 'clone objectWithPrototypeInheritedProps:'
-#clone = _.clone(objectWithPrototypeInheritedProps, true)
-#l.log isEqual clone, expectedPropertyValues, undefined, undefined, inherited:true
-#l.log isEqualInherited clone, expectedPropertyValues
-#l.log (_.isEqual clone, expectedPropertyValues)
+#l.warn 'clone objectWithProtoInheritedProps: ##########################'
+#clone = _.clone(objectWithProtoInheritedProps, true)
+# # imperfect clone - prototype is not copied!
+#clone.__proto__ = objectWithProtoInheritedProps.__proto__
+#l.log 'true?', isEqual expectedPropertyValues, clone, undefined, undefined, inherited:true
+#l.log 'true?', isEqualInherited clone, expectedPropertyValues
+#l.log _.isEqual clone, expectedPropertyValues
 #
-#l.warn 'clone c3:'
+#l.warn 'clone c3:##########################'
 #clone = _.clone(c3, true)
-#l.log isEqual clone, expectedPropertyValues, undefined, undefined, inherited:true
-#l.log isEqualInherited clone, expectedPropertyValues
-#l.log (_.isEqual clone, expectedPropertyValues)
+#clone.__proto__ = c3.__proto__
+#l.log 'true?', isEqual clone, expectedPropertyValues, undefined, undefined, inherited:true
+#l.log 'true?', isEqualInherited clone, expectedPropertyValues
+#l.log _.isEqual clone, expectedPropertyValues

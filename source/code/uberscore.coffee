@@ -34,6 +34,7 @@ class uberscore
   getInheritedPropertyNames: require "objects/getInheritedPropertyNames"
   isEqual: require "objects/isEqual"
   isEqualInherited: require "objects/isEqualInherited"
+  isEqualExact: require "objects/isEqualExact"
 
   # Collections
   go: require './collections/go'

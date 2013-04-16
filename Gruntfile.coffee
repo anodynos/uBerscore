@@ -44,7 +44,7 @@ gruntFunction = (grunt) ->
 
         build:
           verbose: false
-#          debugLevel: 60
+          debugLevel: 0
 
       uberscoreUMD:
         dependencies:
@@ -178,6 +178,7 @@ gruntFunction = (grunt) ->
      "urc":     "urequire:uberscore"
      "b":       "build"
      "d":       "deploy"
+     "m":       "mocha"
      "t1":      "urequire:spec mocha"
      "tb":      "urequire:spec mochaBlending"
      "t":       "test"

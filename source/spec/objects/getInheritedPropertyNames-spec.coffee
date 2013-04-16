@@ -1,12 +1,12 @@
 assert = chai.assert
 expect = chai.expect
 
-{ objectWithPrototypeInheritedProps, Class3 } = data
+{ objectWithProtoInheritedProps, Class3 } = data
 
 describe 'getInheritedPropertyNames: ', ->
 
   it "reads property names of __proro__ linked object hierarchy", ->
-    inheritedProps = _B.getInheritedPropertyNames objectWithPrototypeInheritedProps
+    inheritedProps = _B.getInheritedPropertyNames objectWithProtoInheritedProps
     expect(_B.isEqualArraySet inheritedProps, [
       'aProp1'
       'aProp2'

@@ -24,7 +24,7 @@ describe 'getRefs:', ->
             {a:b:->}
             4
           ]
-    refs = _B.getRefs(oa, true)
+    refs = _B.getRefs(oa, deep:true)
     expect(_B.isEqualArraySet refs, [
         oa[2]
         oa[2].p
@@ -42,7 +42,7 @@ describe 'getRefs:', ->
         p3:a:b:->
         p4:4
       }
-      refs = _B.getRefs(oa, true)
+      refs = _B.getRefs(oa, deep:true)
       expect(_B.isEqualArraySet refs, [
           oa.p2.p
           oa.p2.p[0]

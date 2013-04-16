@@ -11,7 +11,6 @@ type = require '../type'
   A highly configurable variant of deepExtend / jQuery.extend / lodash.merge
   (as a poor man's B, since that's a bit far from now... ?)
 ###
-l.log 'Blender'
 class Blender
 
   defaultBBOrder = ['src', 'dst'] # `action` is stored in {dst:src} objects
@@ -32,29 +31,32 @@ class Blender
   constructor: (@blenderBehaviors...)->
 
     # add the defaultBlenderBehavior
-    (@defaultBlenderBehaviors or= []).push require('./blenderBehaviors/DefaultBlenderBehavior')
+    (@defaultBlenderBehaviors or= []).push Blender.behavior
 
     lastDBB = _.last @defaultBlenderBehaviors
     # add defaultAction to all destinations for the last BB
     for typeName, dbb of lastDBB['|'] # when type.isType(typeName) # assumed
       if (_.isUndefined dbb["*"])
         dbb["*"] or= lastDBB['|']['*']['*'] # Anything placed at '|':'*':'*' of lastDBB is default
+
     # treat defaulBBs as normal blenderBehaviours:
     # they just go at the end, being the last resort
     @blenderBehaviors.push bb for bb in @defaultBlenderBehaviors
-    # shortify 'em
+    # shortify 'em all
     @blenderBehaviors[bbi]['|'] = Blender.shortifyTypeNames bb['|'] for bb, bbi in @blenderBehaviors
     @path = []
 
   # Recursivelly convert all isType(keys) to `type.short` format
   # i.e it changes all nested keys named 'Array', 'Object' etc to '[]', '{}' etc
   # Blender always use short format internally
-  @shortifyTypeNames: (bbSrcDstSpec)->
-    for key, val of bbSrcDstSpec when type.isType(key) # ignore non-types (eg blendBehavior.order & actions)
-      short = type.toShort key
-      if short and (key isnt short)
-        bbSrcDstSpec[short] = bbSrcDstSpec[key]
-        delete bbSrcDstSpec[key]
+  @shortifyTypeNames: (bbSrcDstSpec={})->
+    for key, val of bbSrcDstSpec
+      if type.isType key # ignore non-types (shouldn't be under '|', but just in case)
+        short = type.toShort key
+        if short and (key isnt short)
+          bbSrcDstSpec[short] = bbSrcDstSpec[key]
+          delete bbSrcDstSpec[key]
+
       if _.isPlainObject(val) #recurse
         Blender.shortifyTypeNames val
 
@@ -110,7 +112,7 @@ class Blender
         if l.debugLevel >= 50
           l.debug 50, """
             @path = /#{@path.join('/')}
-            '#{type dst[prop]}'    <--  '#{type src[prop]}'
+            '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
           """, dst[prop], '    <--  ', src[prop]
 
         # go through @certainBlenderBehaviors, until an 'action' match is found.
@@ -122,8 +124,8 @@ class Blender
 
           for bbOrder in (bb.order or defaultBBOrder) # bbOrder is either 'src' or 'dst' @todo: or 'path'
 
-            if l.debugLevel >= 60
-              l.debug 60, "At bbOrder='#{bbOrder}'",
+            if l.debugLevel >= 80
+              l.debug 80, "At bbOrder='#{bbOrder}'",
                     " types[bbOrder]='#{types[bbOrder]}'",
                     " nextBBSrcDstSpec=\n", nextBBSrcDstSpec
 
@@ -137,19 +139,19 @@ class Blender
                 # Invlaid type is excluded as a case
 
             else
-
+              currentBBSrcDstSpec = nextBBSrcDstSpec
               nextBBSrcDstSpec = nextBBSrcDstSpec[types[bbOrder]] or nextBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
 
-              if l.debugLevel >= 50
+              if l.debugLevel >= 70
 
-                  l.debug(50,
+                  l.debug(70,
                     if nextBBSrcDstSpec is undefined
                       "Found NO nextBBSrcDstSpec at all - go to NEXT BlenderBehaviour"
                     else
-                      if nextBBSrcDstSpec[types[bbOrder]]
+                      if nextBBSrcDstSpec is currentBBSrcDstSpec[types[bbOrder]]
                         "Found "
                       else
-                        if nextBBSrcDstSpec['*']
+                        if nextBBSrcDstSpec is currentBBSrcDstSpec['*']
                           "Found NOT exact nextBBSrcDstSpec, but a '*'"
                         else
                           if _.isString nextBBSrcDstSpec
@@ -158,7 +160,7 @@ class Blender
                             if _.isFunction nextBBSrcDstSpec
                               "Found a Function "
                             else
-                              throw "Unknown nextBBSrcDstSpec = " + nextBBSrcDstSpec
+                              throw "Unknown nextBBSrcDstSpec = " + l.prettify nextBBSrcDstSpec
                   ,
                     " bbOrder='#{bbOrder}'",
                     " types[bbOrder]='#{types[bbOrder]}'",
@@ -202,13 +204,13 @@ class Blender
               visitNextBB = true
 
             l.debug 20, """
-              Action Called: Value assigning:  @path =""", @path.join('/'), """
-                value =""", l.prettify(result)
+              Action Called - Value assigning:  @path =""", @path.join('/'), """
+              \n  value =""", l.prettify(result)
 
             dst[prop] = result # actually assign, by default all values
 
           else # we have some special ActionResult:
-            l.debug 30, "Action Called: ActionResult: ", result
+            l.debug 30, "Action Called - ActionResult = ", result
             if result in [Blender.DELETE, Blender.DELETE_NEXT]
               delete dst[prop]
 #              l.debug 70, "DELETEd prop = #{l.prettify prop}"
@@ -287,19 +289,59 @@ class Blender
     dst[prop].push s for s in src[prop]
     dst[prop] # return the appended array as the result
 
+
+  ###
+   The default behavior is to overwrite all keys of destination
+   with the respective value of source.
+
+   When destination is a `Primitive` or `Undefined`, we simply overwrite it
+   with either the (primitive) value or reference (for Object types)
+
+   When destination is an Object (reference type, with nested keys),
+   and source also happens to be an Object as well, then we 'merge',
+   i.e we deepOverwrite.
+
+   Note that we deepOvewrite or 'merge' with Array <-- Object and vise versa.
+   This simply copies properties which is javascript valid and perhaps usefull.
+
+   Redefined `BlenderBehaviour`s can change this default behaviour.
+  ###
+  @behavior: #static
+
+    order: ['dst', 'src']
+
+    '|': # our 'dst <-- src' spec
+
+      # When destination is a `Primitive` or `Undefined`, we simply overwrite it
+      # with either the (primitive) value or reference (for Object types)
+      "*": "*": 'overwrite' # this is the default case
+
+      # When destination is an Object (reference type, with nested keys),
+      # and source also happens to be an Object as well, then we 'merge',
+      # i.e we deepOverwrite.
+      Array:
+        Array: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
+        Object: 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
+        Function: 'deepOverwrite'
+      Object:
+        Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
+        Array: 'deepOverwrite'
+        Function: 'deepOverwrite'
+
 module.exports = Blender
 
 #### DEBUG ###
-YADC = require('YouAreDaChef').YouAreDaChef
+if l.debugLevel > 40
+  YADC = require('YouAreDaChef').YouAreDaChef
 
-YADC(Blender)
-  .before /overwriteOrReplace|deepOverwrite|overwrite|print/, (match, prop, src, dst, blender)->
-    l.debug """
-     YADC:#{match} @path = /#{blender.path.join('/')}
-     '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
-    """, dst[prop],'    <--  ', src[prop]
+  YADC(Blender)
+    .before /overwriteOrReplace|deepOverwrite|overwrite|print/, (match, prop, src, dst, blender)->
+      l.debug 40, """
+       YADC:#{match} @path = /#{blender.path.join('/')}
+       '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
+      """, dst[prop],'    <--  ', src[prop]
 
-  .before /getAction/, (match, actionName)->
-    l.debug 50, "getAction(actionName = #{actionName})"
+    .before /getAction/, (match, actionName)->
+      l.debug 50, "getAction(actionName = #{actionName})"
 
 

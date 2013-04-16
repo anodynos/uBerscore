@@ -87,6 +87,7 @@ This looks like _.omit, the oposite of _.pick - actually there is a shocrtcut fo
                   type:int
                   descr:"how deep to go into sub-levels"
                   default: 99999
+                inherited: process all properties, not just own
                 clone: default: true # if clone is false, what ? might be too hard to suport!
                 asynch: default: false
 
