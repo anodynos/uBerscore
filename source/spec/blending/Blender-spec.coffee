@@ -3,48 +3,51 @@ expect = chai.expect
 
 l = new _B.Logger 'Blender-spec', 0
 
-describe 'Blender / blend :', ->
+describe 'Blender:', ->
 
-  deepExtendblender = new _B.DeepExtendBlender
+  describe 'Blender.shortifyTypeNames : ', ->
 
-  require('./shared/deepExtendExamples-specs') deepExtendblender.blend
+    it "corectly transforms nested types of srcDstSpecs to short format", ->
+      longTypeNames = {
+        order: ['src', 'dst']
+        Array: String:'someAction'
+        Object:
+          "Array": "doSomeAction"
+          "Null": ->
 
-  # default Blender should behave like lodash.merge,
-  # with the exception of ignoring undefined:
-  lodashMergeLike_blender = new _B.Blender(
-    order: ['src']
-    '|':
-      'Undefined':-> _B.Blender.SKIP
-      #'Null':-> @SKIP _.merge changed this - it overwrites normally.
-  )
-  require('./shared/lodashMerge-specs') lodashMergeLike_blender.blend
+        doSomeAction:->
+      }
 
-  require('./shared/lodashMerge_Blender-specs') lodashMergeLike_blender.blend
+      expectedShortified = {
+        order: [ 'src', 'dst' ]
+        doSomeAction: longTypeNames.doSomeAction # copy function ref
+        '[]': "''": 'someAction'
+        '{}':
+          '[]': 'doSomeAction'
+          'null': longTypeNames.Object.Null
+      }
 
-  #todo: require require('./jQueryExtend-SharedSpecs') jQueryExtendBlender.blend
+      expect(
+        _B.Blender.shortifyTypeNames longTypeNames
+      ).to.deep.equal expectedShortified
 
-describe 'Blender.shortifyTypeNames : ', ->
+  describe 'DeepExtendBlender', ->
+    deepExtendblender = new _B.DeepExtendBlender
 
-  it "corectly transforms nested types of srcDstSpecs to short format", ->
-    longTypeNames = {
-      order: ['src', 'dst']
-      Array: String:'someAction'
-      Object:
-        "Array": "doSomeAction"
-        "Null": ->
+    require('./shared/deepExtendExamples-specs') deepExtendblender.blend
 
-      doSomeAction:->
+  describe 'lodash.merge -like blender', ->
+    # default Blender should behave like lodash.merge,
+    # with the exception of ignoring undefined:
+    lodashMerge_like_blender = new _B.Blender {
+      order: ['src']
+      '|':
+        'Undefined':-> _B.Blender.SKIP
+        #'Null':-> @SKIP _.merge changed this - it overwrites normally.
     }
+    require('./shared/lodashMerge-specs') lodashMerge_like_blender.blend
 
-    expectedShortified = {
-      order: [ 'src', 'dst' ]
-      doSomeAction: longTypeNames.doSomeAction # copy function ref
-      '[]': "''": 'someAction'
-      '{}':
-        '[]': 'doSomeAction'
-        'null': longTypeNames.Object.Null
-    }
+    require('./shared/lodashMerge_Blender-specs') lodashMerge_like_blender.blend
 
-    expect(
-      _B.Blender.shortifyTypeNames longTypeNames
-    ).to.deep.equal expectedShortified
+    #todo: require require('./jQueryExtend-SharedSpecs') jQueryExtendBlender.blend
+

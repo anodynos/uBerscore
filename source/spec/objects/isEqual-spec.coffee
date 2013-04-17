@@ -10,8 +10,6 @@ expect = chai.expect
   inheritedDeepClone
 } = data
 
-
-
 oClone = _.clone objectWithProtoInheritedProps
 c3Clone = _.clone c3
 
@@ -105,9 +103,19 @@ describe 'isEqual:', ->
         expect(_B.isEqual 112, 111).to.be.false
         expect(_B.isEqual 111.002, 111.003).to.be.false
 
-      it 'String', ->
-        expect(_B.isEqual '111', '111').to.be.true
-        expect(_B.isEqual '112', '111').to.be.false
+      describe 'String', ->
+        it 'as primitive ""', ->
+          expect(_B.isEqual 'AAA 111', 'AAA 111').to.be.true
+          expect(_B.isEqual 'AAA 112', 'AAA 111').to.be.false
+
+        it 'as String Object', ->
+          expect(_B.isEqual new String('AAA 111'), 'AAA 111').to.be.true
+          expect(_B.isEqual 'AAA 111', new String('AAA 111')).to.be.true
+          expect(_B.isEqual new String('AAA 111'), new String('AAA 111')).to.be.true
+
+          expect(_B.isEqual 'AAA 112', new String('AAA 111')).to.be.false
+          expect(_B.isEqual new String('AAA 112'), 'AAA 111').to.be.false
+          expect(_B.isEqual new String('AAA 112'), new String('AAA 111')).to.be.false
 
       it 'Date', ->
         expect(_B.isEqual new Date('2012-12-12'), new Date('2012-12-12')).to.be.true
@@ -117,15 +125,45 @@ describe 'isEqual:', ->
         expect(_B.isEqual /abc/, /abc/).to.be.true
         expect(_B.isEqual /abcd/, /abc/).to.be.false
 
-      it 'Boolean', ->
-        expect(_B.isEqual true, true).to.be.true
-        expect(_B.isEqual true, false).to.be.false
-        expect(_B.isEqual new Boolean(true), true).to.be.true
-        expect(_B.isEqual new Boolean(true), false).to.be.false
-        expect(_B.isEqual false, new Boolean(false)).to.be.true
+      describe 'Boolean', ->
+        it 'as primitive', ->
+          expect(_B.isEqual true, true).to.be.true
+          expect(_B.isEqual true, false).to.be.false
+        it 'as Boolean {}', ->
+          expect(_B.isEqual new Boolean(true), true).to.be.true
+          expect(_B.isEqual new Boolean(true), false).to.be.false
+          expect(_B.isEqual false, new Boolean(false)).to.be.true
 
-    describe "callback", ->
-      expect(_B.isEqual 111, '111', (a, b)-> a+'' is b+'').to.be.true
+      describe 'Mixed primitives', ->
+        it 'boolean truthys', ->
+          expect(_B.isEqual true, 1).to.be.false
+          expect(_B.isEqual true, 'a string').to.be.false
+        it 'boolean falsys', ->
+          expect(_B.isEqual false, 0).to.be.false
+          expect(_B.isEqual false, '').to.be.false
+
+    describe 'Simple Objects & all functions', ->
+
+      it 'empty objects & arrays', ->
+        expect(_B.isEqual [], []).to.be.true
+        expect(_B.isEqual {}, {}).to.be.true
+        expect(_B.isEqual {}, []).to.be.false
+
+      it 'functions, with/without props', ->
+        f1 = ->
+        f2 = ->
+        expect(_B.isEqual f1, f2).to.be.false
+        expect(_B.isExact f1, f2).to.be.false
+        expect(_B.isIqual f1, f2).to.be.false
+        f1.p = 'a'
+        f2.p = 'a'
+        expect(_B.isEqual f1, f2).to.be.false
+        expect(_B.isExact f1, f2).to.be.false
+        expect(_B.isIqual f1, f2).to.be.false
+
+    describe "callback:", ->
+      it "returns true", ->
+        expect(_B.isEqual 111, '111', (a, b)-> a+'' is b+'').to.be.true
 
 
   describe "options.inherited - Objects with inherited properties:", ->
@@ -142,9 +180,9 @@ describe 'isEqual:', ->
 
       describe "with _.clone: ", ->
 
-        it "_B.isEqualInherited fails (imperfect _.clone)", ->
-          expect(_B.isEqualInherited oClone, expectedPropertyValues).to.be.false
-          expect(_B.isEqualInherited expectedPropertyValues, oClone).to.be.false
+        it "_B.isIqual fails (imperfect _.clone)", ->
+          expect(_B.isIqual oClone, expectedPropertyValues).to.be.false
+          expect(_B.isIqual expectedPropertyValues, oClone).to.be.false
 
         it "_.isEqual fails", ->
           expect(_.isEqual oClone, expectedPropertyValues).to.be.false
@@ -154,11 +192,11 @@ describe 'isEqual:', ->
         oCloneProto = _.clone objectWithProtoInheritedProps
         oCloneProto.__proto__ = objectWithProtoInheritedProps.__proto__
 
-        it "_B.isEqualInherited succeeds (a perfect clone:-)", ->
-          expect(_B.isEqualInherited oCloneProto, expectedPropertyValues).to.be.true
-          expect(_B.isEqualInherited expectedPropertyValues, oCloneProto ).to.be.true
+        it "_B.isIqual succeeds (a perfect clone:-)", ->
+          expect(_B.isIqual oCloneProto, expectedPropertyValues).to.be.true
+          expect(_B.isIqual expectedPropertyValues, oCloneProto ).to.be.true
 
-        it "_.isEqual fails", ->
+        it "_.isEqual still fails", ->
           expect(_.isEqual oCloneProto, expectedPropertyValues).to.be.false
           expect(_.isEqual expectedPropertyValues, oCloneProto).to.be.false
 
@@ -167,16 +205,16 @@ describe 'isEqual:', ->
 
       it "_B.isEqual is true", ->
         expect(_B.isEqual c3, expectedPropertyValues, inherited:true).to.be.true #alt `options` passing style (in callback's place)
-        expect(_B.isEqualInherited expectedPropertyValues, c3).to.be.true
+        expect(_B.isIqual expectedPropertyValues, c3).to.be.true
 
       it "_.isEqual fails", ->
         expect(_.isEqual c3, expectedPropertyValues).to.be.false
         expect(_.isEqual expectedPropertyValues, c3).to.be.false
 
       describe "with _.clone:", ->
-        it "_B.isEqualInherited fails (imperfect _.clone)", ->
+        it "_B.isIqual fails (imperfect _.clone)", ->
           expect(_B.isEqual c3Clone, expectedPropertyValues, undefined, undefined, inherited:true).to.be.false
-          expect(_B.isEqualInherited expectedPropertyValues, c3Clone).to.be.false
+          expect(_B.isIqual expectedPropertyValues, c3Clone).to.be.false
 
         it "_.isEqual fails", ->
           expect(_.isEqual c3Clone, expectedPropertyValues).to.be.false
@@ -185,9 +223,10 @@ describe 'isEqual:', ->
       describe "with _.clone proto: ", ->
         c3CloneProto = _.clone c3
         c3CloneProto.__proto__ = c3.__proto__
-        it "_B.isEqualInherited is true", ->
+
+        it "_B.isIqual is true", ->
           expect(_B.isEqual c3CloneProto, expectedPropertyValues, undefined, undefined, inherited:true).to.be.true
-          expect(_B.isEqualInherited expectedPropertyValues, c3CloneProto).to.be.true
+          expect(_B.isIqual expectedPropertyValues, c3CloneProto).to.be.true
 
         it "_.isEqual fails", ->
           expect(_.isEqual c3CloneProto , expectedPropertyValues).to.be.false
@@ -198,13 +237,13 @@ describe 'isEqual:', ->
 
     describe "shallow cloned objects :", ->
 
-      it "_B.isEqualExact(object, objectShallowClone1) is true", ->
+      it "_B.isExact(object, objectShallowClone1) is true", ->
         expect(_B.isEqual object, objectShallowClone1, undefined, undefined, exact:true).to.be.true
-        expect(_B.isEqualExact objectShallowClone1, object).to.be.true
+        expect(_B.isExact objectShallowClone1, object).to.be.true
 
-      it "_B.isEqualExact(object, objectShallowClone2) with _.clone(object) is true", ->
+      it "_B.isExact(object, objectShallowClone2) with _.clone(object) is true", ->
         expect(_B.isEqual object, objectShallowClone2, exact:true).to.be.true #alt `options` passing style (in callback's place)
-        expect(_B.isEqualExact objectShallowClone2, object).to.be.true
+        expect(_B.isExact objectShallowClone2, object).to.be.true
 
       it "_.isEqual(object, shallowClone1 & 2) gives true", ->
         expect(_.isEqual object, objectShallowClone1).to.be.true
@@ -214,9 +253,9 @@ describe 'isEqual:', ->
 
       describe "objectDeepClone1 with hand configured __proto__:", ->
 
-        it "_B.isEqualExact is false", ->
+        it "_B.isExact is false", ->
           expect(_B.isEqual object, objectDeepClone1, exact:true).to.be.false #alt `options` passing style (in callback's place)
-          expect(_B.isEqualExact objectDeepClone1, object).to.be.false
+          expect(_B.isExact objectDeepClone1, object).to.be.false
 
         it "_B.isEqual is true", ->
           expect(_B.isEqual object, objectDeepClone1).to.be.true
@@ -224,9 +263,9 @@ describe 'isEqual:', ->
 
       describe "objectDeepClone2 = _.clone(object):", ->
 
-        it "_B.isEqualExact is false", ->
+        it "_B.isExact is false", ->
           expect(_B.isEqual object, objectDeepClone2, undefined, undefined, exact:true).to.be.false
-          expect(_B.isEqualExact objectDeepClone2, object).to.be.false
+          expect(_B.isExact objectDeepClone2, object).to.be.false
 
         it "_B.isEqual is true", ->
           expect(_B.isEqual object, objectDeepClone2).to.be.true
@@ -237,25 +276,25 @@ describe 'isEqual:', ->
         expect(_.isEqual object, objectDeepClone2).to.be.true
 
 
-    describe "isEqualInheritedExact : isEqual with inherited & exact :", ->
+    describe "isIqualExact : isEqual with inherited & exact :", ->
 
-      isEqualInheritedExact = (a, b, callback, thisArg, options={})->
+      isIqualExact = (a, b, callback, thisArg, options={})->
         options.exact = true
-        _B.isEqualInherited.apply undefined, [a, b, callback, thisArg, options]
+        _B.isIqual.apply undefined, [a, b, callback, thisArg, options]
 
       describe "shallow inherited clone: inheritedShallowClone:", ->
 
-        it 'isEqualInheritedExact is true:',->
-          expect(isEqualInheritedExact inheritedShallowClone, object).to.be.true
+        it 'isIqualExact is true:',->
+          expect(isIqualExact inheritedShallowClone, object).to.be.true
 
-        it 'isEqualInherited is true:', ->
-          expect(_B.isEqualInherited object, inheritedShallowClone).to.be.true
+        it 'isIqual is true:', ->
+          expect(_B.isIqual object, inheritedShallowClone).to.be.true
 
       describe "deep inherited clone : inheritedDeepClone:", ->
 
-        it 'isEqualInheritedExact is true:',->
-          expect(isEqualInheritedExact inheritedDeepClone, object).to.be.false
+        it 'isIqualExact is true:',->
+          expect(isIqualExact inheritedDeepClone, object).to.be.false
 
-        it 'isEqualInherited is true:', ->
-          expect(_B.isEqualInherited object, inheritedDeepClone).to.be.true
+        it 'isIqual is true:', ->
+          expect(_B.isIqual object, inheritedDeepClone).to.be.true
 

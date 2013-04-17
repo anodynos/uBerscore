@@ -12,7 +12,7 @@ type = require '../type'
   (as a poor man's B, since that's a bit far from now... ?)
 ###
 class Blender
-
+  @defaultOptions: {inherited: false, isCopyProto: false}
   defaultBBOrder = ['src', 'dst'] # `action` is stored in {dst:src} objects
 
   ###
@@ -29,10 +29,25 @@ class Blender
                           Note: DONT overwrite `blend` or `_blend` !
   ###
   constructor: (@blenderBehaviors...)->
+    # add base Blender defaults
+    (@_optionsList or= []).unshift Blender.defaultOptions
 
-    # add the defaultBlenderBehavior
+    # check if we have options: 1st param is blenderBehaviour [], 2nd is options {}
+    if _.isArray @blenderBehaviors[0]
+      if l.debugLevel >= 20
+        l.debug "We might have options:", @blenderBehaviors[1], "@_optionsList (defaults):", @_optionsList
+      @_optionsList.push @blenderBehaviors[1] # user/param @options override all others
+      @blenderBehaviors = @blenderBehaviors[0]
+
+    @_optionsList.unshift options = {} # store all under local 'options'
+    _.extend.apply undefined, @_optionsList    # final options
+    if l.debugLevel >= 10
+      l.debug "Final blender options:", options
+    _.extend @, options # copy all to this
+    delete @_optionsList
+
+    # Setup the default BlenderBehavior
     (@defaultBlenderBehaviors or= []).push Blender.behavior
-
     lastDBB = _.last @defaultBlenderBehaviors
     # add defaultAction to all destinations for the last BB
     for typeName, dbb of lastDBB['|'] # when type.isType(typeName) # assumed
@@ -101,8 +116,12 @@ class Blender
   # our real `blend` function
   _blend: (dst, sources...)=>
     for src in sources
-      for own prop of src
+      props = if _.isArray src
+                (p for v, p in src)
+              else
+                if @inherited then (p for p of src) else (p for own p of src)
 
+      for prop in props # props for {} is ['prop1', 'prop2', ...], for [] its [1,2,3,...]
         @path.push prop
         types =  # just a shortcut: `scr:'[]', dst: '{}'`
           dst: type(dst[prop], true) # get short version of type, thats how we always handle it internally
@@ -279,6 +298,9 @@ class Blender
 
   ###
   deepOverwrite: (prop, src, dst, blender)->
+    if blender.isCopyProto # http://stackoverflow.com/questions/9959727/what-is-the-difference-between-proto-and-prototype-in-java-script
+      dst[prop].__proto__ = src[prop].__proto__
+
     blender.blend dst[prop], src[prop] # @todo: try _blend ?
 
   ###

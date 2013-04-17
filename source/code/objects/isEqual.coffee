@@ -8,20 +8,18 @@ _ = require 'lodash'
 type = require '../type'
 isPlain = require '../isPlain'
 isEqualArraySet = require '../collections/array/isEqualArraySet'
+l = new (require '../Logger') '_B.isEqual', 0
 
-isEqualDefaults = {
-    inherited: false
-    exclude: ['constructor']
-    exact: false# if true, then all refs must point to the same objects, not lokkalike clones! #todo: NOT IMPLEMETED
-    #callback:-> #todo: implement this way of calling
-    #thisArg:that #todo: implement this way of calling
-}
+isEqualDefaults =
+  inherited: false
+  exclude: ['constructor']
+  exact: false# if true, then all refs must point to the same objects, not lokkalike clones! #todo: NOT IMPLEMETED
 
 isEqual = (a, b, callback, thisArg, options=isEqualDefaults)->
 
-  # is callback actually the options object?
+  # if callback is actually the options object, destructure it
   if _.isPlainObject(callback) and
-      _.isUndefined(thisArg) and (options is isEqualDefaults) # destructure it
+      _.isUndefined(thisArg) and (options is isEqualDefaults)
         options = _.clone options, true
         options[p] or= callback[p] for p in _.keys(isEqualDefaults)
         {callback, thisArg} = callback
@@ -35,27 +33,27 @@ isEqual = (a, b, callback, thisArg, options=isEqualDefaults)->
       return (if cbResult then true else false)
   else callback = undefined # lodash doesnt like non-function callbacks!
 
-  console.log options
+  l.debug options if l.debugLevel > 20
 
-  # if we aren't option.exact=true, _isEqual true is good enough
+  # if we aren't option.exact=true, _isEqual *true* is true enough
   aType = type(a); bType = type(b)
   if not (options.exact or options.inherited) and (_.isObject(a) or _.isObject(b))
     if _.isEqual a, b, callback, thisArg
-      console.log 'return true - non exact _.isEqual'
+      l.debug 'return true - non exact _.isEqual' if l.debugLevel > 40
       return true
-    # no else: but just cause _.isEqual is false, we can't yet decide;
-    # not for inherited anyway
+      # no else: just cause _.isEqual is false, we can't yet decide;
+      # not for inherited anyway
 
   # perhaps we have a strict `exact` match for Object types
   # or a & b really look different
   #
   # Lets eliminate some rudimentary cases
   if a is b
-    console.log 'return true - a is b'
+    l.debug 'return true - a is b' if l.debugLevel > 40
     return true
   else
-    if isPlain(a) or isPlain(b)
-      console.log 'return false - aType in [Boolean... etc]'
+    if isPlain(a) or isPlain(b) or _.isFunction(a) or _.isFunction(b)
+      l.debug 'return  _.isEqual a, b' if l.debugLevel > 40
       return _.isEqual a, b
 
   # if we've passed this point, it means for both a & b we have
@@ -74,21 +72,21 @@ isEqual = (a, b, callback, thisArg, options=isEqualDefaults)->
                     (not isEqualArraySet aKeys, bKeys) # different set of keys
 
     for prop in aKeys # xKeys are equal
-      #console.log 'prop=', prop, 'a[prop]=', a[prop], 'b[prop]=', b[prop]
+      #if l.debugLevel > 40 l.debug 'prop=', prop, 'a[prop]=', a[prop], 'b[prop]=', b[prop]
       if options.exact # and (_.isObject(a[prop]) or _.isObject(b[prop]))
         if a[prop] isnt b[prop] #exact match required for all nested references of a
-          console.log 'return false - exact ref not same'
+          l.debug 'return false - exact ref not same' if l.debugLevel > 40
           return false
 
       if not _.isEqual a[prop], b[prop], callback, thisArg # todo: might not be needed: use base case
         if not isEqual a[prop], b[prop], callback, thisArg, options # 2nd chance: use isEqual instead as last resort!
-          console.log 'return false - not isEqual nested'
+          l.debug 'return false - not isEqual nested for prop =', prop, 'values = ', a[prop], b[prop] if l.debugLevel > 40
           return false
 
-    console.log 'return true - all properties considered'
+    l.debug 'return true - all properties considered true' if l.debugLevel > 40
     return true
 
-  console.log 'return false - nothing left to do!'
+  l.debug 'return false - nothing left to check!' if l.debugLevel > 40
   false
 
 module.exports = isEqual
