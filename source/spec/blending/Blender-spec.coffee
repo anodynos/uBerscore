@@ -4,9 +4,7 @@ expect = chai.expect
 l = new _B.Logger 'Blender-spec', 0
 
 describe 'Blender:', ->
-
   describe 'Blender.shortifyTypeNames : ', ->
-
     it "corectly transforms nested types of srcDstSpecs to short format", ->
       longTypeNames = {
         order: ['src', 'dst']
@@ -33,7 +31,6 @@ describe 'Blender:', ->
 
   describe 'DeepExtendBlender', ->
     deepExtendblender = new _B.DeepExtendBlender
-
     require('./shared/deepExtendExamples-specs') deepExtendblender.blend
 
   describe 'lodash.merge -like blender', ->
@@ -46,7 +43,6 @@ describe 'Blender:', ->
         #'Null':-> @SKIP _.merge changed this - it overwrites normally.
     }
     require('./shared/lodashMerge-specs') lodashMerge_like_blender.blend
-
     require('./shared/lodashMerge_Blender-specs') lodashMerge_like_blender.blend
 
     #todo: require require('./jQueryExtend-SharedSpecs') jQueryExtendBlender.blend

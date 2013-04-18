@@ -25,7 +25,7 @@ module.exports = isExact
 #} = require '../../spec/spec-data'
 ##
 #isIqual = require './isIqual'
-#isIqualExact = (a, b, callback, thisArg, options={})->
+#isIxact = (a, b, callback, thisArg, options={})->
 #  options.exact = true
 #  isIqual.apply undefined, [a, b, callback, thisArg, options]
 #
@@ -58,8 +58,8 @@ module.exports = isExact
 #l.log 'inheritedDeepClone', 'isExact is false:'+ isExact inheritedDeepClone, object
 #
 #
-#l.log 'inheritedShallowClone', 'isIqualExact is true:'+ isIqualExact inheritedShallowClone, object
+#l.log 'inheritedShallowClone', 'isIxact is true:'+ isIxact inheritedShallowClone, object
 #l.log 'inheritedShallowClone', 'isIqual is true:'+ isIqual object, inheritedShallowClone
 #
-#l.log 'inheritedDeepClone', 'isIqualExact is false:'+ isIqualExact inheritedDeepClone, object
+#l.log 'inheritedDeepClone', 'isIxact is false:'+ isIxact inheritedDeepClone, object
 #l.log 'inheritedDeepClone', 'isIqual is true:'+ isIqual inheritedDeepClone, object

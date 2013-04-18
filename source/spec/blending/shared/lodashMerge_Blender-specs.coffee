@@ -155,21 +155,3 @@ module.exports = (deepExtendMergeBlend)->
           anotherProp: null
         }
       ]
-
-
-#    it "", ->
-#      result = deepExtendMergeBlend()
-#      expect( result ).to.deep.equal expected
-
-#    it "", ->
-#      result = deepExtendMergeBlend()
-#      expect( result ).to.deep.equal expected
-
-#    it "", ->
-#      result = deepExtendMergeBlend()
-#      expect( result ).to.deep.equal expected
-
-#    it "", ->
-#      result = deepExtendMergeBlend()
-#      expect( result ).to.deep.equal expected
-

@@ -11,9 +11,16 @@ isEqualArraySet = require '../collections/array/isEqualArraySet'
 l = new (require '../Logger') '_B.isEqual', 0
 
 isEqualDefaults =
-  inherited: false
-  exclude: ['constructor']
-  exact: false# if true, then all refs must point to the same objects, not lokkalike clones! #todo: NOT IMPLEMETED
+  inherited: false # if true, examine all (inherited) properties, not just *own*
+
+  exact: false # if true, then all refs must point to the same objects, not lokkalike clones!
+
+  exclude: ['constructor'] # keys to be excluded - <String> of excluded key names.
+                           # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
+
+  functionAsObject: false #todo: NOT IMPLEMETED # if true, function/function or function/object equality only cares about properties
+  allKeys: false #:todo: NOT IMPLEMENTD # if true, all keys are considered for all Object types (eg Array props but also String, Number etc)
+
 
 isEqual = (a, b, callback, thisArg, options=isEqualDefaults)->
 
@@ -33,7 +40,7 @@ isEqual = (a, b, callback, thisArg, options=isEqualDefaults)->
       return (if cbResult then true else false)
   else callback = undefined # lodash doesnt like non-function callbacks!
 
-  l.debug options if l.debugLevel > 20
+  l.debug 'options = ', options if l.debugLevel > 20
 
   # if we aren't option.exact=true, _isEqual *true* is true enough
   aType = type(a); bType = type(b)

@@ -276,24 +276,20 @@ describe 'isEqual:', ->
         expect(_.isEqual object, objectDeepClone2).to.be.true
 
 
-    describe "isIqualExact : isEqual with inherited & exact :", ->
-
-      isIqualExact = (a, b, callback, thisArg, options={})->
-        options.exact = true
-        _B.isIqual.apply undefined, [a, b, callback, thisArg, options]
+    describe "isIxact : isEqual with inherited & exact :", ->
 
       describe "shallow inherited clone: inheritedShallowClone:", ->
 
-        it 'isIqualExact is true:',->
-          expect(isIqualExact inheritedShallowClone, object).to.be.true
+        it 'isIxact is true:',->
+          expect(isIxact inheritedShallowClone, object).to.be.true
 
         it 'isIqual is true:', ->
           expect(_B.isIqual object, inheritedShallowClone).to.be.true
 
       describe "deep inherited clone : inheritedDeepClone:", ->
 
-        it 'isIqualExact is true:',->
-          expect(isIqualExact inheritedDeepClone, object).to.be.false
+        it 'isIxact is true:',->
+          expect(isIxact inheritedDeepClone, object).to.be.false
 
         it 'isIqual is true:', ->
           expect(_B.isIqual object, inheritedDeepClone).to.be.true

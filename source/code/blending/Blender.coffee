@@ -12,7 +12,7 @@ type = require '../type'
   (as a poor man's B, since that's a bit far from now... ?)
 ###
 class Blender
-  @defaultOptions: {inherited: false, isCopyProto: false}
+  @defaultOptions: {inherited: false, copyProto: false}
   defaultBBOrder = ['src', 'dst'] # `action` is stored in {dst:src} objects
 
   ###
@@ -298,7 +298,7 @@ class Blender
 
   ###
   deepOverwrite: (prop, src, dst, blender)->
-    if blender.isCopyProto # http://stackoverflow.com/questions/9959727/what-is-the-difference-between-proto-and-prototype-in-java-script
+    if blender.copyProto # http://stackoverflow.com/questions/9959727/what-is-the-difference-between-proto-and-prototype-in-java-script
       dst[prop].__proto__ = src[prop].__proto__
 
     blender.blend dst[prop], src[prop] # @todo: try _blend ?
