@@ -179,9 +179,10 @@ gruntFunction = (grunt) ->
      "b":       "build"
      "d":       "deploy"
      "m":       "mocha"
+     "t":       "test"
      "t1":      "urequire:spec mocha"
      "tb":      "urequire:spec mochaBlending"
-     "t":       "test"
+
   }
 
   grunt.registerTask shortCut, tasks for shortCut, tasks of {

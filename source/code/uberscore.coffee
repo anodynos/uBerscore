@@ -11,6 +11,7 @@ class uberscore
 
   # Blender - blending Objects
   Blender: require './blending/Blender'
+  DeepCloneBlender: require './blending/blenders/DeepCloneBlender'
   DeepExtendBlender: require './blending/blenders/DeepExtendBlender'
 
   #blendXXX: @todo:(6 5 5) provide default/predefined/common Blender instances,
@@ -35,6 +36,7 @@ class uberscore
   isEqual: require "objects/isEqual"
   isIqual: require "objects/isIqual"
   isExact: require "objects/isExact"
+  isIxact: require "objects/isIxact"
 
   # Collections
   go: require './collections/go'

@@ -2,10 +2,12 @@
 
 #collection
 
-require "blending/deepExtend-spec"
+
 require "blending/Blender-spec"
-require "blending/lodash-merge-spec"
 require "blending/deepCloneDefaults-spec"
+require "blending/deepExtend-spec"
+require "blending/lodash-merge-spec"
+require "blending/Mergers_Blender-spec"
 
 require "objects/getInheritedPropertyNames-spec"
 require "objects/getRefs-spec"

@@ -281,7 +281,7 @@ describe 'isEqual:', ->
       describe "shallow inherited clone: inheritedShallowClone:", ->
 
         it 'isIxact is true:',->
-          expect(isIxact inheritedShallowClone, object).to.be.true
+          expect(_B.isIxact inheritedShallowClone, object).to.be.true
 
         it 'isIqual is true:', ->
           expect(_B.isIqual object, inheritedShallowClone).to.be.true
@@ -289,7 +289,7 @@ describe 'isEqual:', ->
       describe "deep inherited clone : inheritedDeepClone:", ->
 
         it 'isIxact is true:',->
-          expect(isIxact inheritedDeepClone, object).to.be.false
+          expect(_B.isIxact inheritedDeepClone, object).to.be.false
 
         it 'isIqual is true:', ->
           expect(_B.isIqual object, inheritedDeepClone).to.be.true
