@@ -1,8 +1,22 @@
 ###
   Just like _.isEqual BUT with more options :
+
     * `inherited` : if true, it checks all properties of inheritance chain (__proto_ chain)
        for both a & b and decides if their root-level properties are also isEqual ,,,options
-    * `exclude`: array of exclusions, default is ['constructor']
+
+    * `exclude`: array of excluded keys, default is ['constructor']
+               #todo: add a callback Function version
+
+    * `exact`: if true, then reference value types (Objects, Arrays, Functions etc) should be exactly === equal.
+
+    * more coming - check comments below!
+
+  The `options` object can be passed as the 5th parameter (to maintain compatibility with *lodash*),
+  but also as the 3rd, in place of callback.
+
+  In all cases you can pass `callback` and `thisArg` as properties of `options`,
+  which will have precedence over the respective arguments.
+
 ###
 _ = require 'lodash'
 type = require '../type'
@@ -27,9 +41,11 @@ isEqual = (a, b, callback, thisArg, options=isEqualDefaults)->
   # if callback is actually the options object, destructure it
   if _.isPlainObject(callback) and
       _.isUndefined(thisArg) and (options is isEqualDefaults)
-        options = _.clone options, true
+        options = _.clone options, true #dont touch isEqualDefaults!
         options[p] or= callback[p] for p in _.keys(isEqualDefaults)
-        {callback, thisArg} = callback
+
+  callback = options.callback if options.callback
+  thisArg = options.thisArg if options.thisArg
 
   _.defaults(options, isEqualDefaults) if options isnt isEqualDefaults
 

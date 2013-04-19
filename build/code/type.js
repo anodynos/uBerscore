@@ -86,9 +86,9 @@ type.TYPES = {
     String: [ "''", "S", '""' ],
     Date: [ "D" ],
     RegExp: [ "//", "R" ],
-    Object: [ "{}", "O" ],
     Number: [ "N" ],
     Boolean: [ "B" ],
+    Object: [ "{}", "O" ],
     Null: [ "null", "-" ],
     Undefined: [ "U", "?" ]
 };

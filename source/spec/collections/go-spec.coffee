@@ -23,7 +23,7 @@ describe "go: version 0.0.3", ->
       expect( result ).to.deep.equal arrInt
 
     it "but should NOT be the *identical* array, but a clone of it", ->
-      expect( ).to.not.equal arrInt
+      expect( result ).to.not.equal arrInt
 
 
   describe "go: Array<String> passed, no params, ", ->

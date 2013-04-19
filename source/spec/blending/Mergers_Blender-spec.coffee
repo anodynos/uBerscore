@@ -1,47 +1,47 @@
-#assert = chai.assert
-#expect = chai.expect
-#{ objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = data
+assert = chai.assert
+expect = chai.expect
+{ objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = data
 
-### fake mocha/chai style tests ###
-basePath = '../../code/'
-#todo: (3 4 2) Find a way to run real specs with 'run', no full build!
-l = new (require basePath + 'Logger') 'Blender & merging'
-errorCount = 0; hasError = false; level = 0; indent = ->("   " for i in [0..level]).join('')
-describe = (msg, fn)->
-  l.verbose indent() + msg;
-  level++; fn(msg); level--
-  if errorCount and level is 0
-    l.warn 'Error count:' + errorCount
-
-it = (msg, expectedFn)->
-  hasError = false; expectedFn();
-  if hasError
-    errorCount++
-    l.warn(indent() + msg + ' - false')
-  else
-    l.ok(indent() + msg + ' - OK')
-expect = (v)-> hasError = true if not v
-### fake mocha/chai style tests ###
-
-_ = require 'lodash'
-_B = do()->
-
-  isRefDisjoint = require basePath + 'objects/isRefDisjoint'
-  isDisjoint = require basePath + 'objects/isDisjoint'
-  getRefs = require basePath + 'objects/getRefs'
-  isIqual = require basePath + 'objects/isIqual'
-  getRefs = require basePath + 'objects/getRefs'
-  isEqualArraySet = require basePath + 'collections/array/isEqualArraySet'
-  isEqual = require basePath + 'objects/isEqual'
-  isIqual = require basePath + 'objects/isIqual'
-  isExact = require basePath + 'objects/isExact'
-  isIxact = require basePath + 'objects/isIxact'
-  Blender = require basePath + 'blending/Blender'
-  DeepCloneBlender = require basePath + 'blending/blenders/DeepCloneBlender'
-
-  {isEqual, isIqual, isExact, isIxact, getRefs, isEqualArraySet, getRefs, isRefDisjoint, isDisjoint, Blender, DeepCloneBlender}
-
-{ objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = require '../spec-data'
+#### fake mocha/chai style tests ###
+#basePath = '../../code/'
+##todo: (3 4 2) Find a way to run real specs with 'run', no full build!
+#l = new (require basePath + 'Logger') 'Blender & merging'
+#errorCount = 0; hasError = false; level = 0; indent = ->("   " for i in [0..level]).join('')
+#describe = (msg, fn)->
+#  l.verbose indent() + msg;
+#  level++; fn(msg); level--
+#  if errorCount and level is 0
+#    l.warn 'Error count:' + errorCount
+#
+#it = (msg, expectedFn)->
+#  hasError = false; expectedFn();
+#  if hasError
+#    errorCount++
+#    l.warn(indent() + msg + ' - false')
+#  else
+#    l.ok(indent() + msg + ' - OK')
+#expect = (v)-> hasError = true if not v
+#### fake mocha/chai style tests ###
+#
+#_ = require 'lodash'
+#_B = do()->
+#
+#  isRefDisjoint = require basePath + 'objects/isRefDisjoint'
+#  isDisjoint = require basePath + 'objects/isDisjoint'
+#  getRefs = require basePath + 'objects/getRefs'
+#  isIqual = require basePath + 'objects/isIqual'
+#  getRefs = require basePath + 'objects/getRefs'
+#  isEqualArraySet = require basePath + 'collections/array/isEqualArraySet'
+#  isEqual = require basePath + 'objects/isEqual'
+#  isIqual = require basePath + 'objects/isIqual'
+#  isExact = require basePath + 'objects/isExact'
+#  isIxact = require basePath + 'objects/isIxact'
+#  Blender = require basePath + 'blending/Blender'
+#  DeepCloneBlender = require basePath + 'blending/blenders/DeepCloneBlender'
+#
+#  {isEqual, isIqual, isExact, isIxact, getRefs, isEqualArraySet, getRefs, isRefDisjoint, isDisjoint, Blender, DeepCloneBlender}
+#
+#{ objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = require '../spec-data'
 
 
 describe "Default 'Blender.blend'", ->

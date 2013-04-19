@@ -70,7 +70,8 @@ Logger = function() {
     };
     Logger.prototype.err = Logger.getALog("ERROR", "[31m", console.error);
     Logger.prototype.log = Logger.getALog("", "[0m", console.log);
-    Logger.prototype.verbose = Logger.getALog("", "[32m", console.log);
+    Logger.prototype.verbose = Logger.getALog("", "[34m", console.log);
+    Logger.prototype.ok = Logger.getALog("", "[32m", console.log);
     Logger.prototype.warn = Logger.getALog("WARNING", "[33m", console.log);
     Logger.prototype.debug = function() {
         var log;

@@ -437,9 +437,163 @@ define('uberscore',[],function () {
   define('spec-data',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
   function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var data;
+var Class0, Class1, Class2, Class3, c3, data, expectedPropertyValues, inheritedDeepClone, inheritedDeepCloneParent, inheritedShallowClone, inheritedShallowCloneParent, object, object1, object2, object3, objectDeepClone1, objectDeepClone2, objectShallowClone1, objectShallowClone2, objectWithProtoInheritedProps, prop1, _, __hasProp = {}.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) {
+        if (__hasProp.call(parent, key)) child[key] = parent[key];
+    }
+    function ctor() {
+        this.constructor = child;
+    }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+};
+
+_ = require("lodash");
+
+prop1 = {
+    "aProp1.1": "o1.aVal1.1",
+    "aProp1.2": "o1.aVal1.2"
+};
+
+object1 = {
+    aProp1: {},
+    aProp2: "o1.aVal2"
+};
+
+object1.aProp1.__proto__ = prop1;
+
+object2 = {
+    aProp2: "o2.aVal2-1"
+};
+
+object2.__proto__ = object1;
+
+object3 = {
+    aProp2: "o3.aVal2-2",
+    aProp3: [ 1, "2", 3, {
+        aProp4: "o3.aVal3"
+    } ]
+};
+
+object3.__proto__ = object2;
+
+objectWithProtoInheritedProps = {
+    aProp0: "o0.aVal0"
+};
+
+objectWithProtoInheritedProps.__proto__ = object3;
+
+Class0 = function() {
+    function Class0() {
+        this.aProp0 = "o0.aVal0";
+    }
+    return Class0;
+}();
+
+Class1 = function(_super) {
+    __extends(Class1, _super);
+    function Class1() {
+        return Class1.__super__.constructor.apply(this, arguments);
+    }
+    Class1.prototype.aProp1 = prop1;
+    Class1.prototype.aProp2 = "o1.aVal2";
+    return Class1;
+}(Class0);
+
+Class2 = function(_super) {
+    __extends(Class2, _super);
+    function Class2() {
+        return Class2.__super__.constructor.apply(this, arguments);
+    }
+    Class2.prototype.aProp2 = "o2.aVal2-1";
+    return Class2;
+}(Class1);
+
+Class3 = function(_super) {
+    __extends(Class3, _super);
+    function Class3() {
+        return Class3.__super__.constructor.apply(this, arguments);
+    }
+    Class3.prototype.aProp2 = "o3.aVal2-2";
+    Class3.prototype.aProp3 = [ 1, "2", 3, {
+        aProp4: "o3.aVal3"
+    } ];
+    return Class3;
+}(Class2);
+
+c3 = new Class3;
+
+expectedPropertyValues = {
+    aProp0: "o0.aVal0",
+    aProp1: {
+        "aProp1.1": "o1.aVal1.1",
+        "aProp1.2": "o1.aVal1.2"
+    },
+    aProp2: "o3.aVal2-2",
+    aProp3: [ 1, "2", 3, {
+        aProp4: "o3.aVal3"
+    } ]
+};
+
+object = {
+    p1: 1,
+    p2: {
+        p2_2: 3
+    }
+};
+
+objectShallowClone1 = {
+    p1: 1,
+    p2: object.p2
+};
+
+objectShallowClone2 = _.clone(object);
+
+objectDeepClone1 = {
+    p1: 1,
+    p2: {
+        p2_2: 3
+    }
+};
+
+objectDeepClone2 = _.clone(object, true);
+
+inheritedShallowCloneParent = {
+    p2: object.p2
+};
+
+inheritedShallowClone = {
+    p1: 1
+};
+
+inheritedShallowClone.__proto__ = inheritedShallowCloneParent;
+
+inheritedDeepCloneParent = {
+    p2: {
+        p2_2: 3
+    }
+};
+
+inheritedDeepClone = {
+    p1: 1
+};
+
+inheritedDeepClone.__proto__ = inheritedDeepCloneParent;
 
 data = {
+    objectWithProtoInheritedProps: objectWithProtoInheritedProps,
+    Class3: Class3,
+    c3: c3,
+    expectedPropertyValues: expectedPropertyValues,
+    object: object,
+    objectShallowClone1: objectShallowClone1,
+    objectShallowClone2: objectShallowClone2,
+    objectDeepClone1: objectDeepClone1,
+    objectDeepClone2: objectDeepClone2,
+    inheritedShallowClone: inheritedShallowClone,
+    inheritedDeepClone: inheritedDeepClone,
     obj: {
         ciba: 4,
         aaa: 7,
@@ -476,50 +630,6 @@ data = {
 };
 
 module.exports = data;
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
-  define('arrayize-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
-  function (require, exports, module, chai, _, _B, data) {
-  // uRequire: start body of original nodejs module
-var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref;
-
-assert = chai.assert;
-
-expect = chai.expect;
-
-_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
-
-describe("arrayize :", function() {
-    it("arrayize a String", function() {
-        return expect(_B.arrayize("agelos")).to.deep.equal([ "agelos" ]);
-    });
-    it("arrayize a Number", function() {
-        return expect(_B.arrayize(19)).to.deep.equal([ 19 ]);
-    });
-    it("arrayize an Object", function() {
-        return expect(_B.arrayize({
-            a: 1,
-            b: 2
-        })).to.deep.equal([ {
-            a: 1,
-            b: 2
-        } ]);
-    });
-    it("arrayize an existing array", function() {
-        var arr;
-        arr = [ 1, "john" ];
-        return expect(_B.arrayize(arr)).to.equal(arr);
-    });
-    return it("arrayize nothingness", function() {
-        return expect(_B.arrayize(void 0)).to.deep.equal([]);
-    });
-});
 // uRequire: end body of original nodejs module
 
 
@@ -721,27 +831,6 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('blending/deepExtend-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data', './shared/deepExtendExamples-specs', './shared/lodashMerge-specs'], 
-  function (require, exports, module, chai, _, _B, data) {
-  // uRequire: start body of original nodejs module
-var assert, expect;
-
-assert = chai.assert;
-
-expect = chai.expect;
-
-describe("deepExtend :", function() {
-    require("./shared/deepExtendExamples-specs")(_B.deepExtend);
-    return require("./shared/lodashMerge-specs")(_B.deepExtend);
-});
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
   define('blending/shared/lodashMerge_Blender-specs',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../../spec-data'], 
   function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
@@ -903,70 +992,53 @@ expect = chai.expect;
 
 l = new _B.Logger("Blender-spec", 0);
 
-describe("Blender / blend :", function() {
-    var deepExtendblender, lodashMergeLike_blender;
-    deepExtendblender = new _B.DeepExtendBlender;
-    require("./shared/deepExtendExamples-specs")(deepExtendblender.blend);
-    lodashMergeLike_blender = new _B.Blender({
-        order: [ "src" ],
-        "|": {
-            Undefined: function() {
-                return _B.Blender.SKIP;
-            }
-        }
+describe("Blender:", function() {
+    describe("Blender.shortifyTypeNames : ", function() {
+        return it("corectly transforms nested types of srcDstSpecs to short format", function() {
+            var expectedShortified, longTypeNames;
+            longTypeNames = {
+                order: [ "src", "dst" ],
+                Array: {
+                    String: "someAction"
+                },
+                Object: {
+                    Array: "doSomeAction",
+                    Null: function() {}
+                },
+                doSomeAction: function() {}
+            };
+            expectedShortified = {
+                order: [ "src", "dst" ],
+                doSomeAction: longTypeNames.doSomeAction,
+                "[]": {
+                    "''": "someAction"
+                },
+                "{}": {
+                    "[]": "doSomeAction",
+                    "null": longTypeNames.Object.Null
+                }
+            };
+            return expect(_B.Blender.shortifyTypeNames(longTypeNames)).to.deep.equal(expectedShortified);
+        });
     });
-    require("./shared/lodashMerge-specs")(lodashMergeLike_blender.blend);
-    return require("./shared/lodashMerge_Blender-specs")(lodashMergeLike_blender.blend);
-});
-
-describe("Blender.shortifyTypeNames : ", function() {
-    return it("corectly transforms nested types of srcDstSpecs to short format", function() {
-        var expectedShortified, longTypeNames;
-        longTypeNames = {
-            order: [ "src", "dst" ],
-            Array: {
-                String: "someAction"
-            },
-            Object: {
-                Array: "doSomeAction",
-                Null: function() {}
-            },
-            doSomeAction: function() {}
-        };
-        expectedShortified = {
-            order: [ "src", "dst" ],
-            doSomeAction: longTypeNames.doSomeAction,
-            "[]": {
-                "''": "someAction"
-            },
-            "{}": {
-                "[]": "doSomeAction",
-                "null": longTypeNames.Object.Null
-            }
-        };
-        return expect(_B.Blender.shortifyTypeNames(longTypeNames)).to.deep.equal(expectedShortified);
+    describe("DeepExtendBlender", function() {
+        var deepExtendblender;
+        deepExtendblender = new _B.DeepExtendBlender;
+        return require("./shared/deepExtendExamples-specs")(deepExtendblender.blend);
     });
-});
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
-  define('blending/lodash-merge-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data', './shared/lodashMerge-specs', './shared/lodashMerge_Blender-specs'], 
-  function (require, exports, module, chai, _, _B, data) {
-  // uRequire: start body of original nodejs module
-var assert, expect;
-
-assert = chai.assert;
-
-expect = chai.expect;
-
-describe("lodash's `merge` :", function() {
-    require("./shared/lodashMerge-specs")(_.merge);
-    return require("./shared/lodashMerge_Blender-specs")(_.merge);
+    return describe("lodash.merge -like blender", function() {
+        var lodashMerge_like_blender;
+        lodashMerge_like_blender = new _B.Blender({
+            order: [ "src" ],
+            "|": {
+                Undefined: function() {
+                    return _B.Blender.SKIP;
+                }
+            }
+        });
+        require("./shared/lodashMerge-specs")(lodashMerge_like_blender.blend);
+        return require("./shared/lodashMerge_Blender-specs")(lodashMerge_like_blender.blend);
+    });
 });
 // uRequire: end body of original nodejs module
 
@@ -1020,6 +1092,480 @@ describe("deepCloneDefaults:", function() {
         expect(bundleDefaults).to.deep.equal(data.bundleDefaults);
         expect(projectDefaults).to.deep.equal(data.projectDefaults);
         return expect(globalDefaults).to.deep.equal(data.globalDefaults);
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/deepExtend-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data', './shared/deepExtendExamples-specs', './shared/lodashMerge-specs'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("deepExtend :", function() {
+    require("./shared/deepExtendExamples-specs")(_B.deepExtend);
+    return require("./shared/lodashMerge-specs")(_B.deepExtend);
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/lodash-merge-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data', './shared/lodashMerge-specs', './shared/lodashMerge_Blender-specs'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("lodash's `merge` :", function() {
+    require("./shared/lodashMerge-specs")(_.merge);
+    return require("./shared/lodashMerge_Blender-specs")(_.merge);
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('blending/Mergers_Blender-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var Class3, assert, c3, expect, expectedPropertyValues, objectWithProtoInheritedProps;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+objectWithProtoInheritedProps = data.objectWithProtoInheritedProps, Class3 = data.Class3, c3 = data.c3, expectedPropertyValues = data.expectedPropertyValues;
+
+describe("Default 'Blender.blend'", function() {
+    describe("Default settings: with inherited:false, copyProto:false", function() {
+        var defaultBlender;
+        defaultBlender = new _B.Blender;
+        describe("clones POJSO Object (no inheritance)", function() {
+            return describe("(shallowClone = defaultBlender.blend {}, expectedPropertyValues)", function() {
+                var shallowClone;
+                shallowClone = defaultBlender.blend({}, expectedPropertyValues);
+                return describe("is a shallow clone and compared to source: ", function() {
+                    it("is not RefDisjoint - (there is at least one common reference))", function() {
+                        return expect(_B.isRefDisjoint(shallowClone, expectedPropertyValues, {
+                            deep: true,
+                            inherited: true
+                        }) === false);
+                    });
+                    it("has common references of all nested objects", function() {
+                        var cRefs, sRefs;
+                        sRefs = _B.getRefs(expectedPropertyValues, {
+                            deep: true,
+                            inherited: true
+                        });
+                        cRefs = _B.getRefs(shallowClone, {
+                            deep: true,
+                            inherited: true
+                        });
+                        return expect(_B.isEqualArraySet(sRefs, cRefs));
+                    });
+                    it("has a nested object copied by reference", function() {
+                        expect(shallowClone.aProp1 === expectedPropertyValues.aProp1);
+                        return expect(shallowClone.aProp1 !== void 0);
+                    });
+                    it("_.isEqual true (soft equality, same values/JSON)", function() {
+                        return expect(_.isEqual(shallowClone, expectedPropertyValues));
+                    });
+                    it("_B.isEqual true (soft equality, same values/JSON)", function() {
+                        return expect(_B.isEqual(shallowClone, expectedPropertyValues));
+                    });
+                    return it("_B.isExact true (strict references equality)", function() {
+                        return expect(_B.isExact(shallowClone, expectedPropertyValues));
+                    });
+                });
+            });
+        });
+        return describe("clones objectWithProtoInheritedProps (with inheritance)", function() {
+            return describe("(shallowClone = defaultBlender.blend {}, objectWithProtoInheritedProps)", function() {
+                var shallowIncompleteClone;
+                shallowIncompleteClone = defaultBlender.blend({}, objectWithProtoInheritedProps);
+                return describe("is an incomplete shallow clone, not copied inherited props: ", function() {
+                    it("has NOT common references of all nested objects", function() {
+                        var cRefs, sRefs;
+                        sRefs = _B.getRefs(objectWithProtoInheritedProps, {
+                            deep: true,
+                            inherited: true
+                        });
+                        cRefs = _B.getRefs(shallowIncompleteClone, {
+                            deep: true,
+                            inherited: true
+                        });
+                        return expect(_B.isDisjoint(sRefs, cRefs));
+                    });
+                    it("has NOT copied inherited nested object", function() {
+                        return expect(shallowIncompleteClone.aProp1 === void 0);
+                    });
+                    it("_.isEqual true (soft equality, same values/JSON)", function() {
+                        return expect(_.isEqual(shallowIncompleteClone, objectWithProtoInheritedProps));
+                    });
+                    it("_B.isEqual true (soft equality, same values/JSON)", function() {
+                        return expect(_B.isEqual(shallowIncompleteClone, objectWithProtoInheritedProps));
+                    });
+                    it("_B.isExact true (strict references equality, no inherited props)", function() {
+                        return expect(_B.isExact(shallowIncompleteClone, objectWithProtoInheritedProps));
+                    });
+                    it("_B.isIqual false (inherited props, soft object equality)", function() {
+                        return expect(_B.isIqual(shallowIncompleteClone, objectWithProtoInheritedProps) === false);
+                    });
+                    return it("_B.isIxact false (inherited props equality + strict references equality)", function() {
+                        return expect(_B.isIxact(shallowIncompleteClone, objectWithProtoInheritedProps) === false);
+                    });
+                });
+            });
+        });
+    });
+    describe("Default 'Blender.blend' with inherited:true", function() {
+        var defaultBlenderProtoCopier;
+        defaultBlenderProtoCopier = new _B.Blender([], {
+            inherited: true
+        });
+        return describe("clones objectWithProtoInheritedProps (with inheritance)", function() {
+            return describe("(shallowClone = defaultBlenderProtoCopier.blend {}, objectWithProtoInheritedProps)", function() {
+                var shallowCloneProtoCopied;
+                shallowCloneProtoCopied = defaultBlenderProtoCopier.blend({}, objectWithProtoInheritedProps);
+                return describe("is a complete shallow clone, having shallow copied all inherited props: ", function() {
+                    it("has common references of all nested objects", function() {
+                        var cRefs, sRefs;
+                        sRefs = _B.getRefs(objectWithProtoInheritedProps, {
+                            deep: true,
+                            inherited: true
+                        });
+                        cRefs = _B.getRefs(shallowCloneProtoCopied, {
+                            deep: true,
+                            inherited: true
+                        });
+                        return expect(_B.isEqualArraySet(sRefs, cRefs));
+                    });
+                    it("has copied inherited nested object", function() {
+                        expect(shallowCloneProtoCopied.aProp1 === objectWithProtoInheritedProps.aProp1);
+                        return expect(shallowCloneProtoCopied.aProp1 !== void 0);
+                    });
+                    it("_.isEqual is false (soft equality, not looking at inherited props of source)", function() {
+                        return expect(_.isEqual(shallowCloneProtoCopied, objectWithProtoInheritedProps) === false);
+                    });
+                    it("_B.isEqual is false (soft equality, not looking at inherited props of source)", function() {
+                        return expect(_B.isEqual(shallowCloneProtoCopied, objectWithProtoInheritedProps) === false);
+                    });
+                    it("_B.isExact is false (strict references equality, no inherited props of source)", function() {
+                        return expect(_B.isExact(shallowCloneProtoCopied, objectWithProtoInheritedProps) === false);
+                    });
+                    it("_B.isIqual is true (inherited props, soft object equality)", function() {
+                        return expect(_B.isIqual(shallowCloneProtoCopied, objectWithProtoInheritedProps));
+                    });
+                    return it("_B.isIxact true (inherited props, strict references equality)", function() {
+                        return expect(_B.isIxact(shallowCloneProtoCopied, objectWithProtoInheritedProps));
+                    });
+                });
+            });
+        });
+    });
+    return describe("Default 'Blender.blend' with copyProto:true", function() {
+        var defaultBlenderProtoCopier;
+        defaultBlenderProtoCopier = new _B.Blender([], {
+            copyProto: true
+        });
+        return describe("clones objectWithProtoInheritedProps (with inheritance)", function() {
+            return describe("(shallowClone = defaultBlenderProtoCopier.blend {}, objectWithProtoInheritedProps)", function() {
+                var shallowCloneProtoCopied;
+                shallowCloneProtoCopied = defaultBlenderProtoCopier.blend({}, objectWithProtoInheritedProps);
+                return describe("is a complete shallow clone, having shallow copied only own props & __proto__: ", function() {
+                    it("has ALL common references of all nested objects", function() {
+                        var cRefs, sRefs;
+                        sRefs = _B.getRefs(objectWithProtoInheritedProps, {
+                            deep: true,
+                            inherited: true
+                        });
+                        cRefs = _B.getRefs(shallowCloneProtoCopied, {
+                            deep: true,
+                            inherited: true
+                        });
+                        return expect(_B.isEqualArraySet(sRefs, cRefs));
+                    });
+                    it("has not copied inherited nested object, but can access it through __proto__ inheritance", function() {
+                        expect(shallowCloneProtoCopied.aProp1 === objectWithProtoInheritedProps.aProp1);
+                        expect(shallowCloneProtoCopied.aProp1 !== void 0);
+                        expect(objectWithProtoInheritedProps.hasOwnProperty("aProp1") === false);
+                        return expect(shallowCloneProtoCopied.hasOwnProperty("aProp1") === false);
+                    });
+                    it("_.isEqual is true (soft equality, not looking at inherited props of either)", function() {
+                        return expect(_.isEqual(shallowCloneProtoCopied, objectWithProtoInheritedProps));
+                    });
+                    it("_B.isEqual is true (soft equality, not looking at inherited props of either)", function() {
+                        return expect(_B.isEqual(shallowCloneProtoCopied, objectWithProtoInheritedProps));
+                    });
+                    it("_B.isExact is true (strict references equality, no inherited props of either)", function() {
+                        return expect(_B.isExact(shallowCloneProtoCopied, objectWithProtoInheritedProps));
+                    });
+                    it("_B.isIqual is true (inherited props, soft object equality)", function() {
+                        return expect(_B.isIqual(shallowCloneProtoCopied, objectWithProtoInheritedProps));
+                    });
+                    return it("_B.isIxact true (inherited props, strict references equality)", function() {
+                        return expect(_B.isIxact(shallowCloneProtoCopied, objectWithProtoInheritedProps));
+                    });
+                });
+            });
+        });
+    });
+});
+
+describe("DeepCloneBlender .blend:", function() {
+    describe("Default settings: with inherited:false, copyProto:false", function() {
+        var deepCloneBlender;
+        deepCloneBlender = new _B.DeepCloneBlender;
+        describe("clones POJSO Object (no inheritance)", function() {
+            return describe("(deepClone = deepCloneBlender.blend {}, expectedPropertyValues)", function() {
+                var deepClone;
+                deepClone = deepCloneBlender.blend({}, expectedPropertyValues);
+                return describe("is a deep clone", function() {
+                    it("_B.isDisjoint true, NO common references in objects", function() {
+                        return expect(_B.isRefDisjoint(deepClone, expectedPropertyValues, {
+                            deep: true,
+                            inherited: true
+                        }));
+                    });
+                    it("nested object is a clone it self - NOT the same reference", function() {
+                        return expect(deepClone.aProp1 !== expectedPropertyValues.aProp1);
+                    });
+                    it("_.isEqual true (soft equality, same values/JSON)", function() {
+                        return expect(_.isEqual(deepClone, expectedPropertyValues));
+                    });
+                    it("_B.isEqual true (soft equality, same values/JSON)", function() {
+                        return expect(_B.isEqual(deepClone, expectedPropertyValues));
+                    });
+                    return it("_B.isExact is false (strict references equality)", function() {
+                        return expect(_B.isExact(deepClone, expectedPropertyValues) === false);
+                    });
+                });
+            });
+        });
+        return describe("clones objectWithProtoInheritedProps (with inheritance)", function() {
+            return describe("(deepIncompleteClone = deepCloneBlender.blend {}, objectWithProtoInheritedProps)", function() {
+                var deepIncompleteClone;
+                deepIncompleteClone = deepCloneBlender.blend({}, objectWithProtoInheritedProps);
+                return describe("is an incomplete deep clone, not copied inherited props: ", function() {
+                    it("_B.isDisjoint true, has NO common references of all nested objects", function() {
+                        return expect(_B.isRefDisjoint(objectWithProtoInheritedProps, deepIncompleteClone, {
+                            deep: true,
+                            inherited: true
+                        }));
+                    });
+                    it("has NOT copied inherited nested object", function() {
+                        return expect(deepIncompleteClone.aProp1 === void 0);
+                    });
+                    describe("equality of deepIncompleteClone, objectWithProtoInheritedProps", function() {
+                        it("_.isEqual true (soft equality, same values/JSON)", function() {
+                            return expect(_.isEqual(deepIncompleteClone, objectWithProtoInheritedProps));
+                        });
+                        it("_B.isEqual true (soft equality, same values/JSON)", function() {
+                            return expect(_B.isEqual(deepIncompleteClone, objectWithProtoInheritedProps));
+                        });
+                        it("_B.isIqual false (inherited props)", function() {
+                            return expect(_B.isIqual(deepIncompleteClone, objectWithProtoInheritedProps) === false);
+                        });
+                        it("_B.isExact true (strict references equality)", function() {
+                            return expect(_B.isExact(deepIncompleteClone, objectWithProtoInheritedProps));
+                        });
+                        return it("_B.isIxact false (inherited props, scrict references equality)", function() {
+                            return expect(_B.isIxact(deepIncompleteClone, objectWithProtoInheritedProps) === false);
+                        });
+                    });
+                    return describe("equality of deepInheritedClone, expectedPropertyValues", function() {
+                        it("_.isEqual false (soft equality, same values/JSON)", function() {
+                            return expect(_.isEqual(deepIncompleteClone, expectedPropertyValues) === false);
+                        });
+                        it("_B.isEqual false (soft equality, same values/JSON)", function() {
+                            return expect(_B.isEqual(deepIncompleteClone, expectedPropertyValues) === false);
+                        });
+                        it("_B.isIqual false (inherited props)", function() {
+                            return expect(_B.isIqual(deepIncompleteClone, expectedPropertyValues) === false);
+                        });
+                        it("_B.isExact false (strict references equality)", function() {
+                            return expect(_B.isExact(deepIncompleteClone, expectedPropertyValues) === false);
+                        });
+                        return it("_B.isIxact false (inherited props, scrict references equality)", function() {
+                            return expect(_B.isIxact(deepIncompleteClone, expectedPropertyValues) === false);
+                        });
+                    });
+                });
+            });
+        });
+    });
+    return describe("with inherited:true", function() {
+        var deepCloneInheritedBlender;
+        deepCloneInheritedBlender = new _B.DeepCloneBlender([], {
+            inherited: true
+        });
+        return describe("clones objectWithProtoInheritedProps (with inheritance)", function() {
+            return describe("(deepInheritedClone = deepCloneInheritedBlender .blend {}, objectWithProtoInheritedProps)", function() {
+                var deepInheritedClone;
+                deepInheritedClone = deepCloneInheritedBlender.blend({}, objectWithProtoInheritedProps);
+                return describe("is a complete deep clone, having deep cloned all inherited props as its own: ", function() {
+                    it("_B.isDisjoint true, has NO common references of all nested objects", function() {
+                        return expect(_B.isRefDisjoint(objectWithProtoInheritedProps, deepInheritedClone, {
+                            deep: true,
+                            inherited: true
+                        }));
+                    });
+                    describe("equality of deepInheritedClone, objectWithProtoInheritedProps", function() {
+                        it("_.isEqual false (soft equality, not looking at inherited props of either)", function() {
+                            return expect(_.isEqual(deepInheritedClone, objectWithProtoInheritedProps) === false);
+                        });
+                        it("_B.isEqual false (soft equality, not looking at inherited props of either)", function() {
+                            return expect(_B.isEqual(deepInheritedClone, objectWithProtoInheritedProps) === false);
+                        });
+                        it("_B.isIqual true (soft equality, inherited props)", function() {
+                            return expect(_B.isIqual(deepInheritedClone, objectWithProtoInheritedProps));
+                        });
+                        it("_B.isExact false (strict references equality)", function() {
+                            return expect(_B.isExact(deepInheritedClone, objectWithProtoInheritedProps) === false);
+                        });
+                        return it("_B.isIxact false (inherited props, scrict references equality)", function() {
+                            return expect(_B.isIxact(deepInheritedClone, objectWithProtoInheritedProps) === false);
+                        });
+                    });
+                    return describe("equality of deepInheritedClone, expectedPropertyValues", function() {
+                        it("_.isEqual true (soft equality, all props are equal )", function() {
+                            return expect(_.isEqual(deepInheritedClone, expectedPropertyValues));
+                        });
+                        it("_B.isEqual false (soft equality, all props are equal)", function() {
+                            return expect(_B.isEqual(deepInheritedClone, expectedPropertyValues));
+                        });
+                        it("_B.isIqual true (soft equality, inherited props, all props are equal)", function() {
+                            return expect(_B.isIqual(deepInheritedClone, expectedPropertyValues));
+                        });
+                        it("_B.isExact false (strict references equality)", function() {
+                            return expect(_B.isExact(deepInheritedClone, expectedPropertyValues) === false);
+                        });
+                        return it("_B.isIxact false (inherited props, scrict references equality)", function() {
+                            return expect(_B.isIxact(deepInheritedClone, expectedPropertyValues) === false);
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('objects/getInheritedPropertyNames-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var Class3, assert, expect, objectWithProtoInheritedProps;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+objectWithProtoInheritedProps = data.objectWithProtoInheritedProps, Class3 = data.Class3;
+
+describe("getInheritedPropertyNames: ", function() {
+    it("reads property names of __proro__ linked object hierarchy", function() {
+        var inheritedProps;
+        inheritedProps = _B.getInheritedPropertyNames(objectWithProtoInheritedProps);
+        return expect(_B.isEqualArraySet(inheritedProps, [ "aProp1", "aProp2", "aProp3" ])).to.be["true"];
+    });
+    return it("reads property names of coffeescript class-inherited objects", function() {
+        return expect(_B.isEqualArraySet(_B.getInheritedPropertyNames(new Class3), [ "aProp3", "aProp2", "aProp1" ])).to.be["true"];
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('objects/getRefs-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("getRefs:", function() {
+    it("from array, deep = false", function() {
+        var oa, refs;
+        oa = [ 0, 1, {
+            p: [ {
+                PP: 3
+            } ]
+        }, {
+            a: {
+                b: function() {}
+            }
+        }, 4 ];
+        refs = _B.getRefs(oa);
+        return expect(_B.isEqualArraySet(refs, [ oa[3], oa[2] ])).to.be["true"];
+    });
+    it("from array, deep = true:", function() {
+        var oa, refs;
+        oa = [ 0, 1, {
+            p: [ {
+                PP: 3
+            } ]
+        }, {
+            a: {
+                b: function() {}
+            }
+        }, 4 ];
+        refs = _B.getRefs(oa, {
+            deep: true
+        });
+        return expect(_B.isEqualArraySet(refs, [ oa[2], oa[2].p, oa[2].p[0], oa[3], oa[3].a, oa[3].a.b ])).to.be["true"];
+    });
+    return it("from object, deep = true:", function() {
+        var oa, refs;
+        oa = {
+            p0: 0,
+            p1: 1,
+            p2: {
+                p: [ {
+                    PP: 3
+                } ]
+            },
+            p3: {
+                a: {
+                    b: function() {}
+                }
+            },
+            p4: 4
+        };
+        refs = _B.getRefs(oa, {
+            deep: true
+        });
+        return expect(_B.isEqualArraySet(refs, [ oa.p2.p, oa.p2.p[0], oa.p2, oa.p3, oa.p3.a, oa.p3.a.b ])).to.be["true"];
     });
 });
 // uRequire: end body of original nodejs module
@@ -1085,6 +1631,926 @@ describe("objects/getValueAtPath ", function() {
         });
         return it("undefined, for path of inexistent keys, with alt sep", function() {
             return expect(_B.getValueAtPath(o, "$>bundle>dependencies>variableNames>notfound>stillNotFound>", ">")).to.deep.equal(void 0);
+        });
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('objects/isDisjoint-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("isDisjoint:", function() {
+    describe("with primitives:", function() {
+        describe("arrays:", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isDisjoint([ 1, 2, 3 ], [ 4, 5, 6, "1" ])).to.be["true"];
+                return expect(_.intersection([ 1, 2, 3 ], [ 4, 5, 6, "1" ])).to.be.an("array").and.is.empty;
+            });
+            return it("recognises non disjoint:", function() {
+                expect(_B.isDisjoint([ 1, 2, 3 ], [ 4, 2, 5 ])).to.be["false"];
+                return expect(_.intersection([ 1, 2, 3 ], [ 4, 2, 5 ])).to.deep.equal([ 2 ]);
+            });
+        });
+        return describe("arrays & objects:", function() {
+            it("recognises disjoint in [] & {}:", function() {
+                return expect(_B.isDisjoint([ 4, 5, 6 ], {
+                    a: 1,
+                    b: 7,
+                    c: 8
+                })).to.be["true"];
+            });
+            return it("recognises non disjoint in [] & {}:", function() {
+                return expect(_B.isDisjoint([ 1, 2, 3 ], {
+                    a: 1,
+                    b: 7,
+                    c: 8
+                })).to.be["false"];
+            });
+        });
+    });
+    return describe("with references:", function() {
+        var o1, o2, o3, o4;
+        o1 = {
+            p1: 1
+        };
+        o2 = {
+            p2: 2
+        };
+        o3 = {
+            p3: 3
+        };
+        o4 = {
+            p4: 4
+        };
+        describe("arrays:", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isDisjoint([ o1, o2 ], [ {
+                    p1: 1
+                }, o3, o4 ])).to.be["true"];
+                return expect(_.intersection([ o1, o2 ], [ {
+                    p1: 1
+                }, o3, o4 ])).to.deep.equal([]);
+            });
+            return it("recognises non disjoint:", function() {
+                expect(_B.isDisjoint([ o1, o2 ], [ {
+                    p1: 1
+                }, o3, o4, o2 ])).to.be["false"];
+                return expect(_.intersection([ o1, o2 ], [ {
+                    p1: 1
+                }, o3, o4, o2 ])).to.deep.equal([ o2 ]);
+            });
+        });
+        describe("arrays & objects:", function() {
+            it("recognises disjoint in [] & {}", function() {
+                return expect(_B.isDisjoint([ o1, o2 ], {
+                    p1: 1,
+                    o3: o3,
+                    o4: o4
+                })).to.be["true"];
+            });
+            return it("recognises non disjoint in [] & {}:", function() {
+                return expect(_B.isDisjoint([ o1, o2 ], {
+                    p1: 1,
+                    o3: o3,
+                    o4: o4,
+                    o2: o2
+                })).to.be["false"];
+            });
+        });
+        return describe("equality using _.isEqual :", function() {
+            it("recognises disjoint in [] & {}, without _.isEqual", function() {
+                return expect(_B.isDisjoint([ o1, o2 ], {
+                    someP: {
+                        p1: 1
+                    },
+                    o3: o3
+                })).to.be["true"];
+            });
+            return it("recognises non disjoint in [] & {}, when using _.isEqual", function() {
+                return expect(_B.isDisjoint([ o1, o2 ], {
+                    someP: {
+                        p1: 1
+                    },
+                    o3: o3
+                }, _.isEqual)).to.be["false"];
+            });
+        });
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('objects/isEqual-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var Class3, assert, c3, c3Clone, expect, expectedPropertyValues, inheritedDeepClone, inheritedShallowClone, oClone, object, objectDeepClone1, objectDeepClone2, objectShallowClone1, objectShallowClone2, objectWithProtoInheritedProps;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+objectWithProtoInheritedProps = data.objectWithProtoInheritedProps, Class3 = data.Class3, c3 = data.c3, expectedPropertyValues = data.expectedPropertyValues, object = data.object, objectShallowClone1 = data.objectShallowClone1, objectShallowClone2 = data.objectShallowClone2, objectDeepClone1 = data.objectDeepClone1, objectDeepClone2 = data.objectDeepClone2, inheritedShallowClone = data.inheritedShallowClone, inheritedDeepClone = data.inheritedDeepClone;
+
+oClone = _.clone(objectWithProtoInheritedProps);
+
+c3Clone = _.clone(c3);
+
+describe("isEqual:", function() {
+    describe("lodash _.isEqual tests on _B.isEqual:", function() {
+        it("should work with `arguments` objects (test in IE < 9)", function() {
+            var args1, args2, args3;
+            args1 = function() {
+                return arguments;
+            }(1, 2, 3);
+            args2 = function() {
+                return arguments;
+            }(1, 2, 3);
+            args3 = function() {
+                return arguments;
+            }(1, 2);
+            expect(_B.isEqual(args1, args2)).to.be["true"];
+            return expect(_B.isEqual(args1, args3)).to.be["false"];
+        });
+        it("should return `false` when comparing values with circular references to unlike values", function() {
+            var array1, array2, object1, object2;
+            array1 = [ "a", null, "c" ];
+            array2 = [ "a", [], "c" ];
+            object1 = {
+                a: 1,
+                b: null,
+                c: 3
+            };
+            object2 = {
+                a: 1,
+                b: {},
+                c: 3
+            };
+            array1[1] = array1;
+            expect(_B.isEqual(array1, array2)).to.be["false"];
+            object1.b = object1;
+            return expect(_B.isEqual(object1, object2)).to.be["false"];
+        });
+        it("should pass the correct `callback` arguments", function() {
+            var args;
+            args = void 0;
+            _B.isEqual("a", "b", function() {
+                return args || (args = [].slice.call(arguments));
+            });
+            return expect(args).to.be.deep.equal([ "a", "b" ]);
+        });
+        it("should correct set the `this` binding", function() {
+            var actual;
+            actual = _B.isEqual("a", "b", function(a, b) {
+                return this[a] === this[b];
+            }, {
+                a: 1,
+                b: 1
+            });
+            return expect(actual).to.be["true"];
+        });
+        it("should handle comparisons if `callback` returns `undefined`", function() {
+            var actual;
+            actual = _B.isEqual("a", "a", function() {});
+            return expect(actual).to.be["true"];
+        });
+        return it("should return a boolean value even if `callback` does not", function() {
+            var actual;
+            actual = _B.isEqual("a", "a", function() {
+                return "a";
+            });
+            expect(actual).to.be["true"];
+            return _.each([ "", 0, false, NaN, null, void 0 ], function(value) {
+                actual = _B.isEqual("a", "b", function() {
+                    return value;
+                });
+                return expect(actual).to.be["false"];
+            });
+        });
+    });
+    describe("rudimentary checks:", function() {
+        describe("primitives:", function() {
+            it("one undefined", function() {
+                expect(_B.isEqual(void 0, objectWithProtoInheritedProps)).to.be["false"];
+                return expect(_B.isEqual(objectWithProtoInheritedProps, void 0)).to.be["false"];
+            });
+            it("one null", function() {
+                expect(_B.isEqual(null, objectWithProtoInheritedProps)).to.be["false"];
+                return expect(_B.isEqual(objectWithProtoInheritedProps, null)).to.be["false"];
+            });
+            it("both undefined/null", function() {
+                expect(_B.isEqual(void 0, void 0)).to.be["true"];
+                return expect(_B.isEqual(null, null)).to.be["true"];
+            });
+            it("one undefined, other null", function() {
+                expect(_B.isEqual(null, void 0)).to.be["false"];
+                return expect(_B.isEqual(void 0, null)).to.be["false"];
+            });
+            it("Number", function() {
+                expect(_B.isEqual(111, 111)).to.be["true"];
+                expect(_B.isEqual(111.002, 111.002)).to.be["true"];
+                expect(_B.isEqual(112, 111)).to.be["false"];
+                return expect(_B.isEqual(111.002, 111.003)).to.be["false"];
+            });
+            describe("String", function() {
+                it('as primitive ""', function() {
+                    expect(_B.isEqual("AAA 111", "AAA 111")).to.be["true"];
+                    return expect(_B.isEqual("AAA 112", "AAA 111")).to.be["false"];
+                });
+                return it("as String Object", function() {
+                    expect(_B.isEqual(new String("AAA 111"), "AAA 111")).to.be["true"];
+                    expect(_B.isEqual("AAA 111", new String("AAA 111"))).to.be["true"];
+                    expect(_B.isEqual(new String("AAA 111"), new String("AAA 111"))).to.be["true"];
+                    expect(_B.isEqual("AAA 112", new String("AAA 111"))).to.be["false"];
+                    expect(_B.isEqual(new String("AAA 112"), "AAA 111")).to.be["false"];
+                    return expect(_B.isEqual(new String("AAA 112"), new String("AAA 111"))).to.be["false"];
+                });
+            });
+            it("Date", function() {
+                expect(_B.isEqual(new Date("2012-12-12"), new Date("2012-12-12"))).to.be["true"];
+                return expect(_B.isEqual(new Date("2012-12-13"), new Date("2012-12-12"))).to.be["false"];
+            });
+            it("RegExp", function() {
+                expect(_B.isEqual(/abc/, /abc/)).to.be["true"];
+                return expect(_B.isEqual(/abcd/, /abc/)).to.be["false"];
+            });
+            describe("Boolean", function() {
+                it("as primitive", function() {
+                    expect(_B.isEqual(true, true)).to.be["true"];
+                    return expect(_B.isEqual(true, false)).to.be["false"];
+                });
+                return it("as Boolean {}", function() {
+                    expect(_B.isEqual(new Boolean(true), true)).to.be["true"];
+                    expect(_B.isEqual(new Boolean(true), false)).to.be["false"];
+                    return expect(_B.isEqual(false, new Boolean(false))).to.be["true"];
+                });
+            });
+            return describe("Mixed primitives", function() {
+                it("boolean truthys", function() {
+                    expect(_B.isEqual(true, 1)).to.be["false"];
+                    return expect(_B.isEqual(true, "a string")).to.be["false"];
+                });
+                return it("boolean falsys", function() {
+                    expect(_B.isEqual(false, 0)).to.be["false"];
+                    return expect(_B.isEqual(false, "")).to.be["false"];
+                });
+            });
+        });
+        describe("Simple Objects & all functions", function() {
+            it("empty objects & arrays", function() {
+                expect(_B.isEqual([], [])).to.be["true"];
+                expect(_B.isEqual({}, {})).to.be["true"];
+                return expect(_B.isEqual({}, [])).to.be["false"];
+            });
+            return it("functions, with/without props", function() {
+                var f1, f2;
+                f1 = function() {};
+                f2 = function() {};
+                expect(_B.isEqual(f1, f2)).to.be["false"];
+                expect(_B.isExact(f1, f2)).to.be["false"];
+                expect(_B.isIqual(f1, f2)).to.be["false"];
+                f1.p = "a";
+                f2.p = "a";
+                expect(_B.isEqual(f1, f2)).to.be["false"];
+                expect(_B.isExact(f1, f2)).to.be["false"];
+                return expect(_B.isIqual(f1, f2)).to.be["false"];
+            });
+        });
+        return describe("callback:", function() {
+            return it("returns true", function() {
+                return expect(_B.isEqual(111, "111", function(a, b) {
+                    return a + "" === b + "";
+                })).to.be["true"];
+            });
+        });
+    });
+    describe("options.inherited - Objects with inherited properties:", function() {
+        describe("object with __proro__ inherited properties:", function() {
+            it("_B.isEqual is true", function() {
+                expect(_B.isEqual(objectWithProtoInheritedProps, expectedPropertyValues, void 0, void 0, {
+                    inherited: true
+                })).to.be["true"];
+                return expect(_B.isEqual(expectedPropertyValues, objectWithProtoInheritedProps, void 0, void 0, {
+                    inherited: true
+                })).to.be["true"];
+            });
+            it("_.isEqual fails", function() {
+                expect(_.isEqual(objectWithProtoInheritedProps, expectedPropertyValues)).to.be["false"];
+                return expect(_.isEqual(expectedPropertyValues, objectWithProtoInheritedProps)).to.be["false"];
+            });
+            describe("with _.clone: ", function() {
+                it("_B.isIqual fails (imperfect _.clone)", function() {
+                    expect(_B.isIqual(oClone, expectedPropertyValues)).to.be["false"];
+                    return expect(_B.isIqual(expectedPropertyValues, oClone)).to.be["false"];
+                });
+                return it("_.isEqual fails", function() {
+                    expect(_.isEqual(oClone, expectedPropertyValues)).to.be["false"];
+                    return expect(_.isEqual(expectedPropertyValues, oClone)).to.be["false"];
+                });
+            });
+            return describe("with _B.clone proto: ", function() {
+                var oCloneProto;
+                oCloneProto = _.clone(objectWithProtoInheritedProps);
+                oCloneProto.__proto__ = objectWithProtoInheritedProps.__proto__;
+                it("_B.isIqual succeeds (a perfect clone:-)", function() {
+                    expect(_B.isIqual(oCloneProto, expectedPropertyValues)).to.be["true"];
+                    return expect(_B.isIqual(expectedPropertyValues, oCloneProto)).to.be["true"];
+                });
+                return it("_.isEqual still fails", function() {
+                    expect(_.isEqual(oCloneProto, expectedPropertyValues)).to.be["false"];
+                    return expect(_.isEqual(expectedPropertyValues, oCloneProto)).to.be["false"];
+                });
+            });
+        });
+        return describe("coffeescript object with inherited properties:", function() {
+            it("_B.isEqual is true", function() {
+                expect(_B.isEqual(c3, expectedPropertyValues, {
+                    inherited: true
+                })).to.be["true"];
+                return expect(_B.isIqual(expectedPropertyValues, c3)).to.be["true"];
+            });
+            it("_.isEqual fails", function() {
+                expect(_.isEqual(c3, expectedPropertyValues)).to.be["false"];
+                return expect(_.isEqual(expectedPropertyValues, c3)).to.be["false"];
+            });
+            describe("with _.clone:", function() {
+                it("_B.isIqual fails (imperfect _.clone)", function() {
+                    expect(_B.isEqual(c3Clone, expectedPropertyValues, void 0, void 0, {
+                        inherited: true
+                    })).to.be["false"];
+                    return expect(_B.isIqual(expectedPropertyValues, c3Clone)).to.be["false"];
+                });
+                return it("_.isEqual fails", function() {
+                    expect(_.isEqual(c3Clone, expectedPropertyValues)).to.be["false"];
+                    return expect(_.isEqual(expectedPropertyValues, c3Clone)).to.be["false"];
+                });
+            });
+            return describe("with _.clone proto: ", function() {
+                var c3CloneProto;
+                c3CloneProto = _.clone(c3);
+                c3CloneProto.__proto__ = c3.__proto__;
+                it("_B.isIqual is true", function() {
+                    expect(_B.isEqual(c3CloneProto, expectedPropertyValues, void 0, void 0, {
+                        inherited: true
+                    })).to.be["true"];
+                    return expect(_B.isIqual(expectedPropertyValues, c3CloneProto)).to.be["true"];
+                });
+                return it("_.isEqual fails", function() {
+                    expect(_.isEqual(c3CloneProto, expectedPropertyValues)).to.be["false"];
+                    return expect(_.isEqual(expectedPropertyValues, c3CloneProto)).to.be["false"];
+                });
+            });
+        });
+    });
+    return describe("options.exact (Objects need to have exact refs) :", function() {
+        describe("shallow cloned objects :", function() {
+            it("_B.isExact(object, objectShallowClone1) is true", function() {
+                expect(_B.isEqual(object, objectShallowClone1, void 0, void 0, {
+                    exact: true
+                })).to.be["true"];
+                return expect(_B.isExact(objectShallowClone1, object)).to.be["true"];
+            });
+            it("_B.isExact(object, objectShallowClone2) with _.clone(object) is true", function() {
+                expect(_B.isEqual(object, objectShallowClone2, {
+                    exact: true
+                })).to.be["true"];
+                return expect(_B.isExact(objectShallowClone2, object)).to.be["true"];
+            });
+            return it("_.isEqual(object, shallowClone1 & 2) gives true", function() {
+                expect(_.isEqual(object, objectShallowClone1)).to.be["true"];
+                return expect(_.isEqual(object, objectShallowClone2)).to.be["true"];
+            });
+        });
+        describe("deeply cloned objects:", function() {
+            describe("objectDeepClone1 with hand configured __proto__:", function() {
+                it("_B.isExact is false", function() {
+                    expect(_B.isEqual(object, objectDeepClone1, {
+                        exact: true
+                    })).to.be["false"];
+                    return expect(_B.isExact(objectDeepClone1, object)).to.be["false"];
+                });
+                return it("_B.isEqual is true", function() {
+                    expect(_B.isEqual(object, objectDeepClone1)).to.be["true"];
+                    return expect(_B.isEqual(objectDeepClone1, object)).to.be["true"];
+                });
+            });
+            describe("objectDeepClone2 = _.clone(object):", function() {
+                it("_B.isExact is false", function() {
+                    expect(_B.isEqual(object, objectDeepClone2, void 0, void 0, {
+                        exact: true
+                    })).to.be["false"];
+                    return expect(_B.isExact(objectDeepClone2, object)).to.be["false"];
+                });
+                return it("_B.isEqual is true", function() {
+                    expect(_B.isEqual(object, objectDeepClone2)).to.be["true"];
+                    return expect(_B.isEqual(objectDeepClone2, object)).to.be["true"];
+                });
+            });
+            return it("_.isEqual(object, objectDeepClone1 & 2) gives true", function() {
+                expect(_.isEqual(object, objectDeepClone1)).to.be["true"];
+                return expect(_.isEqual(object, objectDeepClone2)).to.be["true"];
+            });
+        });
+        return describe("isIxact : isEqual with inherited & exact :", function() {
+            describe("shallow inherited clone: inheritedShallowClone:", function() {
+                it("isIxact is true:", function() {
+                    return expect(_B.isIxact(inheritedShallowClone, object)).to.be["true"];
+                });
+                return it("isIqual is true:", function() {
+                    return expect(_B.isIqual(object, inheritedShallowClone)).to.be["true"];
+                });
+            });
+            return describe("deep inherited clone : inheritedDeepClone:", function() {
+                it("isIxact is true:", function() {
+                    return expect(_B.isIxact(inheritedDeepClone, object)).to.be["false"];
+                });
+                return it("isIqual is true:", function() {
+                    return expect(_B.isIqual(object, inheritedDeepClone)).to.be["true"];
+                });
+            });
+        });
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('objects/isRefDisjoint-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var O1, a1_2, a3_4, a3_4_2, a3_4_a1_2, a3_4_nested_a1_2, a3_4_nested_o2, assert, expect, inheritedDeepClone, inheritedShallowClone, o1, o1_2, o2, o3, o3_4, o3_4_2, o3_4_nested_o1_2, o3_4_nested_o2, o3_4_o1_2, o4, object, objectDeepClone1, objectDeepClone2, objectShallowClone1, objectShallowClone2;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+O1 = o1 = {
+    p1: 1
+};
+
+o2 = {
+    p2: 2
+};
+
+o3 = {
+    p3: 3
+};
+
+o4 = {
+    p4: 4
+};
+
+a1_2 = [ o1, o2 ];
+
+o1_2 = {
+    p1: o1,
+    p2: o2
+};
+
+a3_4 = [ o3, o4 ];
+
+o3_4 = {
+    p3: o3,
+    p4: o4
+};
+
+a3_4_2 = [ o3, o4, o2 ];
+
+o3_4_2 = {
+    p3: o3,
+    p4: o4,
+    p5: o2
+};
+
+a3_4_a1_2 = [ o3, o4, a1_2 ];
+
+o3_4_o1_2 = {
+    p3: o3,
+    p4: o4,
+    p5: o1_2
+};
+
+a3_4_nested_o2 = [ o3, o4, {
+    a: {
+        b: o2
+    }
+} ];
+
+o3_4_nested_o2 = {
+    p3: o3,
+    p4: o4,
+    p5: {
+        a: {
+            b: o2
+        }
+    }
+};
+
+a3_4_nested_a1_2 = [ o3, o4, {
+    a: {
+        b: a1_2
+    }
+} ];
+
+o3_4_nested_o1_2 = {
+    p3: o3,
+    p4: o4,
+    p5: {
+        a: {
+            b: o1_2
+        }
+    }
+};
+
+object = data.object, objectShallowClone1 = data.objectShallowClone1, objectShallowClone2 = data.objectShallowClone2, objectDeepClone1 = data.objectDeepClone1, objectDeepClone2 = data.objectDeepClone2, inheritedShallowClone = data.inheritedShallowClone, inheritedDeepClone = data.inheritedDeepClone;
+
+describe("isRefDisjoint:", function() {
+    it("recognises self as non disjoint:", function() {
+        return expect(_B.isRefDisjoint(o1, O1)).to.be["false"];
+    });
+    describe("Arrays:", function() {
+        describe("with deep=false (shallow):", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isRefDisjoint(a1_2, a3_4)).to.be["true"];
+                return expect(_B.isRefDisjoint(a3_4, a1_2)).to.be["true"];
+            });
+            it("recognises non-disjoint", function() {
+                expect(_B.isRefDisjoint(a1_2, a3_4_2)).to.be["false"];
+                return expect(_B.isRefDisjoint(a3_4_2, a1_2)).to.be["false"];
+            });
+            return describe("recognises disjoint:", function() {
+                it("with nested shared reference", function() {
+                    expect(_B.isRefDisjoint(a1_2, a3_4_nested_o2, {
+                        deep: false
+                    })).to.be["true"];
+                    return expect(_B.isRefDisjoint(a3_4_nested_o2, a1_2, {
+                        deep: false
+                    })).to.be["true"];
+                });
+                return it("with one side being a shared reference", function() {
+                    expect(_B.isRefDisjoint(a1_2, a3_4_nested_a1_2, {
+                        deep: false
+                    })).to.be["true"];
+                    return expect(_B.isRefDisjoint(a3_4_nested_a1_2, a1_2, {
+                        deep: false
+                    })).to.be["true"];
+                });
+            });
+        });
+        return describe("with deep=true:", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isRefDisjoint(a1_2, a3_4, {
+                    deep: true
+                })).to.be["true"];
+                return expect(_B.isRefDisjoint(a3_4, a1_2, {
+                    deep: true
+                })).to.be["true"];
+            });
+            return describe("recognises non-disjoint:", function() {
+                it("with nested shared reference", function() {
+                    expect(_B.isRefDisjoint(a1_2, a3_4_nested_o2, {
+                        deep: true
+                    })).to.be["false"];
+                    return expect(_B.isRefDisjoint(a3_4_nested_o2, a1_2, {
+                        deep: true
+                    })).to.be["false"];
+                });
+                return it("with one side being a shared reference", function() {
+                    expect(_B.isRefDisjoint(a1_2, a3_4_nested_a1_2, {
+                        deep: true
+                    })).to.be["false"];
+                    return expect(_B.isRefDisjoint(a3_4_nested_a1_2, a1_2, {
+                        deep: true
+                    })).to.be["false"];
+                });
+            });
+        });
+    });
+    describe("Objects:", function() {
+        describe("with deep=false (shallow):", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isRefDisjoint(o1_2, o3_4)).to.be["true"];
+                return expect(_B.isRefDisjoint(o3_4, o1_2)).to.be["true"];
+            });
+            it("recognises non-disjoint", function() {
+                expect(_B.isRefDisjoint(o1_2, o3_4_2)).to.be["false"];
+                return expect(_B.isRefDisjoint(o3_4_2, o1_2)).to.be["false"];
+            });
+            return describe("recognises disjoint:", function() {
+                it("with nested shared reference", function() {
+                    expect(_B.isRefDisjoint(o1_2, o3_4_nested_o2, {
+                        deep: false
+                    })).to.be["true"];
+                    return expect(_B.isRefDisjoint(o3_4_nested_o2, o1_2, {
+                        deep: false
+                    })).to.be["true"];
+                });
+                return it("with one side being a shared reference", function() {
+                    expect(_B.isRefDisjoint(o1_2, o3_4_nested_o1_2, {
+                        deep: false
+                    })).to.be["true"];
+                    return expect(_B.isRefDisjoint(o3_4_nested_o1_2, o1_2, {
+                        deep: false
+                    })).to.be["true"];
+                });
+            });
+        });
+        return describe("with deep=true:", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isRefDisjoint(o1_2, o3_4, {
+                    deep: true
+                })).to.be["true"];
+                return expect(_B.isRefDisjoint(o3_4, o1_2, {
+                    deep: true
+                })).to.be["true"];
+            });
+            return describe("recognises non-disjoint:", function() {
+                it("with nested shared reference", function() {
+                    expect(_B.isRefDisjoint(o1_2, o3_4_nested_o2, {
+                        deep: true
+                    })).to.be["false"];
+                    return expect(_B.isRefDisjoint(o3_4_nested_o2, o1_2, {
+                        deep: true
+                    })).to.be["false"];
+                });
+                return it("with one side being a shared reference", function() {
+                    expect(_B.isRefDisjoint(o1_2, o3_4_nested_o1_2, {
+                        deep: true
+                    })).to.be["false"];
+                    return expect(_B.isRefDisjoint(o3_4_nested_o1_2, o1_2, {
+                        deep: true
+                    })).to.be["false"];
+                });
+            });
+        });
+    });
+    describe("Mixed Arrays & Objects:", function() {
+        describe("with deep=false (shallow):", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isRefDisjoint(o1_2, a3_4)).to.be["true"];
+                return expect(_B.isRefDisjoint(o3_4, a1_2)).to.be["true"];
+            });
+            it("recognises non-disjoint", function() {
+                expect(_B.isRefDisjoint(o1_2, a3_4_2)).to.be["false"];
+                return expect(_B.isRefDisjoint(o3_4_2, a1_2)).to.be["false"];
+            });
+            return describe("recognises disjoint:", function() {
+                it("with nested shared reference", function() {
+                    expect(_B.isRefDisjoint(o1_2, a3_4_nested_o2, {
+                        deep: false
+                    })).to.be["true"];
+                    return expect(_B.isRefDisjoint(o3_4_nested_o2, a1_2, {
+                        deep: false
+                    })).to.be["true"];
+                });
+                return it("with one side being a shared reference", function() {
+                    expect(_B.isRefDisjoint([ o1_2 ], o3_4_nested_o1_2, {
+                        deep: false
+                    })).to.be["true"];
+                    return expect(_B.isRefDisjoint([ o3_4_nested_o1_2 ], o1_2, {
+                        deep: false
+                    })).to.be["true"];
+                });
+            });
+        });
+        return describe("with deep=true:", function() {
+            it("recognises disjoint:", function() {
+                expect(_B.isRefDisjoint(o1_2, a3_4, {
+                    deep: true
+                })).to.be["true"];
+                return expect(_B.isRefDisjoint(o3_4, a1_2, {
+                    deep: true
+                })).to.be["true"];
+            });
+            return describe("recognises non-disjoint:", function() {
+                it("with nested shared reference", function() {
+                    expect(_B.isRefDisjoint(o1_2, a3_4_nested_o2, {
+                        deep: true
+                    })).to.be["false"];
+                    return expect(_B.isRefDisjoint(o3_4_nested_o2, a1_2, {
+                        deep: true
+                    })).to.be["false"];
+                });
+                return it("with one side being a shared reference", function() {
+                    expect(_B.isRefDisjoint([ o1_2 ], o3_4_nested_o1_2, {
+                        deep: true
+                    })).to.be["false"];
+                    return expect(_B.isRefDisjoint([ o3_4_nested_o1_2 ], o1_2, {
+                        deep: true
+                    })).to.be["false"];
+                });
+            });
+        });
+    });
+    return describe("Cloned objects :", function() {
+        describe("Without inherited properties:", function() {
+            it("recognises non-disjoint (shallow clones):", function() {
+                expect(_B.isRefDisjoint(objectShallowClone1, object, {
+                    deep: true,
+                    inherited: true
+                })).to.be["false"];
+                expect(_B.isRefDisjoint(object, objectShallowClone1, {
+                    deep: true,
+                    inherited: true
+                })).to.be["false"];
+                expect(_B.isRefDisjoint(objectShallowClone2, object, {
+                    deep: true,
+                    inherited: true
+                })).to.be["false"];
+                return expect(_B.isRefDisjoint(object, objectShallowClone2, {
+                    deep: true,
+                    inherited: true
+                })).to.be["false"];
+            });
+            return it("recognises disjoint (deep clones):", function() {
+                expect(_B.isRefDisjoint(objectDeepClone1, object, {
+                    deep: true,
+                    inherited: true
+                })).to.be["true"];
+                expect(_B.isRefDisjoint(object, objectDeepClone1, {
+                    deep: true,
+                    inherited: true
+                })).to.be["true"];
+                expect(_B.isRefDisjoint(objectDeepClone1, object, {
+                    deep: true,
+                    inherited: true
+                })).to.be["true"];
+                return expect(_B.isRefDisjoint(object, objectDeepClone1, {
+                    deep: true,
+                    inherited: true
+                })).to.be["true"];
+            });
+        });
+        return describe("With inherited properties:", function() {
+            it("recognises non-disjoint (shallow clones):", function() {
+                expect(_B.isRefDisjoint(inheritedShallowClone, object, {
+                    deep: true,
+                    inherited: true
+                })).to.be["false"];
+                return expect(_B.isRefDisjoint(object, inheritedShallowClone, {
+                    deep: true,
+                    inherited: true
+                })).to.be["false"];
+            });
+            return it("recognises disjoint (deep clones):", function() {
+                expect(_B.isRefDisjoint(inheritedDeepClone, object, {
+                    deep: true,
+                    inherited: true
+                })).to.be["true"];
+                return expect(_B.isRefDisjoint(object, inheritedDeepClone, {
+                    deep: true,
+                    inherited: true
+                })).to.be["true"];
+            });
+        });
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('objects/mutate-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var assert, expect;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+describe("mutate :", function() {
+    var simpleCalc;
+    simpleCalc = function(v) {
+        if (v < 0) {
+            return v + 10;
+        } else {
+            return v + 20;
+        }
+    };
+    it("mutate Object values", function() {
+        var o;
+        o = {
+            a: 1,
+            b: 2,
+            c: -1
+        };
+        return expect(_B.mutate(o, simpleCalc)).to.deep.equal({
+            a: 21,
+            b: 22,
+            c: 9
+        });
+    });
+    it("arrayize if string", function() {
+        var o;
+        o = {
+            key1: "lalakis",
+            key2: [ "ok", "yes" ]
+        };
+        return expect(_B.mutate(o, _B.arrayize, _.isString)).to.deep.equal({
+            key1: [ "lalakis" ],
+            key2: [ "ok", "yes" ]
+        });
+    });
+    return describe("mutate arrays :", function() {
+        var a;
+        a = [ 1, 2, -1 ];
+        it("mutate array with simplecalc ", function() {
+            return expect(_B.mutate(a, simpleCalc)).to.deep.equal([ 21, 22, 9 ]);
+        });
+        return it("mutate array again with fltr", function() {
+            return expect(_B.mutate(a, simpleCalc, function(v) {
+                return v > 10;
+            })).to.deep.equal([ 41, 42, 9 ]);
+        });
+    });
+});
+// uRequire: end body of original nodejs module
+
+
+return module.exports;
+}
+);
+})(__global);
+(function (window) {
+  define('objects/okv-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
+  function (require, exports, module, chai, _, _B, data) {
+  // uRequire: start body of original nodejs module
+var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref;
+
+assert = chai.assert;
+
+expect = chai.expect;
+
+_ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
+
+describe("okv :", function() {
+    var weirdKeyName;
+    weirdKeyName = " $#%!@&";
+    it("builds a simple object, with weird keyName", function() {
+        return expect(_B.okv({}, "foo_" + weirdKeyName, 8, "bar" + weirdKeyName, "some bar")).to.deep.equal({
+            "foo_ $#%!@&": 8,
+            "bar $#%!@&": "some bar"
+        });
+    });
+    return describe("build a more invloved object", function() {
+        var bar, o;
+        o = {};
+        _B.okv(o, "foo_" + weirdKeyName, 8, bar = "bar" + weirdKeyName, "some bar");
+        o[bar] = _B.okv({}, "nestedBar" + weirdKeyName, "This is a secret bar", "anotherBar" + weirdKeyName, "Many bars, no foo");
+        it("o is build, then part of it augmented", function() {
+            return expect(o).to.deep.equal({
+                "foo_ $#%!@&": 8,
+                "bar $#%!@&": {
+                    "nestedBar $#%!@&": "This is a secret bar",
+                    "anotherBar $#%!@&": "Many bars, no foo"
+                }
+            });
+        });
+        return it("add nested weird keyd bars on existing key", function() {
+            var i;
+            _B.okv(o[bar], "newbar" + weirdKeyName, "a new bar!", "bar" + function() {
+                var _i, _len, _ref1, _results;
+                _ref1 = [ 1, 2, 3 ];
+                _results = [];
+                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                    i = _ref1[_i];
+                    _results.push("" + i);
+                }
+                return _results;
+            }().join("-"), "ther weirest bar!");
+            return expect(o).to.deep.equal({
+                "foo_ $#%!@&": 8,
+                "bar $#%!@&": {
+                    "nestedBar $#%!@&": "This is a secret bar",
+                    "anotherBar $#%!@&": "Many bars, no foo",
+                    "newbar $#%!@&": "a new bar!",
+                    "bar1-2-3": "ther weirest bar!"
+                }
+            });
         });
     });
 });
@@ -1311,197 +2777,7 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('objects/isDisjoint-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
-  function (require, exports, module, chai, _, _B, data) {
-  // uRequire: start body of original nodejs module
-var assert, expect;
-
-assert = chai.assert;
-
-expect = chai.expect;
-
-describe("isDisjoint:", function() {
-    describe("with primitives:", function() {
-        describe("arrays:", function() {
-            it("recognises disjoint:", function() {
-                expect(_B.isDisjoint([ 1, 2, 3 ], [ 4, 5, 6, "1" ])).to.be["true"];
-                return expect(_.intersection([ 1, 2, 3 ], [ 4, 5, 6, "1" ])).to.be.an("array").and.is.empty;
-            });
-            return it("recognises non disjoint:", function() {
-                expect(_B.isDisjoint([ 1, 2, 3 ], [ 4, 2, 5 ])).to.be["false"];
-                return expect(_.intersection([ 1, 2, 3 ], [ 4, 2, 5 ])).to.deep.equal([ 2 ]);
-            });
-        });
-        return describe("arrays & objects:", function() {
-            it("recognises disjoint in [] & {}:", function() {
-                return expect(_B.isDisjoint([ 4, 5, 6 ], {
-                    a: 1,
-                    b: 7,
-                    c: 8
-                })).to.be["true"];
-            });
-            return it("recognises non disjoint in [] & {}:", function() {
-                return expect(_B.isDisjoint([ 1, 2, 3 ], {
-                    a: 1,
-                    b: 7,
-                    c: 8
-                })).to.be["false"];
-            });
-        });
-    });
-    return describe("with references:", function() {
-        var o1, o2, o3, o4;
-        o1 = {
-            p1: 1
-        };
-        o2 = {
-            p2: 2
-        };
-        o3 = {
-            p3: 3
-        };
-        o4 = {
-            p4: 4
-        };
-        describe("arrays:", function() {
-            it("recognises disjoint:", function() {
-                expect(_B.isDisjoint([ o1, o2 ], [ {
-                    p1: 1
-                }, o3, o4 ])).to.be["true"];
-                return expect(_.intersection([ o1, o2 ], [ {
-                    p1: 1
-                }, o3, o4 ])).to.deep.equal([]);
-            });
-            return it("recognises non disjoint:", function() {
-                expect(_B.isDisjoint([ o1, o2 ], [ {
-                    p1: 1
-                }, o3, o4, o2 ])).to.be["false"];
-                return expect(_.intersection([ o1, o2 ], [ {
-                    p1: 1
-                }, o3, o4, o2 ])).to.deep.equal([ o2 ]);
-            });
-        });
-        describe("arrays & objects:", function() {
-            it("recognises disjoint in [] & {}", function() {
-                return expect(_B.isDisjoint([ o1, o2 ], {
-                    p1: 1,
-                    o3: o3,
-                    o4: o4
-                })).to.be["true"];
-            });
-            return it("recognises non disjoint in [] & {}:", function() {
-                return expect(_B.isDisjoint([ o1, o2 ], {
-                    p1: 1,
-                    o3: o3,
-                    o4: o4,
-                    o2: o2
-                })).to.be["false"];
-            });
-        });
-        return describe("equality using _.isEqual :", function() {
-            it("recognises disjoint in [] & {}, without _.isEqual", function() {
-                return expect(_B.isDisjoint([ o1, o2 ], {
-                    someP: {
-                        p1: 1
-                    },
-                    o3: o3
-                })).to.be["true"];
-            });
-            return it("recognises non disjoint in [] & {}, when using _.isEqual", function() {
-                return expect(_B.isDisjoint([ o1, o2 ], {
-                    someP: {
-                        p1: 1
-                    },
-                    o3: o3
-                }, _.isEqual)).to.be["false"];
-            });
-        });
-    });
-});
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
-  define('objects/getRefs-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
-  function (require, exports, module, chai, _, _B, data) {
-  // uRequire: start body of original nodejs module
-var assert, expect, isEqualArraySet;
-
-assert = chai.assert;
-
-expect = chai.expect;
-
-isEqualArraySet = function(a1, a2) {
-    if (_.difference(a1, a2).length === 0) {
-        return _.difference(a2, a1).length === 0;
-    } else {
-        return false;
-    }
-};
-
-describe("getRefs:", function() {
-    it("from array", function() {
-        var oa, refs;
-        oa = [ 0, 1, {
-            p: [ {
-                PP: 3
-            } ]
-        }, {
-            a: {
-                b: function() {}
-            }
-        }, 4 ];
-        refs = _B.getRefs(oa);
-        return expect(isEqualArraySet(refs, [ oa[3], oa[2] ])).to.be["true"];
-    });
-    it("from array, deep = true:", function() {
-        var oa, refs;
-        oa = [ 0, 1, {
-            p: [ {
-                PP: 3
-            } ]
-        }, {
-            a: {
-                b: function() {}
-            }
-        }, 4 ];
-        refs = _B.getRefs(oa, true);
-        return expect(isEqualArraySet(refs, [ oa[2], oa[2].p, oa[2].p[0], oa[3], oa[3].a, oa[3].a.b ])).to.be["true"];
-    });
-    return it("from object, deep = true:", function() {
-        var oa, refs;
-        oa = {
-            p0: 0,
-            p1: 1,
-            p2: {
-                p: [ {
-                    PP: 3
-                } ]
-            },
-            p3: {
-                a: {
-                    b: function() {}
-                }
-            },
-            p4: 4
-        };
-        refs = _B.getRefs(oa, true);
-        return expect(isEqualArraySet(refs, [ oa.p2.p, oa.p2.p[0], oa.p2, oa.p3, oa.p3.a, oa.p3.a.b ])).to.be["true"];
-    });
-});
-// uRequire: end body of original nodejs module
-
-
-return module.exports;
-}
-);
-})(__global);
-(function (window) {
-  define('go-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
+  define('collections/go-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], 
   function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref, __indexOf = [].indexOf || function(item) {
@@ -1536,7 +2812,7 @@ describe("go: version 0.0.3", function() {
             return expect(result).to.deep.equal(arrInt);
         });
         return it("but should NOT be the *identical* array, but a clone of it", function() {
-            return expect().to.not.equal(arrInt);
+            return expect(result).to.not.equal(arrInt);
         });
     });
     describe("go: Array<String> passed, no params, ", function() {
@@ -1899,7 +3175,7 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('okv-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
+  define('collections/array/arrayize-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../../spec-data'], 
   function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
 var arrInt, arrInt2, arrStr, assert, bundleDefaults, expect, globalDefaults, obj, projectDefaults, _ref;
@@ -1910,51 +3186,29 @@ expect = chai.expect;
 
 _ref = _.clone(data, true), projectDefaults = _ref.projectDefaults, globalDefaults = _ref.globalDefaults, bundleDefaults = _ref.bundleDefaults, obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
 
-describe("okv :", function() {
-    var weirdKeyName;
-    weirdKeyName = " $#%!@&";
-    it("builds a simple object, with weird keyName", function() {
-        return expect(_B.okv({}, "foo_" + weirdKeyName, 8, "bar" + weirdKeyName, "some bar")).to.deep.equal({
-            "foo_ $#%!@&": 8,
-            "bar $#%!@&": "some bar"
-        });
+describe("arrayize :", function() {
+    it("arrayize a String", function() {
+        return expect(_B.arrayize("agelos")).to.deep.equal([ "agelos" ]);
     });
-    return describe("build a more invloved object", function() {
-        var bar, o;
-        o = {};
-        _B.okv(o, "foo_" + weirdKeyName, 8, bar = "bar" + weirdKeyName, "some bar");
-        o[bar] = _B.okv({}, "nestedBar" + weirdKeyName, "This is a secret bar", "anotherBar" + weirdKeyName, "Many bars, no foo");
-        it("o is build, then part of it augmented", function() {
-            return expect(o).to.deep.equal({
-                "foo_ $#%!@&": 8,
-                "bar $#%!@&": {
-                    "nestedBar $#%!@&": "This is a secret bar",
-                    "anotherBar $#%!@&": "Many bars, no foo"
-                }
-            });
-        });
-        return it("add nested weird keyd bars on existing key", function() {
-            var i;
-            _B.okv(o[bar], "newbar" + weirdKeyName, "a new bar!", "bar" + function() {
-                var _i, _len, _ref1, _results;
-                _ref1 = [ 1, 2, 3 ];
-                _results = [];
-                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                    i = _ref1[_i];
-                    _results.push("" + i);
-                }
-                return _results;
-            }().join("-"), "ther weirest bar!");
-            return expect(o).to.deep.equal({
-                "foo_ $#%!@&": 8,
-                "bar $#%!@&": {
-                    "nestedBar $#%!@&": "This is a secret bar",
-                    "anotherBar $#%!@&": "Many bars, no foo",
-                    "newbar $#%!@&": "a new bar!",
-                    "bar1-2-3": "ther weirest bar!"
-                }
-            });
-        });
+    it("arrayize a Number", function() {
+        return expect(_B.arrayize(19)).to.deep.equal([ 19 ]);
+    });
+    it("arrayize an Object", function() {
+        return expect(_B.arrayize({
+            a: 1,
+            b: 2
+        })).to.deep.equal([ {
+            a: 1,
+            b: 2
+        } ]);
+    });
+    it("arrayize an existing array", function() {
+        var arr;
+        arr = [ 1, "john" ];
+        return expect(_B.arrayize(arr)).to.equal(arr);
+    });
+    return it("arrayize nothingness", function() {
+        return expect(_B.arrayize(void 0)).to.deep.equal([]);
     });
 });
 // uRequire: end body of original nodejs module
@@ -1965,59 +3219,23 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('mutate-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], 
+  define('collections/array/isEqualArraySet-spec',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../../spec-data'], 
   function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-var assert, expect;
+var arrInt, arrInt2, arrStr, assert, expect, obj, _ref;
 
 assert = chai.assert;
 
 expect = chai.expect;
 
-describe("mutate :", function() {
-    var simpleCalc;
-    simpleCalc = function(v) {
-        if (v < 0) {
-            return v + 10;
-        } else {
-            return v + 20;
-        }
-    };
-    it("mutate Object values", function() {
-        var o;
-        o = {
-            a: 1,
-            b: 2,
-            c: -1
-        };
-        return expect(_B.mutate(o, simpleCalc)).to.deep.equal({
-            a: 21,
-            b: 22,
-            c: 9
-        });
+_ref = _.clone(data, true), obj = _ref.obj, arrInt = _ref.arrInt, arrInt2 = _ref.arrInt2, arrStr = _ref.arrStr;
+
+describe("isEqualArraySet :", function() {
+    it("simple arrays with primitives", function() {
+        return expect(_B.isEqualArraySet([ 1, 2, 3, "John", "Doe" ], [ "John", 3, "Doe", 2, 1 ])).to.be["true"];
     });
-    it("arrayize if string", function() {
-        var o;
-        o = {
-            key1: "lalakis",
-            key2: [ "ok", "yes" ]
-        };
-        return expect(_B.mutate(o, _B.arrayize, _.isString)).to.deep.equal({
-            key1: [ "lalakis" ],
-            key2: [ "ok", "yes" ]
-        });
-    });
-    return describe("mutate arrays :", function() {
-        var a;
-        a = [ 1, 2, -1 ];
-        it("mutate array with simplecalc ", function() {
-            return expect(_B.mutate(a, simpleCalc)).to.deep.equal([ 21, 22, 9 ]);
-        });
-        return it("mutate array again with fltr", function() {
-            return expect(_B.mutate(a, simpleCalc, function(v) {
-                return v > 10;
-            })).to.deep.equal([ 41, 42, 9 ]);
-        });
+    return it("arrays with primitives & references", function() {
+        return expect(_B.isEqualArraySet([ obj, arrInt, arrStr, 2, 3, "John", "Doe" ], [ obj, "John", arrInt, 3, arrStr, "Doe", 2 ])).to.be["true"];
     });
 });
 // uRequire: end body of original nodejs module
@@ -2162,38 +3380,48 @@ return module.exports;
 );
 })(__global);
 (function (window) {
-  define('index',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data', './arrayize-spec', './blending/deepExtend-spec', './blending/Blender-spec', './blending/lodash-merge-spec', './blending/deepCloneDefaults-spec', './objects/getValueAtPath-spec', './objects/setValueAtPath-spec', './objects/isDisjoint-spec', './objects/getRefs-spec', './go-spec', './okv-spec', './mutate-spec', './type-spec', './isPlain-spec', './uberscore-spec'], 
+  define('index',['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data', './blending/Blender-spec', './blending/deepCloneDefaults-spec', './blending/deepExtend-spec', './blending/lodash-merge-spec', './blending/Mergers_Blender-spec', './objects/getInheritedPropertyNames-spec', './objects/getRefs-spec', './objects/getValueAtPath-spec', './objects/isDisjoint-spec', './objects/isEqual-spec', './objects/isRefDisjoint-spec', './objects/mutate-spec', './objects/okv-spec', './objects/setValueAtPath-spec', './collections/go-spec', './collections/array/arrayize-spec', './collections/array/isEqualArraySet-spec', './type-spec', './isPlain-spec', './uberscore-spec'], 
   function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-require("./arrayize-spec");
-
-require("./blending/deepExtend-spec");
-
 require("./blending/Blender-spec");
-
-require("./blending/lodash-merge-spec");
 
 require("./blending/deepCloneDefaults-spec");
 
-require("./objects/getValueAtPath-spec");
+require("./blending/deepExtend-spec");
 
-require("./objects/setValueAtPath-spec");
+require("./blending/lodash-merge-spec");
 
-require("./objects/isDisjoint-spec");
+require("./blending/Mergers_Blender-spec");
+
+require("./objects/getInheritedPropertyNames-spec");
 
 require("./objects/getRefs-spec");
 
-require("./go-spec");
+require("./objects/getValueAtPath-spec");
 
-require("./okv-spec");
+require("./objects/isDisjoint-spec");
 
-require("./mutate-spec");
+require("./objects/isEqual-spec");
 
-require("./spec-data");
+require("./objects/isRefDisjoint-spec");
+
+require("./objects/mutate-spec");
+
+require("./objects/okv-spec");
+
+require("./objects/setValueAtPath-spec");
+
+require("./collections/go-spec");
+
+require("./collections/array/arrayize-spec");
+
+require("./collections/array/isEqualArraySet-spec");
 
 require("./type-spec");
 
 require("./isPlain-spec");
+
+require("./spec-data");
 
 require("./uberscore-spec");
 // uRequire: end body of original nodejs module

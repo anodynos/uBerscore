@@ -8,7 +8,7 @@
    var nr = new (require('urequire').NodeRequirer) ('agreement/inAgreements', module, __dirname, '.');
    module.exports = factory(nr.require, exports, module, nr.require('lodash'), nr.require('./isAgree'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'lodash', './isAgree', '../arrayize'], factory);
+     define(['require', 'exports', 'module', 'lodash', './isAgree', '../collections/array/arrayize'], factory);
  }
 })(this,function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
@@ -18,7 +18,7 @@ _ = require("lodash");
 
 isAgree = require("./isAgree");
 
-arrayize = require("../arrayize");
+arrayize = require("../collections/array/arrayize");
 
 inAgreements = function(o, agreements) {
     var agr, _i, _len;

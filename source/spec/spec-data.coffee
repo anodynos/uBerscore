@@ -15,7 +15,7 @@ object2.__proto__ = object1
 
 object3 =
     aProp2: "o3.aVal2-2"
-    aProp3: "o3.aVal3"
+    aProp3: [1,'2',3,{aProp4:"o3.aVal3"}]
 object3.__proto__ = object2
 
 objectWithProtoInheritedProps = {aProp0:"o0.aVal0"}
@@ -34,7 +34,7 @@ class Class2 extends Class1
 
 class Class3 extends Class2
   aProp2: "o3.aVal2-2"
-  aProp3: "o3.aVal3"
+  aProp3: [1,'2',3,{aProp4:"o3.aVal3"}]
 
 c3 = new Class3
 
@@ -44,7 +44,7 @@ expectedPropertyValues =
     'aProp1.1': "o1.aVal1.1"
     'aProp1.2': "o1.aVal1.2"
   aProp2: "o3.aVal2-2"
-  aProp3: "o3.aVal3"
+  aProp3: [1,'2',3,{aProp4:"o3.aVal3"}]
 
 # A simple object, with 2 shallow, 2 deep clones & 2 inherited
 object =

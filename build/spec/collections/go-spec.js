@@ -5,10 +5,10 @@
     __isWeb = !__isNode;
 (function (root,factory) {
   if (typeof exports === 'object') {
-   var nr = new (require('urequire').NodeRequirer) ('go-spec', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('./spec-data'));
+   var nr = new (require('urequire').NodeRequirer) ('collections/go-spec', module, __dirname, '.');
+   module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('../spec-data'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data'], factory);
+     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', '../spec-data'], factory);
  }
 })(this,function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
@@ -44,7 +44,7 @@ describe("go: version 0.0.3", function() {
             return expect(result).to.deep.equal(arrInt);
         });
         return it("but should NOT be the *identical* array, but a clone of it", function() {
-            return expect().to.not.equal(arrInt);
+            return expect(result).to.not.equal(arrInt);
         });
     });
     describe("go: Array<String> passed, no params, ", function() {

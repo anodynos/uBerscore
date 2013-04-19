@@ -5,10 +5,10 @@
     __isWeb = !__isNode;
 (function (root,factory) {
   if (typeof exports === 'object') {
-   var nr = new (require('urequire').NodeRequirer) ('arrayize', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module, nr.require('lodash'), nr.require('./agreement/isAgree'));
+   var nr = new (require('urequire').NodeRequirer) ('collections/array/arrayize', module, __dirname, '.');
+   module.exports = factory(nr.require, exports, module, nr.require('lodash'), nr.require('../../agreement/isAgree'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'lodash', './agreement/isAgree'], factory);
+     define(['require', 'exports', 'module', 'lodash', '../../agreement/isAgree'], factory);
  }
 })(this,function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module
@@ -16,7 +16,7 @@ var isAgree, _;
 
 _ = require("lodash");
 
-isAgree = require("./agreement/isAgree");
+isAgree = require("../../agreement/isAgree");
 
 module.exports = function(item) {
     if (_.isArray(item)) {

@@ -26,34 +26,36 @@ l = new (require("../Logger"))("Blender", debugLevel != null ? debugLevel : 0);
 
 type = require("../type");
 
-l.log("Blender");
-
 Blender = function() {
     var defaultBBOrder;
+    Blender.defaultOptions = {
+        inherited: false,
+        copyProto: false
+    };
     defaultBBOrder = [ "src", "dst" ];
     function Blender() {
-        var bb, bbi, blenderBehaviors, dbb, lastDBB, typeName, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+        var bb, bbi, blenderBehaviors, dbb, lastDBB, options, typeName, _i, _j, _len, _len1, _ref, _ref1, _ref2;
         blenderBehaviors = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
         this.blenderBehaviors = blenderBehaviors;
         this._blend = __bind(this._blend, this);
         this.blend = __bind(this.blend, this);
         this.getAction = __bind(this.getAction, this);
-        (this.defaultBlenderBehaviors || (this.defaultBlenderBehaviors = [])).push({
-            order: [ "src", "dst" ],
-            "|": {
-                Array: {
-                    A: "deepOverwrite",
-                    "{}": "deepOverwrite"
-                },
-                Object: {
-                    O: "deepOverwrite",
-                    "[]": "deepOverwrite"
-                },
-                "*": {
-                    "*": "overwrite"
-                }
+        (this._optionsList || (this._optionsList = [])).unshift(Blender.defaultOptions);
+        if (_.isArray(this.blenderBehaviors[0])) {
+            if (l.debugLevel >= 20) {
+                l.debug("We might have options:", this.blenderBehaviors[1], "@_optionsList (defaults):", this._optionsList);
             }
-        });
+            this._optionsList.push(this.blenderBehaviors[1]);
+            this.blenderBehaviors = this.blenderBehaviors[0];
+        }
+        this._optionsList.unshift(options = {});
+        _.extend.apply(void 0, this._optionsList);
+        if (l.debugLevel >= 10) {
+            l.debug("Final blender options:", options);
+        }
+        _.extend(this, options);
+        delete this._optionsList;
+        (this.defaultBlenderBehaviors || (this.defaultBlenderBehaviors = [])).push(Blender.behavior);
         lastDBB = _.last(this.defaultBlenderBehaviors);
         _ref = lastDBB["|"];
         for (typeName in _ref) {
@@ -76,15 +78,17 @@ Blender = function() {
     }
     Blender.shortifyTypeNames = function(bbSrcDstSpec) {
         var key, short, val;
+        if (bbSrcDstSpec == null) {
+            bbSrcDstSpec = {};
+        }
         for (key in bbSrcDstSpec) {
             val = bbSrcDstSpec[key];
-            if (!type.isType(key)) {
-                continue;
-            }
-            short = type.toShort(key);
-            if (short && key !== short) {
-                bbSrcDstSpec[short] = bbSrcDstSpec[key];
-                delete bbSrcDstSpec[key];
+            if (type.isType(key)) {
+                short = type.toShort(key);
+                if (short && key !== short) {
+                    bbSrcDstSpec[short] = bbSrcDstSpec[key];
+                    delete bbSrcDstSpec[key];
+                }
             }
             if (_.isPlainObject(val)) {
                 Blender.shortifyTypeNames(val);
@@ -133,23 +137,47 @@ Blender = function() {
         }
     };
     Blender.prototype._blend = function() {
-        var action, bb, bbOrder, bbi, dst, nextBBSrcDstSpec, prop, result, sources, src, types, visitNextBB, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        var action, bb, bbOrder, bbi, currentBBSrcDstSpec, dst, nextBBSrcDstSpec, p, prop, props, result, sources, src, types, v, visitNextBB, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
         dst = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
         for (_i = 0, _len = sources.length; _i < _len; _i++) {
             src = sources[_i];
-            for (prop in src) {
-                if (!__hasProp.call(src, prop)) continue;
+            props = _.isArray(src) ? function() {
+                var _j, _len1, _results;
+                _results = [];
+                for (p = _j = 0, _len1 = src.length; _j < _len1; p = ++_j) {
+                    v = src[p];
+                    _results.push(p);
+                }
+                return _results;
+            }() : this.inherited ? function() {
+                var _results;
+                _results = [];
+                for (p in src) {
+                    _results.push(p);
+                }
+                return _results;
+            }() : function() {
+                var _results;
+                _results = [];
+                for (p in src) {
+                    if (!__hasProp.call(src, p)) continue;
+                    _results.push(p);
+                }
+                return _results;
+            }();
+            for (_j = 0, _len1 = props.length; _j < _len1; _j++) {
+                prop = props[_j];
                 this.path.push(prop);
                 types = {
                     dst: type(dst[prop], true),
                     src: type(src[prop], true)
                 };
                 if (l.debugLevel >= 50) {
-                    l.debug(50, "@path = /" + this.path.join("/") + "\n'" + type(dst[prop]) + "'    <--  '" + type(src[prop]) + "'", dst[prop], "    <--  ", src[prop]);
+                    l.debug(50, "@path = /" + this.path.join("/") + "\n'" + type(dst[prop]) + "'    <--  '" + type(src[prop]) + "'\n", dst[prop], "    <--  ", src[prop]);
                 }
                 visitNextBB = true;
                 _ref = this.blenderBehaviors;
-                for (bbi = _j = 0, _len1 = _ref.length; _j < _len1; bbi = ++_j) {
+                for (bbi = _k = 0, _len2 = _ref.length; _k < _len2; bbi = ++_k) {
                     bb = _ref[bbi];
                     if (!visitNextBB) {
                         continue;
@@ -157,24 +185,25 @@ Blender = function() {
                     l.debug(60, "Looking @ bbi=" + bbi + ", blenderBehaviors =\n", bb);
                     nextBBSrcDstSpec = bb["|"];
                     _ref1 = bb.order || defaultBBOrder;
-                    for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-                        bbOrder = _ref1[_k];
-                        if (l.debugLevel >= 60) {
-                            l.debug(60, "At bbOrder='" + bbOrder + "'", " types[bbOrder]='" + types[bbOrder] + "'", " nextBBSrcDstSpec=\n", nextBBSrcDstSpec);
+                    for (_l = 0, _len3 = _ref1.length; _l < _len3; _l++) {
+                        bbOrder = _ref1[_l];
+                        if (l.debugLevel >= 80) {
+                            l.debug(80, "At bbOrder='" + bbOrder + "'", " types[bbOrder]='" + types[bbOrder] + "'", " nextBBSrcDstSpec=\n", nextBBSrcDstSpec);
                         }
                         if (_.isUndefined(types[bbOrder])) {
                             throw l.err("_.Blender.blend: Error: Invalid BlenderBehaviour `order` '" + bbOrder + "',\nwhile reading BlenderBehaviour #" + bbi + " :\n", this.blenderBehaviors[bbi], "\n\nDefault BlenderBehaviour order is ", defaultBBOrder);
                         } else {
+                            currentBBSrcDstSpec = nextBBSrcDstSpec;
                             nextBBSrcDstSpec = nextBBSrcDstSpec[types[bbOrder]] || nextBBSrcDstSpec["*"];
-                            if (l.debugLevel >= 50) {
-                                l.debug(50, function() {
+                            if (l.debugLevel >= 70) {
+                                l.debug(70, function() {
                                     if (nextBBSrcDstSpec === void 0) {
                                         return "Found NO nextBBSrcDstSpec at all - go to NEXT BlenderBehaviour";
                                     } else {
-                                        if (nextBBSrcDstSpec[types[bbOrder]]) {
+                                        if (nextBBSrcDstSpec === currentBBSrcDstSpec[types[bbOrder]]) {
                                             return "Found ";
                                         } else {
-                                            if (nextBBSrcDstSpec["*"]) {
+                                            if (nextBBSrcDstSpec === currentBBSrcDstSpec["*"]) {
                                                 return "Found NOT exact nextBBSrcDstSpec, but a '*'";
                                             } else {
                                                 if (_.isString(nextBBSrcDstSpec)) {
@@ -183,7 +212,7 @@ Blender = function() {
                                                     if (_.isFunction(nextBBSrcDstSpec)) {
                                                         return "Found a Function ";
                                                     } else {
-                                                        throw "Unknown nextBBSrcDstSpec = " + nextBBSrcDstSpec;
+                                                        throw "Unknown nextBBSrcDstSpec = " + l.prettify(nextBBSrcDstSpec);
                                                     }
                                                 }
                                             }
@@ -216,10 +245,10 @@ Blender = function() {
                             result = result[1];
                             visitNextBB = true;
                         }
-                        l.debug(20, "Action Called: Value assigning:  @path =", this.path.join("/"), "value =", l.prettify(result));
+                        l.debug(20, "Action Called - Value assigning:  @path =", this.path.join("/"), "\n  value =", l.prettify(result));
                         dst[prop] = result;
                     } else {
-                        l.debug(30, "Action Called: ActionResult: ", result);
+                        l.debug(30, "Action Called - ActionResult = ", result);
                         if (result === Blender.DELETE || result === Blender.DELETE_NEXT) {
                             delete dst[prop];
                         }
@@ -249,8 +278,8 @@ Blender = function() {
         return src[prop];
     };
     Blender.prototype.deepOverwrite = function(prop, src, dst, blender) {
-        if (!_.isObject(dst[prop])) {
-            dst[prop] = {};
+        if (blender.copyProto) {
+            dst[prop].__proto__ = src[prop].__proto__;
         }
         return blender.blend(dst[prop], src[prop]);
     };
@@ -263,18 +292,37 @@ Blender = function() {
         }
         return dst[prop];
     };
+    Blender.behavior = {
+        order: [ "dst", "src" ],
+        "|": {
+            "*": {
+                "*": "overwrite"
+            },
+            Array: {
+                Array: "deepOverwrite",
+                Object: "deepOverwrite",
+                Function: "deepOverwrite"
+            },
+            Object: {
+                Object: "deepOverwrite",
+                Array: "deepOverwrite",
+                Function: "deepOverwrite"
+            }
+        }
+    };
     return Blender;
 }();
 
 module.exports = Blender;
 
-YADC = require("../YouAreDaChef").YouAreDaChef;
-
-YADC(Blender).before(/overwriteOrReplace|deepOverwrite|overwrite|print/, function(match, prop, src, dst, blender) {
-    return l.debug("YADC:" + match + " @path = /" + blender.path.join("/") + "\n'" + type(dst[prop]) + "'    <--  '" + type(src[prop]) + "'\n", dst[prop], "    <--  ", src[prop]);
-}).before(/getAction/, function(match, actionName) {
-    return l.debug(50, "getAction(actionName = " + actionName + ")");
-});
+if (l.debugLevel > 40) {
+    YADC = require("../YouAreDaChef").YouAreDaChef;
+    YADC(Blender).before(/overwriteOrReplace|deepOverwrite|overwrite|print/, function(match, prop, src, dst, blender) {
+        return l.debug(40, "YADC:" + match + " @path = /" + blender.path.join("/") + "\n'" + type(dst[prop]) + "'    <--  '" + type(src[prop]) + "'\n", dst[prop], "    <--  ", src[prop]);
+    }).before(/getAction/, function(match, actionName) {
+        return l.debug(50, "getAction(actionName = " + actionName + ")");
+    });
+}
 // uRequire: end body of original nodejs module
 
 

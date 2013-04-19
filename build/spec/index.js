@@ -8,39 +8,49 @@
    var nr = new (require('urequire').NodeRequirer) ('index', module, __dirname, '.');
    module.exports = factory(nr.require, exports, module, nr.require('chai'), nr.require('lodash'), nr.require('uberscore'), nr.require('./spec-data'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data', './arrayize-spec', './blending/deepExtend-spec', './blending/Blender-spec', './blending/lodash-merge-spec', './blending/deepCloneDefaults-spec', './objects/getValueAtPath-spec', './objects/setValueAtPath-spec', './objects/isDisjoint-spec', './objects/getRefs-spec', './go-spec', './okv-spec', './mutate-spec', './type-spec', './isPlain-spec', './uberscore-spec'], factory);
+     define(['require', 'exports', 'module', 'chai', 'lodash', 'uberscore', './spec-data', './blending/Blender-spec', './blending/deepCloneDefaults-spec', './blending/deepExtend-spec', './blending/lodash-merge-spec', './blending/Mergers_Blender-spec', './objects/getInheritedPropertyNames-spec', './objects/getRefs-spec', './objects/getValueAtPath-spec', './objects/isDisjoint-spec', './objects/isEqual-spec', './objects/isRefDisjoint-spec', './objects/mutate-spec', './objects/okv-spec', './objects/setValueAtPath-spec', './collections/go-spec', './collections/array/arrayize-spec', './collections/array/isEqualArraySet-spec', './type-spec', './isPlain-spec', './uberscore-spec'], factory);
  }
 })(this,function (require, exports, module, chai, _, _B, data) {
   // uRequire: start body of original nodejs module
-require("./arrayize-spec");
-
-require("./blending/deepExtend-spec");
-
 require("./blending/Blender-spec");
-
-require("./blending/lodash-merge-spec");
 
 require("./blending/deepCloneDefaults-spec");
 
-require("./objects/getValueAtPath-spec");
+require("./blending/deepExtend-spec");
 
-require("./objects/setValueAtPath-spec");
+require("./blending/lodash-merge-spec");
 
-require("./objects/isDisjoint-spec");
+require("./blending/Mergers_Blender-spec");
+
+require("./objects/getInheritedPropertyNames-spec");
 
 require("./objects/getRefs-spec");
 
-require("./go-spec");
+require("./objects/getValueAtPath-spec");
 
-require("./okv-spec");
+require("./objects/isDisjoint-spec");
 
-require("./mutate-spec");
+require("./objects/isEqual-spec");
 
-require("./spec-data");
+require("./objects/isRefDisjoint-spec");
+
+require("./objects/mutate-spec");
+
+require("./objects/okv-spec");
+
+require("./objects/setValueAtPath-spec");
+
+require("./collections/go-spec");
+
+require("./collections/array/arrayize-spec");
+
+require("./collections/array/isEqualArraySet-spec");
 
 require("./type-spec");
 
 require("./isPlain-spec");
+
+require("./spec-data");
 
 require("./uberscore-spec");
 // uRequire: end body of original nodejs module

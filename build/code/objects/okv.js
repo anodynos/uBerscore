@@ -5,10 +5,10 @@
     __isWeb = !__isNode;
 (function (root,factory) {
   if (typeof exports === 'object') {
-   var nr = new (require('urequire').NodeRequirer) ('okv', module, __dirname, '.');
-   module.exports = factory(nr.require, exports, module, nr.require('lodash'), nr.require('./agreement/isAgree'));
+   var nr = new (require('urequire').NodeRequirer) ('objects/okv', module, __dirname, '.');
+   module.exports = factory(nr.require, exports, module, nr.require('lodash'), nr.require('../agreement/isAgree'));
  } else if (typeof define === 'function' && define.amd) {
-     define(['require', 'exports', 'module', 'lodash', './agreement/isAgree'], factory);
+     define(['require', 'exports', 'module', 'lodash', '../agreement/isAgree'], factory);
  }
 })(this,function (require, exports, module, _, isAgree) {
   // uRequire: start body of original nodejs module

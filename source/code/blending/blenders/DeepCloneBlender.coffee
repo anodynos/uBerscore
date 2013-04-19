@@ -6,7 +6,6 @@ class DeepCloneBlender extends Blender
 
   constructor: (@blenderBehaviors...)->
     (@defaultBlenderBehaviors or= []).push DeepCloneBlender.behavior
-    # default DeepCloneBlender options: copy __proto__ from object to object
     (@_optionsList or= []).unshift {} #no options
     super
 
