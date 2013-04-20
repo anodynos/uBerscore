@@ -2,7 +2,7 @@ assert = chai.assert
 expect = chai.expect
 
 # clone to check mutability
-{ projectDefaults, globalDefaults, bundleDefaults
+{ project, global, bundle
   obj, arrInt, arrInt2, arrStr
 } = _.clone data, true
 
@@ -244,9 +244,9 @@ describe "go: version 0.0.3", ->
 
 
   describe "Original objects not mutated", ->
-    expect(bundleDefaults).to.deep.equal data.bundleDefaults
-    expect(projectDefaults).to.deep.equal data.projectDefaults
-    expect(globalDefaults).to.deep.equal data.globalDefaults
+    expect(bundle).to.deep.equal data.bundle
+    expect(project).to.deep.equal data.project
+    expect(global).to.deep.equal data.global
     expect(obj).to.deep.equal data.obj
     expect(arrStr).to.deep.equal data.arrStr
     expect(arrInt).to.deep.equal data.arrInt

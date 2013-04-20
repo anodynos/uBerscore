@@ -66,18 +66,4 @@ class DeepExtendBlender extends Blender
         src[prop] # simply overwrite
 
 module.exports = DeepExtendBlender
-#
-#deepExtendLike_blender = new DeepExtendBlender
-#
-#object =
-#  constructor: 1
-#  hasOwnProperty: 2
-#  isPrototypeOf: 3
-#
-#source =
-#  propertyIsEnumerable: 4
-#  toLocaleString: 5
-#  toString: 6
-#  valueOf: 7
-#
-#l.log deepExtendLike_blender.blend {constructor: 2}, object, source
+

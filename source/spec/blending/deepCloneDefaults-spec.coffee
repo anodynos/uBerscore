@@ -1,7 +1,7 @@
 assert = chai.assert
 expect = chai.expect
 # clone to check mutability
-{ projectDefaults, globalDefaults, bundleDefaults
+{ project, team, bundle, bundle_project_team
   obj, arrInt, arrInt2, arrStr
 } = _.clone data, true
 
@@ -10,40 +10,25 @@ expect = chai.expect
 
 describe 'deepCloneDefaults:', ->
 
-  it "more 'specific' options eg. project, merged (taking precedence) to more 'global' defaults", ->
-    result = _B.deepCloneDefaults projectDefaults, globalDefaults
+  it "more 'specific' options eg. project, merged (taking precedence) to more 'team' defaults", ->
+    result = _B.deepCloneDefaults project, team
 #    console.log '\n', JSON.stringify result, null, ' '
 
     expect(
       result
     ).to.deep.equal
       'enabled': true
-      'bundleRoot': '/global/project'
+      'bundleRoot': '/team/project'
       'compilers':
-#        'coffee-script': true
-#        'urequire': true
-        'rjs-build': 'project-rjs-build' # <- changed by projectDefaults
-
+        'rjs-build': 'project-rjs-build' # <- changed by project
 
   it "many defaults", ->
-    result = _B.deepCloneDefaults bundleDefaults, projectDefaults, globalDefaults
-
-    expect(
-      result
-    ).to.deep.equal
-      'enabled': true
-      'bundleRoot': '/global/project/bundle'
-      'compilers':
-        'coffee-script':    # <- changed by someBundle
-          'params': 'w b'
-        'urequire':         # <- changed by someBundle
-          'scanPrevent': true
-        'rjs-build': 'project-rjs-build'  # <- changed by projectDefaults
-
+    result = _B.deepCloneDefaults bundle, project, team
+    expect(result).to.deep.equal bundle_project_team
 
   it "Original objects not mutated", ->
-    expect(bundleDefaults).to.deep.equal data.bundleDefaults
-    expect(projectDefaults).to.deep.equal data.projectDefaults
-    expect(globalDefaults).to.deep.equal data.globalDefaults
+    expect(bundle).to.deep.equal data.bundle
+    expect(project).to.deep.equal data.project
+    expect(team).to.deep.equal data.team
 
 

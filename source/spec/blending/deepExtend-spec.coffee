@@ -6,3 +6,6 @@ describe 'deepExtend :', ->
   require('./shared/lodashMerge-specs') _B.deepExtend # shadowed properties are supported in deepExtend's coffeescript adaptation
   #require('./shared/lodashMerge_Blender-specs') _B.deepExtend # Does it work ?
 
+describe 'DeepExtendBlender', ->
+  deepExtendblender = new _B.DeepExtendBlender
+  require('./shared/deepExtendExamples-specs') deepExtendblender.blend

@@ -12,21 +12,62 @@ type = require '../type'
   (as a poor man's B, since that's a bit far from now... ?)
 ###
 class Blender
+
   @defaultOptions: {inherited: false, copyProto: false}
+
   defaultBBOrder = ['src', 'dst'] # `action` is stored in {dst:src} objects
 
   ###
   @param benderBehaviors {Array<BlenderBehavior>}
+
          The blender behaviors with which to perform the blending.
+
          Precedence is left to right.
+
          If benderBehaviors arg is not [], then all args are assumed to be BBs.
 
-  @param actions {Object} A hash of named actions that extend this Blender instance and can be used by your benderBehaviors.
-                          They can overwrite built in ones.
-                          You can simply call them (on @).
-                          @/this is always bound to the Blender instance.
-                          Note: If benderBehaviors arg is not [], then all args are assumed to be BBs, hence no `actions`!
-                          Note: DONT overwrite `blend` or `_blend` !
+  @param options {Object} A hash of named options (or Actions) that ultimatelly extend this Blender instance.
+
+              They can be used by your benderBehaviors (`blender` instance is passed as the 4rth argument on `Action`s)
+
+              `options` are inherited: each option passed in a subclass, overwrites the ones in the ancestor hierarchy (`_.extend` is used).
+              For example in `new MySuperAdvancedBlender [], {someOption:true}`, the value of `someOption` will overwrite/redefine all
+              `someOption` values found is super classes (eg. `Blender`).
+
+              The can be simple booleans, or functions (that are considered `Actions`).
+
+              You can simply use them or call them on `blender` instance.
+
+              Note: On action/Functions `@`/`this` is NOT bound to the Blender instance - its unbound.
+
+              Note: `Actions` Functions can be (and perhaps should better be) defined on a `BlenderBehavior`.
+
+                    On a BlenderBehavior an Action is either defined :
+                      - as a named key of XXXBlender, eg
+                        ```
+                          class XXXBlender extends Blender
+                            doSomething: (prop, src, dst, blender)->
+                      - OR directly on an `SrcDstSpec` eg `Array:Object:(prop, src, dst, blender)->`.
+
+                    If you pass them as `options`, you loose somehow:
+
+                      - Only one version can exist, the one copied on the `blender` instance it self.
+
+                      - You can accintentally overwrite one that is used by all BlenderBehaviors (eg. `overwrite`).
+
+                      - You loose dymanism: when they are defined in a `BlenderBehaviour`, they are local to it.
+                        When a string (name of an) Action is on a BlenderBehavior's type specification (eg `Array:Object:'overwrite'`)
+                        then `'overwrite'` is searched on current BlenderBehavior and to all following ones, up until to `blender`
+                        to find a function called `'overwrite'`.
+
+                        Within an action, you can use `blender.getAction('overwrite')` to trigger the above dynamic search
+                        and retrieve an action.
+
+                        This hierarchical dynamism can actually be very usefull ;-)
+
+              Note: If benderBehaviors arg is not [], then all args are assumed to be BBs, hence no `options`!
+
+              Note: DONT overwrite `blend` or `_blend` (or `overwrite`, `deepOverwrite` etc)!
   ###
   constructor: (@blenderBehaviors...)->
     # add base Blender defaults
@@ -39,12 +80,14 @@ class Blender
       @_optionsList.push @blenderBehaviors[1] # user/param @options override all others
       @blenderBehaviors = @blenderBehaviors[0]
 
-    @_optionsList.unshift options = {} # store all under local 'options'
-    _.extend.apply undefined, @_optionsList    # final options
-    if l.debugLevel >= 10
-      l.debug "Final blender options:", options
-    _.extend @, options # copy all to this
-    delete @_optionsList
+    # Store options: each option passed in a subclass, overwrites the ones in the ancestor hierarchy (`_.extend` is used).
+    @_optionsList.unshift options = {}      # store all under local 'options'
+    _.extend.apply undefined, @_optionsList # options are overwritten by subclass/construction values
+    l.debug "Final blender options:", options if l.debugLevel >= 10
+
+    # copy all to this, the blender instance of XXXBlender
+    _.extend @, options
+    delete @_optionsList  # no longer needed
 
     # Setup the default BlenderBehavior
     (@defaultBlenderBehaviors or= []).push Blender.behavior
@@ -137,7 +180,7 @@ class Blender
         # go through @certainBlenderBehaviors, until an 'action' match is found.
         visitNextBB = true
         for bb, bbi in @blenderBehaviors when visitNextBB
-          l.debug 60, "Looking @ bbi=#{bbi}, blenderBehaviors =\n", bb
+          l.debug 60, "Currently at @blenderBehaviors[#{bbi}] =\n", bb
 
           nextBBSrcDstSpec = bb['|']
 
@@ -345,10 +388,17 @@ class Blender
         Array: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
         Object: 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
         Function: 'deepOverwrite'
+
       Object:
         Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
         Array: 'deepOverwrite'
         Function: 'deepOverwrite'
+
+      Function:
+        Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
+        Array: 'deepOverwrite'
+        Function: 'deepOverwrite'
+
 
 module.exports = Blender
 

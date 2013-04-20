@@ -106,11 +106,11 @@ module.exports = deepExtend
 
 #data = require '../spec/spec-data'
 ## clone to check mutability
-#projectDefaults = _.clone data.projectDefaults, true
-#globalDefaults = _.clone data.globalDefaults, true
-#bundleDefaults = _.clone data.bundleDefaults, true
+#project = _.clone data.project, true
+#global = _.clone data.global, true
+#bundle = _.clone data.bundle, true
 #
-#result = deepExtend globalDefaults, projectDefaults, bundleDefaults
+#result = deepExtend global, project, bundle
 #
 #console.log JSON.stringify result, null, ' '
 #console.log deepExtend({url: "www.example.com"}, {url: 'http://!{_}/path/to/file.html'})

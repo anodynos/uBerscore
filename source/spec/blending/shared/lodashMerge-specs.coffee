@@ -2,7 +2,7 @@ assert = chai.assert
 expect = chai.expect
 
 # clone to check mutability
-{ projectDefaults, globalDefaults, bundleDefaults,
+{ project, global, bundle,
   obj, arrInt, arrInt2, arrStr
 } = _.clone data, true
 
