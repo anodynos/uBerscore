@@ -140,7 +140,7 @@ describe 'Blender:', ->
         expect(someOtherBlender.someOtherOption is "someOtherOptionValue")
 
 
-  describe 'Blender behaviours:', ->
+  describe 'Blender behaviors:', ->
     describe 'Simple examples:', ->
       o1 =
         p1:5
@@ -217,10 +217,10 @@ describe 'Blender:', ->
           p21: 128
           p22: [20, 40]
 
-      describe 'Chained BlenderBehaviours & Subclassed Blenders (are the same stuff): ', ->
+      describe 'Chained BlenderBehaviors & Subclassed Blenders (are the same stuff): ', ->
           addingNumbersAndConcatEmToStringBlender =
             new _B.DeepCloneBlender(                        # We useDeepCloneBlender, cause that's the bottom-line behavior we want.
-              funcOverwrite = '|': 'Function': 'overwrite'  # But we overide the behaviour of a 'Function' arriving as source:
+              funcOverwrite = '|': 'Function': 'overwrite'  # But we overide the behavior of a 'Function' arriving as source:
                                                             # we simply overwrite (i.e copy its reference).
               weirdBB =
                 'order': ['dst', 'src']

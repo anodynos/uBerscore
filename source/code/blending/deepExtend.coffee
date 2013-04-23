@@ -65,7 +65,7 @@ deepExtend = (obj, sources...) ->
           else
             ### Object ###
 #            if ( _.isObject(obj[prop]) and
-#                 not (_.isFunction(obj[prop]) and prop in shadowed)) or #lodash.merge appears to have this behaviour: these functions are deleted
+#                 not (_.isFunction(obj[prop]) and prop in shadowed)) or #lodash.merge appears to have this behavior: these functions are deleted
 #                _.isObject(source[prop])
             #@todo : fix Functions as well: They are Objects, but the also need their properties _merged_
             if _.isPlainObject(obj[prop]) or _.isPlainObject(source[prop])
