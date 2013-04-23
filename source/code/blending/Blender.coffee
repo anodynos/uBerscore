@@ -6,16 +6,17 @@ debugLevel =  0
 
 l = new (require './../Logger') 'Blender', if debugLevel? then debugLevel else 0
 type = require '../type'
+getValueAtPath = require '../objects/getValueAtPath'
 
 ###
   A highly configurable variant of deepExtend / jQuery.extend / lodash.merge
-  (as a poor man's B, since that's a bit far from now... ?)
+  @todo: docs!
 ###
 class Blender
 
   @defaultOptions: {inherited: false, copyProto: false}
 
-  defaultBBOrder = ['src', 'dst'] # `action` is stored in {dst:src} objects
+  defaultBBOrder: ['src', 'dst'] # `action` is stored in {dst:src} objects
 
   ###
   @param benderBehaviors {Array<BlenderBehavior>}
@@ -141,6 +142,72 @@ class Blender
                 " @currentBlenderBehaviorIndex=#{@currentBlenderBehaviorIndex}",
                 " @blenderBehaviors=", @blenderBehaviors
 
+  ###
+    @param bb blenderBhaviour
+    @param bbi blenderBhaviour index (just for debug)
+    @param bbOrderValues Object keyd with 'src', 'dst', 'path' having a) current src/dst valye type and b) current @path contents
+  ###
+  getNextBlenderBehaviorSrcDstSpec: (bb, bbi, bbOrderValues)=>
+
+    for bbOrder in (bb.order or @defaultBBOrder) # bbOrder is either 'src' or 'dst' @todo: or 'path'
+
+      if (currentBBSrcDstSpec is undefined)
+        currentBBSrcDstSpec = bb['|']
+
+      if previousbbOrder is 'path'
+        currentBBSrcDstSpec = currentBBSrcDstSpec['|'] or bb['|']
+#      l.debug(80, "At bbOrder='#{bbOrder}'",
+#            if bbOrder is 'path' then "@path=#{l.prettify @path}" else " bbOrderValues[bbOrder]='#{bbOrderValues[bbOrder]}'",
+#            " currentBBSrcDstSpec =\n", currentBBSrcDstSpec ) if l.debugLevel >= 80
+
+      if _.isUndefined bbOrderValues[bbOrder]
+        throw l.err  """
+          _.Blender.blend: Error: Invalid BlenderBehaviour `order` '#{bbOrder}',
+          while reading BlenderBehaviour ##{bbi} :\n""", @blenderBehaviors[bbi],
+          "\n\nDefault BlenderBehaviour order is ", @defaultBBOrder
+          # Invlaid type is excluded as a case
+
+      else
+        # nextBBSrcDstSpec mainly for debuging
+        if bbOrder is 'path'
+          nextBBSrcDstSpec = getValueAtPath currentBBSrcDstSpec, @path
+        else
+          nextBBSrcDstSpec = currentBBSrcDstSpec[bbOrderValues[bbOrder]] or currentBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
+
+
+#        l.debug(70,
+#          if nextBBSrcDstSpec is undefined
+#            "Found NO nextBBSrcDstSpec at all - go to NEXT BlenderBehaviour"
+#          else
+#            if nextBBSrcDstSpec is currentBBSrcDstSpec[bbOrderValues[bbOrder]]
+#              "Found "
+#            else
+#              if nextBBSrcDstSpec is currentBBSrcDstSpec['*']
+#                "Found NOT exact nextBBSrcDstSpec, but a '*'"
+#              else
+#                if _.isString nextBBSrcDstSpec
+#                  "Found a String "
+#                else
+#                  if _.isFunction nextBBSrcDstSpec
+#                    "Found a Function "
+#                  else
+#                    throw "Unknown nextBBSrcDstSpec = " + l.prettify nextBBSrcDstSpec
+#        ,
+#          " bbOrder='#{bbOrder}'",
+#          " bbOrderValues[bbOrder]='#{bbOrderValues[bbOrder]}'",
+#          " nextBBSrcDstSpec=\n", nextBBSrcDstSpec
+#          " currentBBSrcDstSpec=\n", currentBBSrcDstSpec
+#        ) if l.debugLevel >= 70
+        currentBBSrcDstSpec = nextBBSrcDstSpec
+
+        if (currentBBSrcDstSpec  is undefined ) or # is nextBBSrcDstSpec terminal ?
+                                 _.isString(currentBBSrcDstSpec ) or
+                                 _.isFunction(currentBBSrcDstSpec) # or (not _.isObject nextBBSrcDstSpec ) #todo: need this ?
+            break # skip all other bbOrder, if it was terminal.
+        previousbbOrder = bbOrder
+
+    currentBBSrcDstSpec
+
   # A cover to the "real" _blend, that takes the root objects into blendingBehaviour.
   # It recurses recurses root '$' path, to apply rules even on root objects (eg blend({}, [])
   # A waste of isEmpty otherwise, only used for root!
@@ -166,11 +233,6 @@ class Blender
 
       for prop in props # props for {} is ['prop1', 'prop2', ...], for [] its [1,2,3,...]
         @path.push prop
-        types =  # just a shortcut: `scr:'[]', dst: '{}'`
-          dst: type(dst[prop], true) # get short version of type, thats how we always handle it internally
-          src: type(src[prop], true)
-          #path: ? if path
-
 
         l.debug(50, """
             @path = /#{@path.join('/')}
@@ -182,60 +244,16 @@ class Blender
         for bb, bbi in @blenderBehaviors when visitNextBB
           l.debug(60, "Currently at @blenderBehaviors[#{bbi}] =\n", bb) if l.debugLevel >= 60
 
-          nextBBSrcDstSpec = bb['|']
+          nextBBSrcDstSpec = @getNextBlenderBehaviorSrcDstSpec bb, bbi,
+              # last argument is bbOrderValues, eg : `{scr:'[]', dst: '{}', path:['a','property']}`
+              dst: type(dst[prop], true) # get short type, always handle it as short internally
+              src: type(src[prop], true)
+              path: @path # just ref the path
 
-          for bbOrder in (bb.order or defaultBBOrder) # bbOrder is either 'src' or 'dst' @todo: or 'path'
-
-            l.debug(80, "At bbOrder='#{bbOrder}'",
-                  " types[bbOrder]='#{types[bbOrder]}'",
-                  " nextBBSrcDstSpec=\n", nextBBSrcDstSpec) if l.debugLevel >= 80
-
-
-            if _.isUndefined types[bbOrder]
-              #@todo: check for path
-              throw l.err  """
-                _.Blender.blend: Error: Invalid BlenderBehaviour `order` '#{bbOrder}',
-                while reading BlenderBehaviour ##{bbi} :\n""", @blenderBehaviors[bbi],
-                "\n\nDefault BlenderBehaviour order is ", defaultBBOrder
-                # Invlaid type is excluded as a case
-
-            else
-              currentBBSrcDstSpec = nextBBSrcDstSpec
-              nextBBSrcDstSpec = nextBBSrcDstSpec[types[bbOrder]] or nextBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
-
-              l.debug(70,
-                if nextBBSrcDstSpec is undefined
-                  "Found NO nextBBSrcDstSpec at all - go to NEXT BlenderBehaviour"
-                else
-                  if nextBBSrcDstSpec is currentBBSrcDstSpec[types[bbOrder]]
-                    "Found "
-                  else
-                    if nextBBSrcDstSpec is currentBBSrcDstSpec['*']
-                      "Found NOT exact nextBBSrcDstSpec, but a '*'"
-                    else
-                      if _.isString nextBBSrcDstSpec
-                        "Found a String "
-                      else
-                        if _.isFunction nextBBSrcDstSpec
-                          "Found a Function "
-                        else
-                          throw "Unknown nextBBSrcDstSpec = " + l.prettify nextBBSrcDstSpec
-              ,
-                " bbOrder='#{bbOrder}'",
-                " types[bbOrder]='#{types[bbOrder]}'",
-                " nextBBSrcDstSpec=\n", nextBBSrcDstSpec
-              ) if l.debugLevel >= 70
-
-              if (nextBBSrcDstSpec is undefined ) or # is nextBBSrcDstSpec terminal ?
-                  _.isString(nextBBSrcDstSpec) or
-                  _.isFunction(nextBBSrcDstSpec) # or (not _.isObject nextBBSrcDstSpec ) #todo: need this ?
-
-                break # skip all other bbOrder, if it was terminal.
-
-          if nextBBSrcDstSpec is undefined
+          if (nextBBSrcDstSpec) is undefined
             continue # go to next BlenderBehaviour
 
-          else # found an `action` candidate - either a String or a Function
+          else # found an `action` candidate - Should be either String or Function (i.e a terminal value)
             action = nextBBSrcDstSpec
 
             if not _.isFunction action
@@ -246,7 +264,7 @@ class Blender
                 action = @getAction action, bbi # throws error if none is found, hence no other check needed
 
           # should have an _.isFunction(action) by now.
-          @currentBlenderBehaviorIndex = bbi # todo: why do we need this ?
+          @currentBlenderBehaviorIndex = bbi # @todo: why do we need this ?
 
           # execute the action and retrieve the ActionResult (value or otherwise)
           result = action prop, src, dst, @  # assume _.isFunction action
