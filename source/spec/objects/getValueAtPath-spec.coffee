@@ -12,7 +12,10 @@ describe 'objects/getValueAtPath ', ->
           variableNames: "Bingo"
         someOtherKey:
           '*': notReached: "defaultValue"
-          '#': terminal: "Value"
+          '#': IamA: Stop: "Value"
+        leadingToTerminate:
+          '|': terminated: 'terminated value'
+          someKey: someOtherKey: 'someValue'
 
   describe 'basic tests - retrieving value: ', ->
 
@@ -56,35 +59,53 @@ describe 'objects/getValueAtPath ', ->
         _B.getValueAtPath o, '$>bundle>dependencies>variableNames>notfound>stillNotFound>', separator: '>'
       ).to.deep.equal undefined
 
-  describe 'retrieving value using default:', ->
+  describe 'retrieving value using *defaultKey*:', ->
 
-    it "non existent key, but a default in its place", ->
+    it "non existent key, but a defaultKey in its place", ->
       expect(
         _B.getValueAtPath o, '$/bundle/someNonFoundKey/'
       ).to.deep.equal IamA: "defaultValue"
 
-    it "non existent key, but a default in its place, goin on", ->
+    it "non existent key, but a defaultKey in its place, goin on", ->
       expect(
         _B.getValueAtPath o, '$/bundle/someNonFoundKey/IamA'
       ).to.deep.equal "defaultValue"
 
-    it "non existent key, but a default in its palce, went too far", ->
+    it "non existent key, but a defaultKey in its palce, went too far", ->
       expect(
         _B.getValueAtPath o, '$/bundle/someNonFoundKey/tooFar'
       ).to.deep.equal undefined
 
-  describe 'retrieving value using terminal:', ->
-    it "non existent key, but a terminal in its palce - default is ignored", ->
+  describe 'retrieving value using *stopKey*:', ->
+    it "non existent key, but a stopKey key in its place - defaultKey is ignored", ->
       expect(
         _B.getValueAtPath o, '$/bundle/someOtherKey/someNonFoundKey/'
-      ).to.deep.equal terminal: "Value"
+      ).to.deep.equal IamA: Stop: "Value"
 
-    it "non existent key, a terminal in its palce, going on dosn't matter", ->
+    it "non existent key, a terminal in its place, going on dosn't matter", ->
       expect(
-        _B.getValueAtPath o, '$/bundle/someOtherKey/someNonFoundKey/terminal'
-      ).to.deep.equal terminal: "Value"
+        _B.getValueAtPath o, '$/bundle/someOtherKey/someNonFoundKey/notReached'
+      ).to.deep.equal IamA: Stop: "Value"
 
-    it "non existent key, a terminal in its palce, going too far dosn't matter", ->
+    it "non existent key, a stopKey key in its place, going too far dosn't matter", ->
       expect(
         _B.getValueAtPath o, '$/bundle/someOtherKey/someNonFoundKey/goingTooFar/IsIgnored/'
-      ).to.deep.equal terminal: "Value"
+      ).to.deep.equal IamA: Stop: "Value"
+
+  describe 'retrieving value using *terminateKey*:', ->
+    it "non existent key, but a terminateKey in its place, returns {terminateKey:value}", ->
+      expect(
+        _B.getValueAtPath o, '$/bundle/leadingToTerminate/someNonFoundKey/', terminateKey:'|'
+      ).to.deep.equal '|': terminated: 'terminated value'
+
+    it "existent key path, but found a terminateKey while walking, returns {terminateKey:value}", ->
+      expect(
+        _B.getValueAtPath o, '$/bundle/leadingToTerminate/someKey/someOtherKey', terminateKey:'|'
+      ).to.deep.equal '|': terminated: 'terminated value'
+
+  describe 'retrieving value using *isReturnLast*, returns last value found:', ->
+    it "non existent key, returns last value", ->
+      expect(
+        _B.getValueAtPath o, '$/bundle/dependencies/someNonFoundKey/', isReturnLast: true
+      ).to.deep.equal variableNames:'Bingo'
+

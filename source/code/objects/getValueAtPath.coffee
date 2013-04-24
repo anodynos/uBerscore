@@ -2,9 +2,9 @@ _ = require 'lodash'
 
 defaultOptions =
   separator: '/'
-  stopKey: "#"
-  terminatorKey: undefined
-  defaultKey: "*"
+  stopKey: "#"              # @todo: alternative as callback
+  terminateKey: undefined  # @todo: alternative as callback
+  defaultKey: "*"           # @todo: alternative as callback
 
   isReturnLast: false # @todo: doc it & spec it!
 
@@ -15,11 +15,11 @@ defaultOptions =
 
   While walking/retrieving path keys from o, there are some twists:
 
-    terminatorKey: @todo: spec it!
-      Before looking for any actual key, if this key is found on current object, then walking stops and
-      the value within terminatorKey is returned (with terminatorKey it self as root).
+    terminateKey: @todo: spec it!
+      Before looking for any actual key, if this key is found on current object, then walking stopKeys and
+      the value within terminateKey is returned (with terminateKey it self as root).
 
-      eg if terminatorKey = '|', in
+      eg if terminateKey = '|', in
       {
         'a':'b':
           'c':
@@ -29,16 +29,16 @@ defaultOptions =
      with (valid) path = 'a/b/c/d' the result will be {'|':'terminated'} instead of 'd'.
 
     stopKey:
-      If a key's value is undefined, then it attempts to retrieve '#' (as default).
+      If a key's value is undefined, then it attempts to retrieve '#' (as defaultKey).
       If a value is found on '#', it stops and the returns that value.
 
     defaultkey:
-      if a key's value is undefined then it attempts to retrieve '*' (default) before giving up.
+      if a key's value is undefined then it attempts to retrieve '*' (defaultKey) before giving up.
       If a value is found on '*', it continues as if the original not-found key value was found.
 
-    Note: Precendence is terminatorKey, stopKey & finally defaultkey.
-          So using defaultKey along stopKey or terminatorKey & any other is pointless:
-            terminatorKey is always returned, if it exists, then stopKey and finally,
+    Note: Precendence is terminateKey, stopKey & finally defaultkey.
+          So using defaultKey along stopKey or terminateKey & any other is pointless:
+            terminateKey is always returned, if it exists, then stopKey and finally,
             if those aren't there, defaultkey is returned.
 
     isReturnLast:
@@ -51,14 +51,14 @@ defaultOptions =
   @param path {String|Array<String>} Either a path as a String (separated by separator) or an array of path key names.
 
   @param options {Object}
-    @option separator {String} The seperator to split a String path with. The default is '/'.
+    @option separator {String} The seperator to split a String path with. The defaultKey is '/'.
 
-    @option stopKey {String} The stopKey to retrieve, if original not found, and then terminate returning it.
+    @option stopKey {String} The stopKey to retrieve, if original not found, and then stopp walking returning it.
 
-    @option defaultkey {String} The defaultKey to retrieve if original not found - walking continues as normal
+    @option defaultKey {String} The defaultKey to retrieve if original not found - walking continues as normal if defaultKey is found
 
-    @option terminatorKey {String} The key that stops all further walking and even if the key requested exists, it instead
-                                    returns an object with one key (it self) and the value of it self in the original object.
+    @option terminateKey {String} The key that terminates all further walking and even if the key requested exists, it instead
+                               returns an object with one key (it self) and the value of it self in the original object.
 
     @option isReturnLast {truthy} If true, it returns the last non-undefined value found. # @todo: spec it
 
@@ -82,10 +82,10 @@ getValueAtPath = (o, path, options = defaultOptions)->
       o = undefined
       break
 
-    if options.terminatorKey
-      if o[options.terminatorKey]
+    if options.terminateKey
+      if o[options.terminateKey]
         returnWithTerminator = {}
-        returnWithTerminator[options.terminatorKey] = o[options.terminatorKey]
+        returnWithTerminator[options.terminateKey] = o[options.terminateKey]
         o = returnWithTerminator
         break
 
@@ -108,19 +108,35 @@ getValueAtPath = (o, path, options = defaultOptions)->
 
 module.exports = getValueAtPath
 
-l = new (require '../Logger') 'getValueAtPath'
+#l = new (require '../Logger') 'getValueAtPath'
+#
+#o =
+#  '$':
+#    bundle:
+#      some: path:"|": terminated:"because of terminateKey !"
+#
+#      anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
+#      dependencies:
+#        variableNames: "Bingo"
+#        '#': 'No deps when terminal key is found'
+#        "|": terminatedAgain:" again because of terminateKey !"
+#      '*': 'paparo values'
 
-o =
-  '$':
-    bundle:
-      some: path:"|": terminated:"because of terminatorKey !"
-
-      anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
-      dependencies:
-        variableNames: "Bingo"
-        '#': 'No deps when terminal key is found'
-        "|": terminatedAgain:" again because of terminatorKey !"
-      '*': 'paparo values'
-
-#l.log getValueAtPath o, '$/bundle/some/path', terminatorKey:'|'
-l.log getValueAtPath o, '/$/bundle/dependencies/malakies', isReturnLast: true, terminatorKey:'|'
+#l.log getValueAtPath o, '$/bundle/some/path', terminateKey:'|'
+#l.log getValueAtPath o, '/$/bundle/dependencies/malakies', isReturnLast: true, terminateKey:'|'
+#
+#o =
+#  '$':
+#    bundle:
+#      anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
+#      '*': IamA: "defaultValue"
+#      dependencies:
+#        variableNames: "Bingo"
+#      someOtherKey:
+#        '*': notReached: "defaultValue"
+#        '#': IamA: Stop: "Value"
+#      leadingToTerminate:
+#        '|': terminated: 'terminated value'
+#        someKey: someOtherKey: 'someValue'
+#
+#l.log getValueAtPath o, '$/bundle/leadingToTerminate/someKey/someOtherKey', terminateKey:'|'

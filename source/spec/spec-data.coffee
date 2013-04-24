@@ -121,12 +121,13 @@ experiment =
   life:
     races: ['Kafkasian', 'ApHriCan', 'Azian', 'Mutant']
     people: [
-      { 'name': 'moe', 'age': 40 }
-      { 'name': 'blanka', 'age': 20 }
-      { 'name': 'ken', 'age': 25 }
-      { 'name': 'ryu', 'age': 28 }
-      { 'name': 'larry', 'age': 50 }
-    ]
+          { 'name': 'moe', 'age': 400 }
+          { 'name': 'blanka', 'age': 20 }
+          { 'name': 'ken', 'age': 25 }
+          { 'name': 'ryu', 'age': 28 }
+          { 'name': 'larry', 'age': 500 }
+        ]
+
   results:success:false
 
 ### Results (for _B.DeepDefaultsBlender.blend) ###
@@ -155,11 +156,11 @@ experiment_laboratory_earth = # experiment is 1st (more important) than laborato
     races: ['Kafkasian', 'ApHriCan', 'Azian', 'Mutant']
 
     people: [                 # <-- by experiment (was undefined)
-      { 'name': 'moe', 'age': 40 }
+      { 'name': 'moe', 'age': 400 }
       { 'name': 'blanka', 'age': 20 }
       { 'name': 'ken', 'age': 25 }
       { 'name': 'ryu', 'age': 28 }
-      { 'name': 'larry', 'age': 50 }
+      { 'name': 'larry', 'age': 500 }
     ]
   results:success:false       # <-- by experiment (was undefined)
 
@@ -181,7 +182,7 @@ laboratory_experiment = # laboratory is 1st (more important) than experiment
       { 'name': 'larry', 'age': 50 }  # <-- retained from laboratory (not was undefined)
       { 'name': 'ken', 'age': 25 }
       { 'name': 'ryu', 'age': 28 }
-      { 'name': 'larry', 'age': 50 }
+      { 'name': 'larry', 'age': 500 }
     ]
   results:success:false       # <-- by experiment (was undefined)
 

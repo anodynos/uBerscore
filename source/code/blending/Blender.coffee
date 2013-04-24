@@ -29,46 +29,47 @@ class Blender
 
   @param options {Object} A hash of named options (or Actions) that ultimatelly extend this Blender instance.
 
-              They can be used by your benderBehaviors (`blender` instance is passed as the 4rth argument on `Action`s)
+          They can be used by your benderBehaviors (`blender` instance is passed as the 4rth argument on `Action`s)
 
-              `options` are inherited: each option passed in a subclass, overwrites the ones in the ancestor hierarchy (`_.extend` is used).
-              For example in `new MySuperAdvancedBlender [], {someOption:true}`, the value of `someOption` will overwrite/redefine all
-              `someOption` values found is super classes (eg. `Blender`).
+          `options` are inherited: each option passed in a subclass, overwrites the ones in the ancestor hierarchy (`_.extend` is used).
+          For example in `new MySuperAdvancedBlender [], {someOption:true}`, the value of `someOption` will overwrite/redefine all
+          `someOption` values found is super classes (eg. `Blender`).
 
-              The can be simple booleans, or functions (that are considered `Actions`).
+          The can be simple booleans, or functions (that are considered `Actions`).
 
-              You can simply use them or call them on `blender` instance.
+          You can simply use them or call them on `blender` instance.
 
-              Note: On action/Functions `@`/`this` is NOT bound to the Blender instance - its unbound.
+          Notes:
+            * On action/Functions `@`/`this` is NOT bound to the Blender instance - its unbound.
 
-              Note: `Action` Functions can be (and perhaps should better be) defined on a `BlenderBehavior`.
+            * `Action` Functions can be (and perhaps should better be) defined on a `BlenderBehavior`.
 
-                    On a BlenderBehavior an Action is either defined :
-                      - as a named key of XXXBlender, eg
-                        ```
-                          class XXXBlender extends Blender
-                            doSomething: (prop, src, dst, blender)->
-                      - OR directly on an `SrcDstSpec` eg `Array:Object:(prop, src, dst, blender)->`.
+                On a BlenderBehavior an Action is either defined :
+                  - as a named key of XXXBlender, eg
+                    ```
+                      class XXXBlender extends Blender
+                        doSomething: (prop, src, dst, blender)->
+                  - OR directly on an `SrcDstSpec` eg `Array:Object:(prop, src, dst, blender)->`.
 
-                    If you pass them as `options`, you loose somehow:
+                If you pass them as `options`, you loose somehow:
 
-                      - Only one version can exist, the one copied on the `blender` instance it self.
+                  - Only one version can exist, the one copied on the `blender` instance it self.
 
-                      - You can accintentally overwrite one that is used by all BlenderBehaviors (eg. `overwrite`).
+                  - You can accintentally overwrite one that is used by all BlenderBehaviors (eg. `overwrite`).
 
-                      - You loose dymanism: when they are defined in a `BlenderBehavior`, they are local to it.
-                        When a string (name of an) Action is on a BlenderBehavior's type specification (eg `Array:Object:'overwrite'`)
-                        then `'overwrite'` is searched on current BlenderBehavior and to all following ones, up until to `blender`
-                        to find a function called `'overwrite'`.
+                  - You loose dymanism: when they are defined in a `BlenderBehavior`, they are local to it.
+                    When a string (name of an) Action is on a BlenderBehavior's type specification (eg `Array:Object:'overwrite'`)
+                    then `'overwrite'` is searched on current BlenderBehavior and to all following ones, up until to `blender`
+                    to find a function called `'overwrite'`.
 
-                        Within an action, you can use `blender.getAction('overwrite')` to trigger the above dynamic search
-                        and retrieve an action.
+                    Within an action, you can use `blender.getAction('overwrite')` to trigger the above dynamic search
+                    and retrieve an action.
 
-                        This hierarchical dynamism can actually be very usefull ;-)
+                    This hierarchical dynamism can actually be very usefull ;-)
 
-              Note: If benderBehaviors arg is not [], then all args are assumed to be BBs, hence no `options`!
+          * If benderBehaviors arg is not [], then all args are assumed to be BBs, hence no `options`!
 
-              Note: DONT overwrite `blend` or `_blend` (or `overwrite`, `deepOverwrite` etc)!
+          * DONT overwrite `blend` or `_blend` (or `overwrite`, `deepOverwrite` etc)!
   ###
   constructor: (@blenderBehaviors...)->
     # add base Blender defaults
@@ -159,7 +160,6 @@ class Blender
     @param blenderBehavior {blenderBehavior} The blenderBehavior to search for action
     @param bbi blenderBehavior index (just for debug)
     @param bbOrderValues Object keyd with 'src', 'dst', 'path' having a) current src/dst valye type and b) current @path contents
-
   ###
   getNextAction: (blenderBehavior, bbi, bbOrderValues)=>
 
@@ -189,7 +189,7 @@ class Blender
 
       else # nextBBSrcDstSpec is used mainly for debuging
         if bbOrder is 'path'
-          nextBBSrcDstSpec = getValueAtPath currentBBSrcDstSpec, @path[1..@path.length], {terminatorKey:"|"}
+          nextBBSrcDstSpec = getValueAtPath currentBBSrcDstSpec, @path[1..@path.length], {terminateKey:"|"}
           if _.isObject nextBBSrcDstSpec
             nextBBSrcDstSpec = nextBBSrcDstSpec['|']
         else
@@ -225,12 +225,61 @@ class Blender
         currentBBSrcDstSpec = nextBBSrcDstSpec
 
     currentBBSrcDstSpec
+  ###
+    blend is where the actual blending happens.
+    We have a destination (*dst*) object and one or more sources (*src*) that we examine their each and every key/value.
 
-  # A cover to the "real" _blend, that takes the root objects into blendingBehavior.
-  # It recurses recurses root '$' path, to apply rules even on root objects (eg blend({}, [])
-  # A waste of isEmpty otherwise, only used for root!
+    At each key/value we examine we have enough information and power to manipulate and populate dst.
+
+    The general case is that `destination` is populated with values from `source`.
+    Ultimatelly destination will :
+      * eventually 'receive' values
+      * possibly coming from sources values
+      * perhaps manipulated by an Action
+      * if these are found in a BlenderBehavior of our blender.
+
+    At each Action (which act on a current source's key/value) we have enough information like passed at params:
+      prop: the name of the property, eg 'name'
+
+      dst: the destination Object that contains this key. dst[prop] gives the value of 'name' on the destination
+
+      src: the source Object that contains this key. src[prop] gives the value of 'name' on the source.
+
+      blender: the `blender` instance that contains lots of info, the most usefull of them are:
+
+        * blender.path : an Array of the current path key names, starting with '$' as root.
+                        eg ['$', 'customer', 'person', 'name']
+
+        * blender.srcRoot: The original source object, as called with the 1st blend call (object at '$')
+
+        * blender.dstRoot: The original destination object, as called with the 1st blend call (object at '$')
+
+        but also some internals
+
+        * blender.blenderBehaviors All `BlenderBehavior`s, in the order added (most precedent is 1st etc)
+
+        * blender.currentBlenderBehaviorIndex so that `blender.blenderBehaviors[blender.currentBlenderBehaviorIndex]`
+                                              gives us the currently selected `BlenderBehavior`
+
+
+
+    Notes:
+      * blend() is a cover to the "real" _blend, that takes the root objects into blendingBehavior.
+        It recurses recurses root '$' path, to apply rules even on root objects (eg blend({}, [])
+        A waste of isEmpty otherwise, only used for root! @todo: (2 3 1) optimize it
+
+      * if there are no sources, then 1st param becames one source and dst becomes {}
+
+    @param dst {Anything} our desination Object (which can also be a primitive)
+
+    @param sources {Array<Anything>} Our source objects
+  ###
   blend: (dst, sources...)=>
-    if _.isEmpty @path #todo: (4 6 2) optimize with a @isRoot = true ?
+    if _.isEmpty @path #todo: (2 3 1) optimize with a @isRoot = true ?
+      # if there are no sources, then 1st param becames a source and dst = {}
+      if _.isUndefined(sources) or _.isEmpty(sources)
+        sources = [dst]
+        dst = {}
       dstObject = {'$':dst}
       @dstRoot = dst
       for src in sources
@@ -243,6 +292,11 @@ class Blender
 
   # our real `blend` function
   _blend: (dst, sources...)=>
+    # if there are no sources, then 1st param becames a source and dst = {}
+    if _.isUndefined(sources) or _.isEmpty(sources)
+      sources = [dst]
+      dst = {}
+
     for src in sources
       props = if _.isArray src
                 (p for v, p in src)

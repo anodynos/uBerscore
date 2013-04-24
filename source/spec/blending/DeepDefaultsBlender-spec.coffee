@@ -115,3 +115,54 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
       it "_.isRefDisjoint result with each of laboratory, experiment", ->
         for o in [laboratory, experiment]
           expect(_B.isRefDisjoint result, o)
+
+
+
+  describe 'Using path in BlenderBehavior.order: ', ->
+
+    peopleUniqueBlender = new _B.DeepDefaultsBlender(
+      # we overide the behavior of DeepDefaultsBlender for `* <-- []`,
+      # only for Arrays somewhere within `/life/people/**`
+
+      # We choose to add a person in the Array only if an person with same name exists,
+      # in which case we simply update it.
+
+      'order': ['src', 'path']
+      '|': Array: # our 'src'
+            life: people: '|': # 'path' follows 'src' in order. @todo: allow '/life/people'
+              (prop, src, dst, blender)->
+                  for person in src[prop]
+                    if not _.isArray dst[prop]
+                      dst[prop] = []
+                    else # find person with same name
+                      foundPerson = _.find(dst[prop], ((v)-> v.name is person.name))
+
+                    if not foundPerson
+                      dst[prop].push person
+                    else
+                      _.extend foundPerson, person
+
+                  dst[prop]
+    )
+
+    result = peopleUniqueBlender.blend laboratory, experiment
+
+    it "_.isEqual result, laboratory_experiment", ->
+      expect(_.isEqual result, {
+            name: 'laboratoryDefaults'
+            environment:
+               temperature: 35
+               moisture: max: 40
+               gravity: 1.5
+            life:
+               races: [ 'Caucasian', 'African', 'Asian', 'Mutant' ]
+               people: [
+                  { name: 'moe', age: 400 }
+                  { name: 'larry', age: 500 }
+                  { name: 'blanka', age: 20 }
+                  { name: 'ken', age: 25 }
+                  { name: 'ryu', age: 28 }
+               ]
+            results: success: false
+          }
+      )

@@ -3,8 +3,22 @@ Blender = require '../Blender'
 _ = require 'lodash'
 
 ###
-  Todo: improvise improvement of this pattern :
+ uBerscore adaptation of deepExtend, by [Kurt Milam](https://gist.github.com/1868955)
+
+ Its mainly a demonstration of uBerscore's _B.Blender abilities.
+ It can be easily further extended is you desire.
+
+ It passes deepExtend's tests.
+
+# Changes/extra features
+# - extra: allow lodash'es 'shadowed' variables
+# - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
+# - null _deletes_ object key, as well as array item
+# - copying Function over Object should replace it first
+
+@see /blending/deepExtend
 ###
+
 class DeepExtendBlender extends Blender
 
   constructor: (@blenderBehaviors...)->

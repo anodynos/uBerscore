@@ -112,38 +112,38 @@ describe "Default 'Blender.blend'", ->
 
 
   describe "Default 'Blender.blend' with inherited:true", ->
-    defaultBlenderProtoCopier = new _B.Blender [], inherited:true
+    defaultBlenderInheritedCopier = new _B.Blender [], inherited:true
 
     describe "clones objectWithProtoInheritedProps (with inheritance)", ->
 
-      describe "(shallowClone = defaultBlenderProtoCopier.blend {}, objectWithProtoInheritedProps)", ->
-        shallowCloneProtoCopied = defaultBlenderProtoCopier.blend {}, objectWithProtoInheritedProps
+      describe "(shallowCloneInheritedCopied = defaultBlenderInheritedCopier.blend {}, objectWithProtoInheritedProps)", ->
+        shallowCloneInheritedCopied = defaultBlenderInheritedCopier.blend {}, objectWithProtoInheritedProps
 
         describe "is a complete shallow clone, having shallow copied all inherited props: ", ->
 
           it "has common references of all nested objects", ->
             sRefs = _B.getRefs objectWithProtoInheritedProps, {deep:true, inherited:true}
-            cRefs = _B.getRefs shallowCloneProtoCopied, {deep:true, inherited:true}
+            cRefs = _B.getRefs shallowCloneInheritedCopied, {deep:true, inherited:true}
             expect(_B.isEqualArraySet sRefs, cRefs)
 
           it "has copied inherited nested object", ->
-            expect(shallowCloneProtoCopied.aProp1 is objectWithProtoInheritedProps.aProp1)
-            expect(shallowCloneProtoCopied.aProp1 isnt undefined)
+            expect(shallowCloneInheritedCopied.aProp1 is objectWithProtoInheritedProps.aProp1)
+            expect(shallowCloneInheritedCopied.aProp1 isnt undefined)
 
           it "_.isEqual is false (soft equality, not looking at inherited props of source)", ->
-            expect(!_.isEqual shallowCloneProtoCopied, objectWithProtoInheritedProps)
+            expect(!_.isEqual shallowCloneInheritedCopied, objectWithProtoInheritedProps)
 
           it "_B.isEqual is false (soft equality, not looking at inherited props of source)", ->
-            expect(!_B.isEqual shallowCloneProtoCopied, objectWithProtoInheritedProps)
+            expect(!_B.isEqual shallowCloneInheritedCopied, objectWithProtoInheritedProps)
 
           it "_B.isExact is false (strict references equality, no inherited props of source)", ->
-            expect(!_B.isExact shallowCloneProtoCopied, objectWithProtoInheritedProps)
+            expect(!_B.isExact shallowCloneInheritedCopied, objectWithProtoInheritedProps)
 
           it "_B.isIqual is true (inherited props, soft object equality)", ->
-            expect(_B.isIqual(shallowCloneProtoCopied, objectWithProtoInheritedProps))
+            expect(_B.isIqual(shallowCloneInheritedCopied, objectWithProtoInheritedProps))
 
           it "_B.isIxact true (inherited props, strict references equality)", ->
-            expect(_B.isIxact(shallowCloneProtoCopied, objectWithProtoInheritedProps))
+            expect(_B.isIxact(shallowCloneInheritedCopied, objectWithProtoInheritedProps))
 
   describe "Default 'Blender.blend' with copyProto:true", ->
     defaultBlenderProtoCopier = new _B.Blender [], copyProto:true
@@ -303,4 +303,54 @@ describe "DeepCloneBlender .blend:", ->
 
             it "_B.isIxact false (inherited props, scrict references equality)", ->
               expect(!_B.isIxact deepInheritedClone, expectedPropertyValues)
+
+    describe "Something different & trivial: using path in BlenderBehavior", ->
+
+      blender = new _B.DeepCloneBlender({
+        order:['dst', 'path', 'src']
+        # Strings inside 'bundle:basics' never ovewrite other String's!
+        '|':
+          String: # our destination MUST be String
+            bundle: basics : '|':   # our PATH is everything
+              String: # our source also MUST be String
+                (prop, src, dst, blender)-> _B.Blender.SKIP
+
+      })
+
+      result = blender.blend(
+          bundle:
+            someOkString: "OLD String#1"
+            someOkStrings: ["OLD [String]#1", "OLD [String]#2"]
+            basics:
+              someObject: skippedString: 'OLD string #2'
+              skippedString: 'OLD string #3'
+              skippedStrings: ["OLD [String]#3", "OLD [String]#4"]
+              anInt: 8
+        ,
+          bundle:
+            someOkString: "OVERWRITTEN String#1"
+            someOkStrings: ["OVERWRITTEN [String]#1", "OVERWRITTEN [String]#2"]
+            basics:
+              newString: "I am a OVERWRITTEN String, but on `undefined <-- String`, so I am ok!"
+              someObject: skippedString: 'SKIPed string #2'
+              skippedString: 'SKIPed string #3'
+              skippedStrings: ["SKIPed [String]#3", "SKIPed [String]#4"]
+              anInt: 18
+      )
+
+      it "_.isEqual is true", ->
+        expect(_.isEqual result,
+           bundle:
+             someOkString: 'OVERWRITTEN String#1'
+             someOkStrings: [
+                'OVERWRITTEN [String]#1',
+                'OVERWRITTEN [String]#2'
+             ]
+             basics:
+                newString: "I am a OVERWRITTEN String, but on `undefined <-- String`, so I am ok!"
+                someObject: skippedString: 'OLD string #2'
+                skippedString: 'OLD string #3'
+                skippedStrings: [ 'OLD [String]#3', 'OLD [String]#4' ]
+                anInt: 18
+        )
 

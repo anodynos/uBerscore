@@ -242,7 +242,9 @@ describe 'Blender:', ->
               (@defaultBlenderBehaviors or= []).push funcOverwrite
               super
 
-          class WeirdBlender extends FunctionOverWriterBlender
+          class UselessBlender extends FunctionOverWriterBlender
+
+          class WeirdBlender extends UselessBlender
             constructor: (@blenderBehaviors...)->
               (@defaultBlenderBehaviors or= []).push weirdBB
               super
