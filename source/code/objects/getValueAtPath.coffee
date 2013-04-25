@@ -3,7 +3,7 @@ _ = require 'lodash'
 defaultOptions =
   separator: '/'
   stopKey: "#"              # @todo: alternative as callback
-  terminateKey: undefined  # @todo: alternative as callback
+  terminateKey: undefined   # @todo: alternative as callback
   defaultKey: "*"           # @todo: alternative as callback
 
   isReturnLast: false # @todo: doc it & spec it!

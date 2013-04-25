@@ -12,12 +12,11 @@ class DeepCloneBlender extends Blender
   @behavior:
     order: ['dst', 'src']
 
-    '|': # our 'dst <-- src' spec
-      "*":
-        'Array': 'deepCloneOverwrite' # 'A' is short for 'Array' (as also is '[]').
-        'Object': 'deepCloneOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
-        'Function': 'deepCloneOverwrite'
-        'Undefined': -> Blender.SKIP
+    "*":
+      'Array': 'deepCloneOverwrite' # 'A' is short for 'Array' (as also is '[]').
+      'Object': 'deepCloneOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
+      'Function': 'deepCloneOverwrite'
+      'Undefined': -> Blender.SKIP
 
     deepCloneOverwrite: (prop, src, dst, blender)->
       srcType = type src[prop] #src[prop] is oneOf Array, Object, Function

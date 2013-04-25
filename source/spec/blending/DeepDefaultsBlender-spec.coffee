@@ -121,6 +121,7 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
   describe 'Using path in BlenderBehavior.order: ', ->
 
     peopleUniqueBlender = new _B.DeepDefaultsBlender(
+
       # we overide the behavior of DeepDefaultsBlender for `* <-- []`,
       # only for Arrays somewhere within `/life/people/**`
 
@@ -128,21 +129,21 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
       # in which case we simply update it.
 
       'order': ['src', 'path']
-      '|': Array: # our 'src'
-            life: people: '|': # 'path' follows 'src' in order. @todo: allow '/life/people'
-              (prop, src, dst, blender)->
-                  for person in src[prop]
-                    if not _.isArray dst[prop]
-                      dst[prop] = []
-                    else # find person with same name
-                      foundPerson = _.find(dst[prop], ((v)-> v.name is person.name))
+      Array: # our 'src'
+        life: people: '|': # 'path' follows 'src' in order. @todo: allow '/life/people'
+          (prop, src, dst, blender)->
+              for person in src[prop]
+                if not _.isArray dst[prop]
+                  dst[prop] = []
+                else # find person with same name
+                  foundPerson = _.find(dst[prop], ((v)-> v.name is person.name))
 
-                    if not foundPerson
-                      dst[prop].push person
-                    else
-                      _.extend foundPerson, person
+                if not foundPerson            #push new person
+                  dst[prop].push person
+                else                          #update found person
+                  _.extend foundPerson, person
 
-                  dst[prop]
+              dst[prop]
     )
 
     result = peopleUniqueBlender.blend laboratory, experiment

@@ -19,24 +19,23 @@ class DeepDefaultsBlender extends DeepCloneBlender
   @behavior:
     order: ['dst', 'src']
 
-    '|':
-      # Specifically declare that we want to process (overwrite) undefined & null destination values.
-      "Undefined": -> Blender.NEXT
-      "Null": -> Blender.NEXT
+    # Specifically declare that we want to process (overwrite) undefined & null destination values.
+    "Undefined": -> Blender.NEXT
+    "Null": -> Blender.NEXT
 
-      # We also need to merge with nested destination types - when both dst & src are such.
-      # We simply NEXT to use DeepCloneBlender's inherited BlenderBehaviors (which will pick 'deepCloneOverwrite' that doesn't overwrite).
-      # @todo: use two BBs to simplify the following BB dstSrcSpec
-      Object: # repeating for Array & Function
-        Object: -> Blender.NEXT
-        Array: -> Blender.NEXT
-        Function: -> Blender.NEXT
-        "*": -> Blender.SKIP
-
-      # SKIP all other destinations (primitives, non undefined/null).
+    # We also need to merge with nested destination types - when both dst & src are such.
+    # We simply NEXT to use DeepCloneBlender's inherited BlenderBehaviors (which will pick 'deepCloneOverwrite' that doesn't overwrite).
+    # @todo: use two BBs to simplify the following BB dstSrcSpec
+    Object: # repeating for Array & Function
+      Object: -> Blender.NEXT
+      Array: -> Blender.NEXT
+      Function: -> Blender.NEXT
       "*": -> Blender.SKIP
 
-  @behavior['|'].Array = @behavior['|'].Object
-  @behavior['|'].Function = @behavior['|'].Object
+    # SKIP all other destinations (primitives, non undefined/null).
+    "*": -> Blender.SKIP
+
+  @behavior['Array'] = @behavior['Object']
+  @behavior['Function'] = @behavior['Object']
 
 module.exports = DeepDefaultsBlender

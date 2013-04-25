@@ -9,12 +9,69 @@ type = require '../type'
 getValueAtPath = require '../objects/getValueAtPath'
 
 ###
-  A highly configurable variant of deepExtend / jQuery.extend / lodash.merge
-  @todo: docs!
+  Blender: a highly configurable object blender :-)
+
+  Blending is the process of mixing one or more objects, using some predefined rule.
+
+  The most known blending functions are the likes of `_.extend, _.defaults, _.clone`
+  or `jQuery.extend`, `lodash.merge` or Kurt Milam's `deepExtend` etc
+
+  However, these functions have many deficiencies and their behavior is highly static.
+
+  In general they have the follwoing shortcomings:
+
+  * They ususally dont go deep - eg `_.extend` and `_.defaults` is only dealing with root-level keys.
+    `lodash.merge` does better, but then there is no further control on copying/overwriting/merging/deep linking semantics.
+     No callbacks or infrastructure to easily adjust its behavior.
+
+  * There is little or no control of what happens at each point,
+    for example what type overwrites which type or at which point/path in the object etc.
+
+    Its hard if not impossible to have fine-grain control on object transformations while processing,
+    with a precise and extensible callback rule-based framework.
+
+    Consider for example a destination object with a key holding an [] and the corresponding source key holding a String.
+    We might want a rule for our source 'String' to be just pushed in an 'Array'. Or be pushed only if it aint there.
+    Or any other crazy rule, but in an easy to define way.
+
+    See the specs for more info!
+
+    @todo: more docs!
 ###
 class Blender
 
-  @defaultOptions: {inherited: false, copyProto: false}
+  @defaultOptions:
+    inherited: false
+    copyProto: false
+
+    # @todo: allow BlenderBehavior cases, configurable PER BlenderBehavior, with defaults on blender
+    #
+    # Then meet these specs
+
+    # a) match exact path              (@todo )
+
+    # b) match everything nested below (@done: pathTerminator default '|')
+
+    # c) compination of a) & b) : anything exact have one behavior, everything found below another behavior.
+
+    # e) like c, but also allow specific number of path keys or specific named keys to have specific behavior
+
+    ###
+      B
+    ###
+    isExactPath: false
+
+    ###
+      Terminates a path in a blenderBehavior spec - better not touch for now!
+      @todo: rethink it, allow terminator-like syntax in bbSrcDstPathSpec
+    ###
+    pathTerminator: '|'
+
+    ###
+      allow paths to be expressed as '/path/to/stuff'
+      @todo: (2 2 2): allow it to change per BB
+    ###
+    pathSeparator: '/'
 
   defaultBBOrder: ['src', 'dst'] # `action` is stored in {dst:src} objects
 
@@ -93,42 +150,107 @@ class Blender
 
     # Setup the default BlenderBehavior
     (@defaultBlenderBehaviors or= []).push Blender.behavior
-    lastDBB = _.last @defaultBlenderBehaviors
     # add defaultAction to all destinations for the last BB
-    for typeName, dbb of lastDBB['|'] # when type.isType(typeName) # assumed
+    lastDBB = _.last @defaultBlenderBehaviors
+    for typeName, dbb of lastDBB # when type.isType(typeName) # assumed
       if (_.isUndefined dbb["*"])
-        dbb["*"] or= lastDBB['|']['*']['*'] # Anything placed at '|':'*':'*' of lastDBB is default
+        dbb["*"] or= lastDBB['*']['*'] # Anything placed at '*':'*' of lastDBB is default
 
     # treat defaulBBs as normal blenderBehaviors:
     # they just go at the end, being the last resort
     @blenderBehaviors.push bb for bb in @defaultBlenderBehaviors
-    # shortify 'em all
-    @blenderBehaviors[bbi]['|'] = Blender.shortifyTypeNames bb['|'] for bb, bbi in @blenderBehaviors
+
+    # adjust blenderBehaviors: shortify all type names & expand all paths
+    @blenderBehaviors[bbi] = @adjustBlenderBehavior bb for bb, bbi in @blenderBehaviors
     @path = []
 
-  # Recursivelly convert all isType(keys) to `type.short` format
-  # i.e it changes all nested keys named 'Array', 'Object' etc to '[]', '{}' etc
-  # Blender always use short format internally
-  # @todo: 9 2 2 - dont shortify the PATH names!
-  @shortifyTypeNames: (bbSrcDstSpec={})->
-    for key, val of bbSrcDstSpec
-      if type.isType key # ignore non-types (shouldn't be under '|', but just in case)
-        short = type.toShort key
-        if short and (key isnt short)
-          bbSrcDstSpec[short] = bbSrcDstSpec[key]
-          delete bbSrcDstSpec[key]
+  ###
+  adjustBlenderBehavior takes a user defined blenderBehavior and converts it
+  to a suitable internal format that easier to work internally with Blender.
 
-      if _.isPlainObject(val) #recurse
-        Blender.shortifyTypeNames val
+  It does 2 basic things:
 
-    bbSrcDstSpec
+  * it shortifies all 'dst' and 'src' type names - ie
+    'Array' becomes '[]' and 'Object' becomes '{}' etc
+
+  * it 'expands' path names, i.e it converts from
+       {'/my/path/to/there':{'|':'something'}}
+    to {my:{path:{to:{there:{'|':'something'}}}}
+
+  its a maksed call to _adjustBbSrcDstPathSpec
+
+  @done: 9 2 2 - dont shortify the PATH names!
+  ###
+  adjustBlenderBehavior : (blenderBehavior)->
+    blenderBehavior.order or= @defaultBBOrder
+    @_adjustBbSrcDstPathSpec blenderBehavior, blenderBehavior.order
+
+  #@done: doc it & spec it!
+  _adjustBbSrcDstPathSpec: (bbSrcDstPathSpec, orderRemaining)->
+
+    if orderRemaining.length > 0
+      bbOrder = orderRemaining[0]
+
+      if bbOrder is 'path'
+
+        for key, val of bbSrcDstPathSpec
+
+          if key is @pathTerminator
+            #consume terminator & throw 'path' from order
+            if _.isPlainObject(val) #recurse
+              @_adjustBbSrcDstPathSpec val, orderRemaining[1..]
+
+          else
+            # adjust a path key (with separator)
+            # from {'/my/path/to/there':{'|':'something'}}
+            # to   {my:{path:{to:{there:{'|':'something'}}}}
+            # blending in :) with existing bbSpec
+            pathItems =
+                if @pathSeparator then (path for path in key.split(@pathSeparator) when path) else []
+
+              if pathItems.length > 1
+                newV = bbSrcDstPathSpec
+                for p, i in pathItems
+                  newV[p] or= {} # blend in :-)
+                  if i < pathItems.length-1
+                    newV = newV[p]
+                  else
+                    newV[p] = val
+                delete bbSrcDstPathSpec[key]
+              else
+                # fix '/somepath/' to 'somepath'
+                if pathItems[0] and key isnt pathItems[0]
+                  bbSrcDstPathSpec[pathItems[0]] = val
+                  delete bbSrcDstPathSpec[key]
+
+            if _.isPlainObject val                         # recurse but keep 'path' as 1st order item
+              @_adjustBbSrcDstPathSpec val, orderRemaining # until a pathTerminator '|' arrives
+
+
+      else
+        # Shortify all type names
+        # Recursivelly convert all isType(keys) to `type.short` format
+        # i.e it changes all nested keys named 'Array', 'Object' etc to '[]', '{}' etc
+        # It changes ONLY those responding to 'src' & 'dst', NOT inside paths (it makes no sense to do)!
+        for key, val of bbSrcDstPathSpec
+          if type.isType key              # ignore non-types
+            short = type.toShort key
+            if short and (key isnt short)
+              bbSrcDstPathSpec[short] = bbSrcDstPathSpec[key]
+              delete bbSrcDstPathSpec[key]
+
+          if _.isPlainObject(val)                             # recurse, but for next order item
+            @_adjustBbSrcDstPathSpec val, orderRemaining[1..] # consume this order item
+
+    bbSrcDstPathSpec
 
   # Find the actionName as Function and return it.
-  # Starts looking in BlenderBehaviors preceding currentBlenderBehavior, and Blender it self as last resort
+  #
+  # Starts looking in BlenderBehaviors preceding currentBlenderBehavior and Blender it self as last resort
   # throws error if no action Function is found in any of those
   #
   # @param {String} actionName name of the action, eg 'deepOverwrite'
-  # @return {Function} The first action Function found
+  # @return {Function} The first action Function found by that actionName
   getAction: (actionName, belowBlenderBehaviorIndex = @currentBlenderBehaviorIndex)=>
     for bb, bbi in @blenderBehaviors when bbi >= belowBlenderBehaviorIndex
       if _.isFunction bb[actionName]
@@ -148,13 +270,12 @@ class Blender
     Read from blenderBehavior : {
       order:['src', 'path', 'dst']
 
-      "|":
-        Array:
-          path: to:
-              other: "|"
-                String: ()->
-              current: is: "|":
-                String: ()->
+      Array:
+        path: to:
+            other: "|"
+              String: ()->
+            current: is: "|":
+              String: ()->
     }
   
     @param blenderBehavior {blenderBehavior} The blenderBehavior to search for action
@@ -163,9 +284,9 @@ class Blender
   ###
   getNextAction: (blenderBehavior, bbi, bbOrderValues)=>
 
-    currentBBSrcDstSpec = blenderBehavior['|']
+    currentBBSrcDstSpec = blenderBehavior
 
-    for bbOrder in (blenderBehavior.order or @defaultBBOrder)
+    for bbOrder in blenderBehavior.order
       # bbOrder is either 'src', 'dst' or 'path'
 
       if (currentBBSrcDstSpec  is undefined ) or # is nextBBSrcDstSpec terminal ?
@@ -189,9 +310,11 @@ class Blender
 
       else # nextBBSrcDstSpec is used mainly for debuging
         if bbOrder is 'path'
-          nextBBSrcDstSpec = getValueAtPath currentBBSrcDstSpec, @path[1..@path.length], {terminateKey:"|"}
-          if _.isObject nextBBSrcDstSpec
-            nextBBSrcDstSpec = nextBBSrcDstSpec['|']
+          nextBBSrcDstSpec = getValueAtPath currentBBSrcDstSpec, @path[1..@path.length], {
+                      terminateKey: if @isExactPath then undefined else @pathTerminator} #default is '|'
+
+          nextBBSrcDstSpec = nextBBSrcDstSpec['|'] if _.isObject nextBBSrcDstSpec
+
         else
           nextBBSrcDstSpec = currentBBSrcDstSpec[bbOrderValues[bbOrder]] or currentBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
 
@@ -232,6 +355,7 @@ class Blender
     At each key/value we examine we have enough information and power to manipulate and populate dst.
 
     The general case is that `destination` is populated with values from `source`.
+
     Ultimatelly destination will :
       * eventually 'receive' values
       * possibly coming from sources values
@@ -239,6 +363,7 @@ class Blender
       * if these are found in a BlenderBehavior of our blender.
 
     At each Action (which act on a current source's key/value) we have enough information like passed at params:
+
       prop: the name of the property, eg 'name'
 
       dst: the destination Object that contains this key. dst[prop] gives the value of 'name' on the destination
@@ -461,29 +586,27 @@ class Blender
 
     order: ['dst', 'src']
 
-    '|': # our 'dst <-- src' spec
+    # When destination is a `Primitive` or `Undefined`, we simply overwrite it
+    # with either the (primitive) value or reference (for Object types)
+    "*": "*": 'overwrite' # this is the default case
 
-      # When destination is a `Primitive` or `Undefined`, we simply overwrite it
-      # with either the (primitive) value or reference (for Object types)
-      "*": "*": 'overwrite' # this is the default case
+    # When destination is an Object (reference type, with nested keys),
+    # and source also happens to be an Object as well, then we 'merge',
+    # i.e we deepOverwrite.
+    Array:
+      Array: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
+      Object: 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
+      Function: 'deepOverwrite'
 
-      # When destination is an Object (reference type, with nested keys),
-      # and source also happens to be an Object as well, then we 'merge',
-      # i.e we deepOverwrite.
-      Array:
-        Array: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
-        Object: 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
-        Function: 'deepOverwrite'
+    Object:
+      Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
+      Array: 'deepOverwrite'
+      Function: 'deepOverwrite'
 
-      Object:
-        Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
-        Array: 'deepOverwrite'
-        Function: 'deepOverwrite'
-
-      Function:
-        Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
-        Array: 'deepOverwrite'
-        Function: 'deepOverwrite'
+    Function:
+      Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
+      Array: 'deepOverwrite'
+      Function: 'deepOverwrite'
 
 
 module.exports = Blender

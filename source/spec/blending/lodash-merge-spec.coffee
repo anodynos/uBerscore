@@ -11,8 +11,7 @@ describe 'lodash.merge-like blender', ->
   # with the exception of ignoring undefined:
   lodashMerge_like_blender = new _B.Blender {
     order: ['src']
-    '|':
-      'Undefined':-> _B.Blender.SKIP
+    'Undefined':-> _B.Blender.SKIP
       #'Null':-> @SKIP _.merge changed this - it overwrites normally.
   }
   require('./shared/lodashMerge-specs') lodashMerge_like_blender.blend

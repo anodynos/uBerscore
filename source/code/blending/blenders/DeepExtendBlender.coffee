@@ -28,37 +28,37 @@ class DeepExtendBlender extends Blender
   DeepExtendBlenderBehavior:
     order: ['src', 'dst']
 
-    '|':
-      String:'*':'overwriteOrReplace'
 
-      Array:
-        '[]': (prop, src, dst, blender)-> # Filter null / undefined. (note `type.areEqual('[]', 'Array') is true`)
-                _.reject blender.deepOverwrite(prop, src, dst, blender), (v)-> v in [null, undefined]
+    String:'*':'overwriteOrReplace'
 
-        '*': (prop, src, dst)->
+    Array:
+      '[]': (prop, src, dst, blender)-> # Filter null / undefined. (note `type.areEqual('[]', 'Array') is true`)
+              _.reject blender.deepOverwrite(prop, src, dst, blender), (v)-> v in [null, undefined]
+
+      '*': (prop, src, dst)->
+          throw """
+            deepExtend: Error: Trying to combine an array with a non-array.
+
+            Property: #{prop}
+            destination[prop]: #{l.prettify dst[prop]}
+            source[prop]: #{l.prettify src[prop]}
+          """
+
+    Object:
+      '{}': (prop, src, dst, blender)-> # Delete null / undefined (note `type.areEqual('{}', 'Object') is true`)
+              for key, val of deepBlended = blender.getAction('deepOverwrite')(prop, src, dst, blender)
+                if (val is null) or (val is undefined)
+                  delete deepBlended[key]
+              deepBlended
+
+      '*': (prop, src, dst)->
             throw """
-              deepExtend: Error: Trying to combine an array with a non-array.
+              deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
 
               Property: #{prop}
               destination[prop]: #{l.prettify dst[prop]}
               source[prop]: #{l.prettify src[prop]}
             """
-
-      Object:
-        '{}': (prop, src, dst, blender)-> # Delete null / undefined (note `type.areEqual('{}', 'Object') is true`)
-                for key, val of deepBlended = blender.getAction('deepOverwrite')(prop, src, dst, blender)
-                  if (val is null) or (val is undefined)
-                    delete deepBlended[key]
-                deepBlended
-
-        '*': (prop, src, dst)->
-              throw """
-                deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
-
-                Property: #{prop}
-                destination[prop]: #{l.prettify dst[prop]}
-                source[prop]: #{l.prettify src[prop]}
-              """
 
     # Actions - local to this blenderBehavior
     ###

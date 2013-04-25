@@ -59,27 +59,102 @@ if chai?
 
 
 describe 'Blender:', ->
-  describe 'Blender.shortifyTypeNames : ', ->
-    it "corectly transforms nested types of srcDstSpecs to short format", ->
-      longTypeNames =
-        order: ['src', 'dst']
-        Array: String:'someAction'
-        Object:
-          "Array": "doSomeAction"
-          "Null": ->
+  
+  describe 'Internals: blender.adjustBlenderBehavior:', ->
+  
+    describe "corectly transforms nested types of srcDstSpecs to short format", ->
+      it "works with simple 'src' and 'dst'", ->
+        longTypeNamesBb =
+          order: ['src', 'dst']
+  
+          Array: String:'someAction'
+          Object:
+            "Array": "doSomeAction"
+            "Null": ->
+  
+          doSomeAction:->
+  
+        expectedAdjustedBb =
+          order: [ 'src', 'dst' ]
+          doSomeAction: longTypeNamesBb.doSomeAction # copy function ref
+          '[]': "''": 'someAction'
+          '{}':
+            '[]': 'doSomeAction'
+            'null': longTypeNamesBb['Object'].Null
+  
+        blender = new _B.Blender longTypeNamesBb
+        expect(_.isEqual blender.blenderBehaviors[0], expectedAdjustedBb)
 
-        doSomeAction:->
 
-      expectedShortified =
-        order: [ 'src', 'dst' ]
-        doSomeAction: longTypeNames.doSomeAction # copy function ref
-        '[]': "''": 'someAction'
-        '{}':
-          '[]': 'doSomeAction'
-          'null': longTypeNames.Object.Null
+      it "works with bbOrder specs ['src', 'path', 'dst']", ->
+        longTypePathBb =
+            order:['src', 'path', 'dst']
 
-      expect(_.isEqual _B.Blender.shortifyTypeNames(longTypeNames), expectedShortified)
+            Function:->                              # its an 'src' item, hence it will become "->"
+            String:                                  # its an 'src' item, hence it will become "''"
+              'bundle/dependencies/variableNames/*': # paths with seperator '/' are expanded eg. `{bundle:dependencies:variableNames}`
 
+                basics : '|':                        # terminator of 'path'
+
+                  # these keys are 'dst' items - they become '{}', '[]' etc
+                  Object: -> 'Iam a someObjectAction'
+                  Array: 'someArrayAction, found on a preceding blenderBehavior or blender'
+                  String: (prop, src, dst, blender)-> B.Blender.SKIP
+
+              'bundle/dependencies/_knownVariableNames':  # expanded to `{bundle:dependencies:_knownVariableNames}`
+                                                          # but merged (blended:-) with {bundle:dependencies:...} above
+
+                  String: Array: Function:                # these are still path names, they aren't shortified
+
+                    '|':
+                      Function: ->_B.Blender.SKIP
+                      Array:'someArrayAction'
+            someAction:->
+
+        expectedAdjustededBb =
+          order: ["src", "path", "dst"]
+
+          '->': longTypePathBb.Function
+
+          "''":
+            bundle:
+              dependencies:
+                variableNames:
+                  "*":
+                    basics:
+                      "|":
+                        "{}": longTypePathBb['String']['bundle/dependencies/variableNames/*'].basics['|']['Object']
+                        "[]": longTypePathBb['String']['bundle/dependencies/variableNames/*'].basics['|']['Array']
+                        "''": longTypePathBb['String']['bundle/dependencies/variableNames/*'].basics['|']['String']
+
+                _knownVariableNames:
+                  String:
+                    Array:
+                      Function:
+                        "|":
+                          "->": longTypePathBb['String']['bundle/dependencies/_knownVariableNames'].String.Array.Function['|']['Function']
+                          "[]": "someArrayAction"
+
+          someAction: longTypePathBb.someAction
+
+        expect _.isEqual (new _B.DeepCloneBlender longTypePathBb).blenderBehaviors[0], expectedAdjustededBb
+
+#      it "ignores PROBLEMATIC specs with 'src' and 'dst' & 'path'", ->
+#
+#        longTypeNamesBb =
+#          order: ['src', 'dst', 'path']
+#          Array: String:'someAction'
+#          Object:
+#            "Array": 'this/is/path/to/action':'|': "doSomeAction"
+#            "Null": ->
+#          doSomeAction:->
+#
+#        expectedAdjustedBb = '???'
+#
+#        blender = new _B.Blender longTypeNamesBb
+#        expect(_.isEqual blender.blenderBehaviors[0], expectedAdjustedBb)
+
+        
   describe 'Handles primitives:', ->
 
     blender = new _B.Blender
@@ -157,7 +232,7 @@ describe 'Blender:', ->
 
       it "Numbers dont just overwrite each other: the source is doubled and then added up to destination", ->
         deepCloneBlenderAddingNumbers =
-          new _B.DeepCloneBlender '|': 'Number': 'Number': (prop, src, dst)-> dst[prop] + src[prop] * 2
+          new _B.DeepCloneBlender 'Number': 'Number': (prop, src, dst)-> dst[prop] + src[prop] * 2
 
         result = deepCloneBlenderAddingNumbers.blend {}, o1, o2
 
@@ -172,7 +247,7 @@ describe 'Blender:', ->
       it "src Array items dont just overwrite the destination Array ones: they are doubled (if numbers) & then pushed to dst.", ->
         deepCloneBlenderAddingNumbers =
           new _B.DeepCloneBlender(
-            '|': 'Array': 'Array': (prop, src, dst, bldr)->
+            'Array': 'Array': (prop, src, dst, bldr)->
                 for item in src[prop]
                   item = bldr.blend({}, {hack:item}).hack
                   dst[prop].push if _.isNumber(item) then item * 2  else item
@@ -193,7 +268,7 @@ describe 'Blender:', ->
         deepCloneBlenderOmmitingStrings =
           new _B.DeepCloneBlender(
             order: ['src']
-            '|': 'String': (prop, src, dst, bldr)-> _B.Blender.SKIP
+            'String': (prop, src, dst, bldr)-> _B.Blender.SKIP
           )
         result = (deepCloneBlenderOmmitingStrings.blend {}, o1, o2)
         expect(_.isEqual result,
@@ -219,21 +294,23 @@ describe 'Blender:', ->
 
       describe 'Chained BlenderBehaviors & Subclassed Blenders (are the same stuff): ', ->
           addingNumbersAndConcatEmToStringBlender =
-            new _B.DeepCloneBlender(                        # We useDeepCloneBlender, cause that's the bottom-line behavior we want.
-              funcOverwrite = '|': 'Function': 'overwrite'  # But we overide the behavior of a 'Function' arriving as source:
-                                                            # we simply overwrite (i.e copy its reference).
+            new _B.DeepCloneBlender(                  # We useDeepCloneBlender, cause that's the bottom-line behavior we want.
+
+              funcOverwrite = 'Function': 'overwrite'  # But we overide the behavior of a 'Function' arriving as source:
+                                                       # we simply overwrite (i.e copy its reference).
               weirdBB =
                 'order': ['dst', 'src']
-                '|':
-                  # When a Number arrives on source going onto a Function, we overwrite the function (at dst[prop])
-                  # with the result of applying src[prop] to that function.
-                  'Function': 'Number': (prop, src, dst)-> dst[prop] src[prop]
 
-                  # When a (Number or String) lands on a (Number or String), we have some special treatment
-                  'Number':
-                    'Number': (prop, src, dst)-> dst[prop] + src[prop] * 2
-                    'String': (prop, src, dst)-> dst[prop] + '--got a String-->:' + src[prop]
-                  'String': 'Number': (prop, src, dst)-> dst[prop] + '--got a Numba * 3-->:' + src[prop] * 3
+                # When a Number arrives (source) going onto a Function (destination),
+                # we overwrite the function (at dst[prop])
+                # with the result of applying src[prop] to that function.
+                'Function': 'Number': (prop, src, dst)-> dst[prop] src[prop]
+
+                # When a (Number or String) lands on a (Number or String), we have some special treatment
+                'Number':
+                  'Number': (prop, src, dst)-> dst[prop] + src[prop] * 2
+                  'String': (prop, src, dst)-> dst[prop] + '--got a String-->:' + src[prop]
+                'String': 'Number': (prop, src, dst)-> dst[prop] + '--got a Numba * 3-->:' + src[prop] * 3
             )
 
           ## lets create the exact Blender, using coffee class, so we can *new* or subclass them.

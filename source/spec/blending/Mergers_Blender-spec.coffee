@@ -304,53 +304,109 @@ describe "DeepCloneBlender .blend:", ->
             it "_B.isIxact false (inherited props, scrict references equality)", ->
               expect(!_B.isIxact deepInheritedClone, expectedPropertyValues)
 
-    describe "Something different & trivial: using path in BlenderBehavior", ->
+    describe "Something different & trivial: using ['path'] order in BlenderBehavior", ->
 
-      blender = new _B.DeepCloneBlender({
+      # a bit of a ['path'] order
+      # All blenders below define the exact same thing (in a slightly different way):
+      # "Destination 'Strings' inside 'bundle/basics' dont get overwriten by source 'String's!"
+
+      blenders = []
+
+      blenders.push new _B.DeepCloneBlender(
         order:['dst', 'path', 'src']
-        # Strings inside 'bundle:basics' never ovewrite other String's!
-        '|':
-          String: # our destination MUST be String
-            bundle: basics : '|':   # our PATH is everything
-              String: # our source also MUST be String
-                (prop, src, dst, blender)-> _B.Blender.SKIP
+        String:                   # our destination MUST be String
+          bundle: basics : '|':   # our PATH
+            String:               # our source also MUST be String
+              (prop, src, dst, blender)-> _B.Blender.SKIP # here's what we do
+      )
 
-      })
+      blenders.push new _B.DeepCloneBlender(
+        order:['path', 'src', 'dst']
+        bundle: basics : '|':   # our PATH
+          String:               # our source also MUST be String
+            String:             # our destination MUST be String
+              (prop, src, dst, blender)-> _B.Blender.SKIP # here's what we do
+      )
 
-      result = blender.blend(
+      blenders.push new _B.DeepCloneBlender(
+        order:['path', 'src', 'dst']
+        '/bundle/basics/': '|': # our PATH
+          String:               # our source also MUST be String
+            String:             # our destination MUST be String
+              (prop, src, dst, blender)-> _B.Blender.SKIP # here's what we do
+      )
+
+      blenders.push new _B.DeepCloneBlender(
+        order:['src', 'dst', 'path']
+        String:               # our source also MUST be String
+          String:             # our destination MUST be String
+            '/bundle/basics/': '|': # our PATH
+              (prop, src, dst, blender)-> _B.Blender.SKIP # here's what we do
+      )
+
+      blenders.push new _B.DeepCloneBlender([
+        order:['src', 'dst', 'path']
+        String:               # our source also MUST be String
+          String:             # our destination MUST be String
+            bundle: basics: '|': # our PATH
+                (prop, src, dst, blender)-> _B.Blender.SKIP # here's what we do
+      ])
+
+
+      o1 =
           bundle:
             someOkString: "OLD String#1"
             someOkStrings: ["OLD [String]#1", "OLD [String]#2"]
             basics:
+              newString2: 665
               someObject: skippedString: 'OLD string #2'
               skippedString: 'OLD string #3'
               skippedStrings: ["OLD [String]#3", "OLD [String]#4"]
+              anIntAsString: "665"
               anInt: 8
-        ,
+      o2 =
           bundle:
             someOkString: "OVERWRITTEN String#1"
             someOkStrings: ["OVERWRITTEN [String]#1", "OVERWRITTEN [String]#2"]
             basics:
               newString: "I am a OVERWRITTEN String, but on `undefined <-- String`, so I am ok!"
+              newString2: "I am a OVERWRITTEN String, but on `Number <-- String`, so I am ok!"
               someObject: skippedString: 'SKIPed string #2'
               skippedString: 'SKIPed string #3'
               skippedStrings: ["SKIPed [String]#3", "SKIPed [String]#4"]
-              anInt: 18
-      )
+              anIntAsString: 77
+              anInt: "18"
 
-      it "_.isEqual is true", ->
-        expect(_.isEqual result,
-           bundle:
-             someOkString: 'OVERWRITTEN String#1'
-             someOkStrings: [
-                'OVERWRITTEN [String]#1',
-                'OVERWRITTEN [String]#2'
-             ]
-             basics:
-                newString: "I am a OVERWRITTEN String, but on `undefined <-- String`, so I am ok!"
-                someObject: skippedString: 'OLD string #2'
-                skippedString: 'OLD string #3'
-                skippedStrings: [ 'OLD [String]#3', 'OLD [String]#4' ]
-                anInt: 18
-        )
+      expected =
+          bundle:
+            someOkString: 'OVERWRITTEN String#1'
+            someOkStrings: [
+              'OVERWRITTEN [String]#1',
+              'OVERWRITTEN [String]#2'
+            ]
+            basics:
+              newString: "I am a OVERWRITTEN String, but on `undefined <-- String`, so I am ok!"
+              newString2: "I am a OVERWRITTEN String, but on `Number <-- String`, so I am ok!"
+              someObject: skippedString: 'OLD string #2'
+              skippedString: 'OLD string #3'
+              skippedStrings: [ 'OLD [String]#3', 'OLD [String]#4' ]
+              anIntAsString: 77 # `String<--Number` overwrites
+              anInt: "18"       # `Number<--String` overwrites
+
+      for blender, bi in blenders
+        it "_.isEqual is true for blender ##{bi}", ->
+            result = blender.blend {}, o1, o2
+            expect(_.isEqual result, expected)
+
+      #todo: with isExactPath
+#      blenders.push new _B.DeepCloneBlender([
+#        order:['src', 'dst', 'path']
+#        String:               # our source also MUST be String
+#          String:             # our destination MUST be String
+#            bundle: basics:
+#              overWrittingString: '|': -> _B.Blender.NEXT
+#
+#              '*': '|': # our PATH
+#                (prop, src, dst, blender)-> _B.Blender.SKIP # here's what we do
+#      ], {pathTerminator: '|', isExactPath: true })
 
