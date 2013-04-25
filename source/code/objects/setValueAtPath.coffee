@@ -1,5 +1,7 @@
 _ = require 'lodash'
 
+#todo: use defaultOptions = {forceCreate: false, separator: '/'}
+
 setValueAtPath = (o, path, val, forceCreate=false, separator='/')-> #
   if not _.isArray(path)
     if _.isString path

@@ -1,7 +1,5 @@
-# a `var VERSION = "x.x.x"` is placed here by grant:concat
 _ = require 'lodash'
 inAgreements = require './agreement/inAgreements'
-
 
 ###
   The simplest possible Logger!
@@ -12,11 +10,8 @@ inAgreements = require './agreement/inAgreements'
     `l = new (require './../Logger') 'MyModule', 0`
 ###
 class Logger
-  # default Logger::debugLevel
-  @debugLevel = 0
-  VERSION: if VERSION? then VERSION else '{NO_VERSION}' # 'VERSION' variable is added by grant:concat
 
-  constructor: (@title, @debugLevel = 0, @newLine = true)->
+  constructor: (@title, @debugLevel, @newLine = true)->
     Logger.loggerCount = (Logger.loggerCount or 0) + 1
 
   @getALog: (baseMsg, color, cons)->
@@ -46,26 +41,64 @@ class Logger
   err:  Logger.getALog "ERROR", '\u001b[31m', console.error #red
   log: Logger.getALog "", '\u001b[0m', console.log          #white
   verbose: Logger.getALog "", '\u001b[34m', console.log     #???
-  ok: Logger.getALog "", '\u001b[32m', console.log     #green
+  ok: Logger.getALog "", '\u001b[32m', console.log          #green
   warn: Logger.getALog "WARNING", '\u001b[33m', console.log #yellow
+
 
   debug: do ->
     log = Logger.getALog "DEBUG", '\u001b[36m', console.log #blue
 
-
     return (level, msgs...)->
-      if _.isString level
+      if not _.isNumber(level)
         msgs.unshift level
-        msgs.unshift '(-)'
-        level = 1 # debug unless debugLevel is 0
+        level = @lastDebugLevelCheck or 1 # debug unless debugLevel is 0
+        msgs.unshift(
+          if @lastDebugLevelCheck then "(?#{@lastDebugLevelCheck})" else '(!1)'
+        )
       else
         msgs.unshift "(#{level})"
 
-      # check @debugLevel if its an instance call (and @debugLevel is defined), else check Logger.debugLevel
-      if ( (Logger.debugLevel >= 0) and # negative debugLevel on the static turns debug OFF completely!
-           (level <= (if (@ is Logger.logger) or (@debugLevel is undefined) then Logger.debugLevel else @debugLevel))
-      ) or (Logger.debugLevel >= 999) # debugLevel that large on the static, prints all debug messages!
-            log.apply @, msgs
+      if level <= @effectiveDebugLevel()
+        log.apply @, msgs
+
+      @lastDebugLevelCheck = undefined #always reset it
+
+  # How to set debugLevel:
+  #
+  # On instance construction, a logger can have a localy-defined debugLevel:
+  #     `l = new Logger 'myLoggerName', 10`
+  #
+  # This local/instance debugLevel is always respected:
+  # all l.debug calls with 1st param a 10 (or less) will fire, as long
+  # as Logger.debugLevel is undefined or greater than 0
+  #
+  # if Logger.debugLevel is <= 0, ALL debug calls are disabled.
+  #
+  # if Logger.debugLevel is > 0, then ALL debug calls that are up to Logger.debugLevel will fire,
+  # as well as those with greater as long as their `l.debugLevel` (i.e their local instance variable) allows it.
+
+  #
+  #  * First, check if we override globally with Logger.debugLevel
+  #    * if zero or negative Logger.debugLevel, its turns debug OFF completely for all loggers.
+  #    * otherwise the greater of Logger.debugLevel and @debugLevel is chosen as effective
+  #
+  #  * Otherwise, we return @debugLevel (and consequently its __proto__, if undefined @ instance)
+  effectiveDebugLevel: ->
+    if Logger.debugLevel isnt undefined
+      if Logger.debugLevel <= 0
+        -Infinity
+      else
+        _.max [Logger.debugLevel, @debugLevel, 0]
+    else
+      @debugLevel or 0
+
+  deb:(debugLevel)->
+    if debugLevel <= @effectiveDebugLevel()
+      @lastDebugLevelCheck = debugLevel
+      return true
+    else
+      @lastDebugLevelCheck = undefined
+      return false
 
   prettify:
     if (__isNode? and __isNode) or not __isNode?
@@ -93,21 +126,25 @@ class Logger
 
 module.exports = Logger
 #
-##inline tests
-#Logger.debugLevel = -1
-#Logger.log 'Static call to .log'
-#Logger.warn 'Static call to .warn'
-#Logger.debug 'Static call to .debug - NOT PRINTING cause too small DebugLevel'
+#todo: specs ?
+#Logger.debugLevel = 15
+#logger10 = new Logger 'logger10', 10
+#logger20 = new Logger 'logger20', 20
 #
-#Logger.debug 0, 'Static call to .debug, debugLevel 0'
+#logger10.debug 10, 'logger10.debug debugLevel = 10 # fires normally'
+#logger10.debug 15, 'logger10.debug debugLevel = 15 # fires because of Logger.debugLevel = 15'
+#logger10.debug 20, 'logger10.debug debugLevel = 20 # doesnt fire because logger10 doesnt allow it & Logger.debugLevel = 15'
 #
-#Logger.debugLevel = 10
-#Logger.debug 'Static call to .debug - PRINTING cause static debugLevel is 10'
+#logger20.debug 10, 'logger20.debug debugLevel = 10 #fires due to logger20'
+#logger20.debug 15, 'logger20.debug debugLevel = 15 #fires due to logger20'
+#logger20.debug 20, 'logger20.debug debugLevel = 20 #fires due to logger20 having debugLevel = 20, despite Logger.debugLevel = 15'
 #
-## Object based
-#l = new Logger "MyLogger", 5
-#l.log 'My logger logs...', (if o? and o then 'go' else 'dont go'), [{a:"b"}], [1,2,3]
-#l.err 'My logger errs...', (if o? and o then 'go' else 'dont go'), [{a:"b"}], [1,2,3]
-##l.warn 'My logger logs...', (if o? and o then 'go' else 'dont go'), [{a:"b"}], [1,2,3]
-#l.debug 10, 'Instance debug - NOT PRINTING, cause I am configured too high', 10, '\n', [{a:["b", "a"], b:[11,22,33]}], [1,2,3]
-#l.debug 5, 'Instance debug - PRINTING, cause I am configured low', 5, '\n', [{a:["b", "a"], b:[11,22,33]}], [1,2,3]
+#Logger.debug 10, 'DefaultLogger.debug debugLevel = 10 # fires because of Logger.debugLevel = 15'
+#Logger.debug 15, 'DefaultLogger.debug debugLevel = 15 # fires because of Logger.debugLevel = 15'
+#Logger.debug 20, 'DefaultLogger.debug debugLevel = 20 # doesnt fire because of Logger.debugLevel = 15'
+#
+#if logger10.deb(13)
+#  logger10.debug 'logger10 using last deb() param as debugLevel'
+#
+#if logger20.deb(18)
+#  logger20.debug 'logger20 using last deb() param as debugLevel'

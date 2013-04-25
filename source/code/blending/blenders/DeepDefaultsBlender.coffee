@@ -23,19 +23,30 @@ class DeepDefaultsBlender extends DeepCloneBlender
     "Undefined": -> Blender.NEXT
     "Null": -> Blender.NEXT
 
-    # We also need to merge with nested destination types - when both dst & src are such.
-    # We simply NEXT to use DeepCloneBlender's inherited BlenderBehaviors (which will pick 'deepCloneOverwrite' that doesn't overwrite).
-    # @todo: use two BBs to simplify the following BB dstSrcSpec
+    # We also need to merge with nested destination types
+    # but ONLY when both dst & src are 'compatible' nnested types.
+    #
+    # This BB (and its parent) consider 'Function' & 'Object' to be 'compatible',
+    # but 'Array' to bedifferent to these - hence no merging is attempted.
+    #
+    # We simply NEXT to use DeepCloneBlender's inherited BlenderBehaviors
+    # (which will pick 'deepCloneOverwrite' that doesn't simply overwrite).
+    # and will SKIP the rest.
+    # @todo: simplify the following BB dstSrcSpec ?
     Object: # repeating for Array & Function
       Object: -> Blender.NEXT
-      Array: -> Blender.NEXT
       Function: -> Blender.NEXT
+      "*": -> Blender.SKIP
+    Function:
+      Object: -> Blender.NEXT
+      Function: -> Blender.NEXT
+      "*": -> Blender.SKIP
+    Array:
+      Array: -> Blender.NEXT
       "*": -> Blender.SKIP
 
     # SKIP all other destinations (primitives, non undefined/null).
     "*": -> Blender.SKIP
 
-  @behavior['Array'] = @behavior['Object']
-  @behavior['Function'] = @behavior['Object']
 
 module.exports = DeepDefaultsBlender

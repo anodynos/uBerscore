@@ -40,6 +40,7 @@ gruntFunction = (grunt) ->
           bundlePath: "#{sourceDir}"
           ignore: [/^draft/]
           dependencies:
+#            bundleExports: 'malakies':"toubana" #todo:delete, test only
             noWeb: ['util']
 
         build:
@@ -49,8 +50,8 @@ gruntFunction = (grunt) ->
       uberscoreUMD:
         dependencies:
           bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
-            'lodash':"_",                               # precise syntax
-            'agreement/isAgree': 'isAgree'
+            'lodash': "_",                                # precise syntax
+            'agreement/isAgree': 'isAgree' #@todo: mind the pathSeperator symbol '/' in Blender paths!
 
         outputPath: "#{buildDir}"
         # template: 'UMD' # 'UMD' is default

@@ -1,4 +1,4 @@
-urequire:                        # uRequire Module Configuration
+urequire:  # uRequire Module Configuration
   rootExports: ['_B', 'uberscore']
   noConflict: true
 ###
@@ -8,6 +8,8 @@ class uberscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
   # some libs are required as bundleRelative others as fileRelative,
   # for uRequire's demonstration purposes!
+
+  #VERSION: if not VERSION? then '{VERSION}' else VERSION # 'VERSION' variable added by grant:concat
 
   # Blender - blending Objects
   Blender: require './blending/Blender'
@@ -57,6 +59,7 @@ class uberscore
 
   # various
   certain: require './certain'
+
 
 
 module.exports = new uberscore

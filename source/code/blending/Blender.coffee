@@ -1,42 +1,55 @@
 ###DEV ONLY ###
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 #__isNode = true
-debugLevel = 0
 ###DEV ONLY ###
 
-l = new (require './../Logger') 'Blender', if debugLevel? then debugLevel else 0
+l = new (require './../Logger') 'Blender', 0
 type = require '../type'
 getValueAtPath = require '../objects/getValueAtPath'
 
 ###
   Blender: a highly configurable object blender :-)
 
-  Blending is the process of mixing one or more objects, using some predefined rule.
+  Blending is the process of mixing one or more objects, using some predefined rules.
 
   The most known blending functions are the likes of `_.extend, _.defaults, _.clone`
   or `jQuery.extend`, `lodash.merge` or Kurt Milam's `deepExtend` etc
 
   However, these functions have many deficiencies and their behavior is highly static.
 
-  In general they have the follwoing shortcomings:
+  In overall they have the following shortcomings:
 
-  * They ususally dont go deep - eg `_.extend` and `_.defaults` is only dealing with root-level keys.
-    `lodash.merge` does better, but then there is no further control on copying/overwriting/merging/deep linking semantics.
-     No callbacks or infrastructure to easily adjust its behavior.
+    * They ususally dont go deep - eg `_.extend` and `_.defaults` is only dealing with root-level keys.
+      `lodash.merge` does better, but still there is no further control on
+       other copying/overwriting/merging/deep linking semantics.
+       There are no callbacks or infrastructure to easily adjust its behavior.
 
-  * There is little or no control of what happens at each point,
-    for example what type overwrites which type or at which point/path in the object etc.
+    * There is little or no control of which branches or data types to
+      visit/avoid/overwrite/merge/trasform/delete etc.
 
-    Its hard if not impossible to have fine-grain control on object transformations while processing,
-    with a precise and extensible callback rule-based framework.
+      We can't easily decide what happens at each point, for example
+        * which data type overwrites/merges/ignores another type
+        * what happens at which point/path in the object etc.
+        * which exact action to take at each point
 
-    Consider for example a destination object with a key holding an [] and the corresponding source key holding a String.
-    We might want a rule for our source 'String' to be just pushed in an 'Array'. Or be pushed only if it aint there.
-    Or any other crazy rule, but in an easy to define way.
+  Consider the simplest example: a destination object with a key 'myKey' holding an [] and the corresponding
+  source key holding a String. We might wish for a rule that our source 'String' at 'myKey' is just pushed
+  in the corresponding 'Array'. Or be pushed only if it aint there. Or any other crazy rule.
 
-    See the specs for more info!
+  In general its not possible to have fine-grain control on object transformations
+  using these predefined simple _.xxx or similar functions.
 
-    @todo: more docs!
+  You can attempt to provide handwritten functions that solve a specific case, but its hard and error prone
+  without a precise and extensible rule-based callback enabled framework.
+
+  If we attempt to write the recursive function with these rules, we'll be reinventing the wheel each time.
+
+  uBerscore Blender provides the common structure for this, allowing rules even more complex than this
+  to be defined in an easy way.
+
+  See the specs for more info!
+
+  @todo: more docs!
 ###
 class Blender
 
@@ -57,15 +70,18 @@ class Blender
     # e) like c, but also allow specific number of path keys or specific named keys to have specific behavior
 
     ###
-      B
-    ###
-    isExactPath: false
-
-    ###
       Terminates a path in a blenderBehavior spec - better not touch for now!
+
       @todo: rethink it, allow terminator-like syntax in bbSrcDstPathSpec
     ###
     pathTerminator: '|'
+
+    ###
+      @todo: only has partial implementation - no specs
+      @todo: make true the default
+    ###
+    isExactPath: false
+
 
     ###
       allow paths to be expressed as '/path/to/stuff'
@@ -73,7 +89,14 @@ class Blender
     ###
     pathSeparator: '/'
 
-  defaultBBOrder: ['src', 'dst'] # `action` is stored in {dst:src} objects
+    debugLevel: 0
+
+    # @todo: investigate those notions
+    #actionResultHandler:   'alwaysAssign'
+    #actionCallbackAdapter: 'standardCallbackAdapter'
+
+
+  defaultBBOrder: ['src', 'dst'] # `action` is stored in {src:dst} objects
 
   ###
   @param benderBehaviors {Array<BlenderBehavior>}
@@ -135,14 +158,16 @@ class Blender
     # check if we have options: 1st param is blenderBehavior [], 2nd is options {}
     if _.isArray @blenderBehaviors[0]
 
-      l.debug(20, "We might have options:", @blenderBehaviors[1], "@_optionsList (defaults):", @_optionsList) if l.debugLevel >= 20
+      l.debug("We might have options:", @blenderBehaviors[1], "@_optionsList (defaults):", @_optionsList) if l.deb 20
       @_optionsList.push @blenderBehaviors[1] # user/param @options override all others
       @blenderBehaviors = @blenderBehaviors[0]
 
     # Store options: each option passed in a subclass, overwrites the ones in the ancestor hierarchy (`_.extend` is used).
     @_optionsList.unshift options = {}      # store all under local 'options'
     _.extend.apply undefined, @_optionsList # options are overwritten by subclass/construction values
-    l.debug(10, "Final blender options:", options) if l.debugLevel >= 10
+
+    l.debugLevel = options.debugLevel
+    l.debug("Final blender options:", options) if l.deb 10
 
     # copy all to this, the blender instance of XXXBlender
     _.extend @, options
@@ -294,12 +319,12 @@ class Blender
          _.isFunction(currentBBSrcDstSpec) # or (not _.isObject nextBBSrcDstSpec ) #todo: need this ?
             break # skip all other bbOrder, if it was terminal.
 
-      l.debug(80, "At bbOrder='#{bbOrder}'",
+      l.debug("At bbOrder='#{bbOrder}'",
             (if bbOrder is 'path'
               " @path=#{l.prettify @path}"
             else
               " bbOrderValues[bbOrder]='#{bbOrderValues[bbOrder]}'"),
-            " currentBBSrcDstSpec =\n", currentBBSrcDstSpec ) if l.debugLevel >= 80
+            " currentBBSrcDstSpec =\n", currentBBSrcDstSpec ) if l.deb 80
 
       if _.isUndefined bbOrderValues[bbOrder]
         throw l.err  """
@@ -343,7 +368,7 @@ class Blender
           " \nbbOrderValues[bbOrder]='#{bbOrderValues[bbOrder]}'",
           " \nnextBBSrcDstSpec=\n", nextBBSrcDstSpec
 #          " \ncurrentBBSrcDstSpec=\n", currentBBSrcDstSpec
-        ) if l.debugLevel >= 70
+        ) if l.deb 70
 
         currentBBSrcDstSpec = nextBBSrcDstSpec
 
@@ -385,6 +410,7 @@ class Blender
 
         * blender.currentBlenderBehaviorIndex so that `blender.blenderBehaviors[blender.currentBlenderBehaviorIndex]`
                                               gives us the currently selected `BlenderBehavior`
+        * blender.currentBlenderBehavior
 
 
 
@@ -431,15 +457,15 @@ class Blender
       for prop in props # props for {} is ['prop1', 'prop2', ...], for [] its [1,2,3,...]
         @path.push prop
 
-        l.debug(50, """
+        l.debug("""
             @path = /#{@path.join('/')}
             '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
-          """, dst[prop], '    <--  ', src[prop]) if l.debugLevel >= 50
+          """, dst[prop], '    <--  ', src[prop]) if l.deb 50
 
         # go through @certainBlenderBehaviors, until an 'action' match is found.
         visitNextBB = true
         for bb, bbi in @blenderBehaviors when visitNextBB
-          l.debug(60, "Currently at @blenderBehaviors[#{bbi}] =\n", bb) if l.debugLevel >= 60
+          l.debug("Currently at @blenderBehaviors[#{bbi}] =\n", bb) if l.deb 60
 
           nextBBSrcDstSpec = @getNextAction bb, bbi,
               # last argument is bbOrderValues, eg : `{scr:'[]', dst: '{}', path:['a','property']}`
@@ -461,7 +487,8 @@ class Blender
                 action = @getAction action, bbi # throws error if none is found, hence no other check needed
 
           # should have an _.isFunction(action) by now.
-          @currentBlenderBehaviorIndex = bbi # @todo: why do we need this ?
+          @currentBlenderBehaviorIndex = bbi # @todo: why do we need these ?
+          @currentBlenderBehavior = @blenderBehaviors[bbi]
 
           # execute the action and retrieve the ActionResult (value or otherwise)
           result = action prop, src, dst, @  # assume _.isFunction action
@@ -476,14 +503,14 @@ class Blender
               result = result[1]
               visitNextBB = true
 
-            l.debug(20, """
+            l.debug("""
               Action Called - Value assigning:  @path =""", @path.join('/'), """
-              \n  value =""", l.prettify result) if l.debugLevel >= 20
+              \n  value =""", l.prettify result) if l.deb 20
 
             dst[prop] = result # actually assign, by default all values
 
           else # we have some special ActionResult:
-            l.debug(30, "Action Called - ActionResult = ", result) if l.debugLevel >= 30
+            l.debug("Action Called - ActionResult = ", result) if l.deb 30
             if result in [Blender.DELETE, Blender.DELETE_NEXT]
               delete dst[prop]
 #              l.debug 70, "DELETEd prop = #{l.prettify prop}"
@@ -612,7 +639,7 @@ class Blender
 module.exports = Blender
 
 #### DEBUG ###
-if l.debugLevel > 40
+if l.deb 40
   YADC = require('YouAreDaChef').YouAreDaChef
 
   YADC(Blender)

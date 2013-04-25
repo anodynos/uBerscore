@@ -56,7 +56,8 @@ describe "Default 'Blender.blend'", ->
     describe "clones POJSO Object (no inheritance)", ->
 
       describe "(shallowClone = defaultBlender.blend {}, expectedPropertyValues)", ->
-        shallowClone = defaultBlender.blend {}, expectedPropertyValues
+#        shallowClone = defaultBlender.blend {}, expectedPropertyValues
+        shallowClone = defaultBlender.blend expectedPropertyValues #same as above
 
         describe "is a shallow clone and compared to source: ", ->
           it "is not RefDisjoint - (there is at least one common reference))", ->
@@ -117,7 +118,8 @@ describe "Default 'Blender.blend'", ->
     describe "clones objectWithProtoInheritedProps (with inheritance)", ->
 
       describe "(shallowCloneInheritedCopied = defaultBlenderInheritedCopier.blend {}, objectWithProtoInheritedProps)", ->
-        shallowCloneInheritedCopied = defaultBlenderInheritedCopier.blend {}, objectWithProtoInheritedProps
+#        shallowCloneInheritedCopied = defaultBlenderInheritedCopier.blend {}, objectWithProtoInheritedProps
+        shallowCloneInheritedCopied = defaultBlenderInheritedCopier.blend objectWithProtoInheritedProps # same as above
 
         describe "is a complete shallow clone, having shallow copied all inherited props: ", ->
 
@@ -192,7 +194,9 @@ describe "DeepCloneBlender .blend:", ->
     describe "clones POJSO Object (no inheritance)", ->
 
       describe "(deepClone = deepCloneBlender.blend {}, expectedPropertyValues)", ->
-        deepClone  = deepCloneBlender.blend {}, expectedPropertyValues
+#        deepClone  = deepCloneBlender.blend {}, expectedPropertyValues
+        deepClone  = deepCloneBlender.blend expectedPropertyValues # same as above
+
         describe "is a deep clone", ->
           it "_B.isDisjoint true, NO common references in objects", ->
             expect(_B.isRefDisjoint(deepClone, expectedPropertyValues, {deep:true, inherited:true}))
