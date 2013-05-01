@@ -20,6 +20,9 @@ describe """
       expect( window._B ).to.equal "Old global `_B`"
       expect( window.uberscore ).to.equal "Old global `uberscore`"
 
+      # just assign it for console testing
+      #window._uB = _uB
+
   else
     it "NOT TESTING `rootExports`, I am on node/#{if __isAMD then 'AMD' else 'plain'}!", ->
     it "NOT TESTING `noConflict()`, I am on node/#{if __isAMD then 'AMD' else 'plain'}!", ->

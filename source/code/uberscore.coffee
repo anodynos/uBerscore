@@ -9,7 +9,7 @@ class uberscore
   # some libs are required as bundleRelative others as fileRelative,
   # for uRequire's demonstration purposes!
 
-  #VERSION: if not VERSION? then '{VERSION}' else VERSION # 'VERSION' variable added by grant:concat
+  VERSION: if not VERSION? then '{NO_VERSION}' else VERSION # 'VERSION' variable added by grant:concat
 
   # Blender - blending Objects
   Blender: require './blending/Blender'
