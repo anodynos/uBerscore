@@ -57,9 +57,7 @@ class uberscore
   # Logging / debugging
   Logger: require './Logger'
 
-  # various
+  # various @todo either DEPRACATE or bring up to a proper decorator ?
   certain: require './certain'
-
-
 
 module.exports = new uberscore

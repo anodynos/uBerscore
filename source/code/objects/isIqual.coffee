@@ -13,7 +13,7 @@ isIqual = (a, b, callback, thisArg, options={})->
 
 module.exports = isIqual
 #
-#l = (new (require './../Logger') '', 40, true)
+#l = (new (require './../Logger') 'uberscore/isIqual', 40, true)
 #_ = require 'lodash'
 #{ objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = require '../../spec/spec-data'
 

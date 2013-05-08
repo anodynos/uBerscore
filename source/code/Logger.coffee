@@ -1,26 +1,48 @@
 _ = require 'lodash'
 inAgreements = require './agreement/inAgreements'
-
+setValueAtPath = require './objects/setValueAtPath'
+getValueAtPath = require './objects/getValueAtPath'
 ###
-  The simplest possible Logger!
+  The simplest possible powerfull Logger!
 
   Use like this
     `var l = new (require('./../Logger'))('MyModule', 0`)
   or in coffee
     `l = new (require './../Logger') 'MyModule', 0`
+
+
+  @todo: document it! And make specs
+  @todo: change the lame names of
+    * levelPath
+    * get/set DebugLevel
 ###
 class Logger
 
-  constructor: (@title, @debugLevel, @newLine = true)->
+  constructor: (@levelPath, @debugLevel, @newLine = true)->
+    @levelPaths = (path for path in levelPath.split('/') when path)
     Logger.loggerCount = (Logger.loggerCount or 0) + 1
+
+  prettify:
+    if (__isNode? and __isNode) or not __isNode?
+      do (inspect = require('util').inspect)-> # 'util' is NOT added by uRequire, using a 'noWeb' declaration
+        (o)->
+          pretty = "\u001b[0m#{(inspect o, false, null, true)}"
+          if _.isArray o
+            pretty.replace /\n/g, ''
+          if inAgreements o, [_.isObject]
+            pretty
+          else # _.isString, etc
+            o
+    else
+      (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation. http://docstore.mik.ua/orelly/webprog/jscript/ch03_12.htm
 
   @getALog: (baseMsg, color, cons)->
     ->
       args = (@prettify(arg) for arg in Array.prototype.slice.call arguments)
-      title = "#{if not @title
+      title = "#{if not @levelPath
                   'Logger' + Logger.loggerCount + ' '
                  else
-                  '[' + @title + '] '
+                  '[' + @levelPath + '] ' #todo: make title smaller than @levelPath, perhaps `@levelPaths[@levelPaths.length-1]` ?
                 }#{baseMsg}"
       title = title + ":" if title
       args.unshift title
@@ -44,7 +66,6 @@ class Logger
   ok: Logger.getALog "", '\u001b[32m', console.log          #green
   warn: Logger.getALog "WARNING", '\u001b[33m', console.log #yellow
 
-
   debug: do ->
     log = Logger.getALog "DEBUG", '\u001b[36m', console.log #blue
 
@@ -58,12 +79,12 @@ class Logger
       else
         msgs.unshift "(#{level})"
 
-      if level <= @effectiveDebugLevel()
+      if level <= @getEffectiveDebugLevel()
         log.apply @, msgs
 
       @lastDebugLevelCheck = undefined #always reset it
 
-  # How to set debugLevel:
+  # How to set debugLevel: #todo: update docs with levelPaths
   #
   # On instance construction, a logger can have a localy-defined debugLevel:
   #     `l = new Logger 'myLoggerName', 10`
@@ -83,36 +104,49 @@ class Logger
   #    * otherwise the greater of Logger.debugLevel and @debugLevel is chosen as effective
   #
   #  * Otherwise, we return @debugLevel (and consequently its __proto__, if undefined @ instance)
-  effectiveDebugLevel: ->
-    if Logger.debugLevel isnt undefined
-      if Logger.debugLevel <= 0
+  getEffectiveDebugLevel: ->
+    fedDebLevel = @getFederatedDebugLevel()
+    if not _.isUndefined fedDebLevel
+      if fedDebLevel <= 0
         -Infinity
       else
-        _.max [Logger.debugLevel, @debugLevel, 0]
+        _.max [fedDebLevel, @debugLevel, 0]
     else
       @debugLevel or 0
 
+  getFederatedDebugLevel: ()->
+     Logger.getStaticDebugLevel @levelPaths
+
+  # Static method to retrieve the level for given levelPath (eg 'uberscore/objects/isIqual')
+  # or one above it in the hierarchy (eg 'uberscore/objects').
+  # it looks inside Logger.debugLevels
+  @getStaticDebugLevel = (levelPaths=[])->
+    levPaths = _.clone levelPaths
+    levPaths.unshift 'debugLevels'
+    val = getValueAtPath Logger, levPaths
+    lastPath = levPaths.pop() # WHERE IS THE REAL REPEAT/UNTIL CONSTRUCT ?
+
+    while (_.isUndefined val?._value) and lastPath
+      val = getValueAtPath Logger, levPaths
+      lastPath = levPaths.pop()
+
+    return val?._value
+
+  # Sets the level for a given Logger levelPath
+  # @param String levelPath eg 'uberscore/objects/isIqual'
+  # @param Number level eg 30
+  @setDebugLevel = (level, levelPath)->
+    setValueAtPath Logger, 'debugLevels/' + levelPath + '/_value', level, forceCreate = true
+
+  # a helper to simplify decision to Log or not, whoith having to evaluate huge concatenations,
+  # just to decide we arent at debuging level anyway.
   deb:(debugLevel)->
-    if debugLevel <= @effectiveDebugLevel()
+    if debugLevel <= @getEffectiveDebugLevel()
       @lastDebugLevelCheck = debugLevel
       return true
     else
       @lastDebugLevelCheck = undefined
       return false
-
-  prettify:
-    if (__isNode? and __isNode) or not __isNode?
-      do (inspect = require('util').inspect)-> # 'util' is NOT added by uRequire, using a 'noWeb' declaration
-        (o)->
-          pretty = "\u001b[0m#{(inspect o, false, null, true)}"
-          if _.isArray o
-            pretty.replace /\n/g, ''
-          if inAgreements o, [_.isObject]
-            pretty
-          else # _.isString, etc
-            o
-    else
-      (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation. http://docstore.mik.ua/orelly/webprog/jscript/ch03_12.htm
 
   # static
   @logger = new Logger 'DefaultLogger'
@@ -124,8 +158,9 @@ class Logger
     else
       Logger[key] = val
 
+
 module.exports = Logger
-#
+
 #todo: specs ?
 #Logger.debugLevel = 15
 #logger10 = new Logger 'logger10', 10
@@ -148,3 +183,18 @@ module.exports = Logger
 #
 #if logger20.deb(18)
 #  logger20.debug 'logger20 using last deb() param as debugLevel'
+
+
+
+
+#Logger.setDebugLevel 40, 'paparia/mentoles'
+#
+#l = new Logger 'paparia/mentoles/arxidies'
+#l2 = new Logger 'paparologies/mentoles/arxidies', 29
+#l.log Logger.debugLevels
+#
+#l.debug 30, 'arxiditses1', l.getFederatedDebugLevel()
+#l2.debug 30, 'arxiditses2', l2.getFederatedDebugLevel() # not debuging, cause there's no debugLevel for 'paparologies/***'
+#
+#console.log l.getDebugLevel is l.__proto__.getDebugLevel
+

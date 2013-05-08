@@ -1,4 +1,4 @@
-l = new (require '../../Logger') 'DeepExtendBlender'
+l = new (require '../../Logger') 'uberscore/DeepExtendBlender'
 Blender = require '../Blender'
 _ = require 'lodash'
 

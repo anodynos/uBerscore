@@ -108,7 +108,7 @@ getValueAtPath = (o, path, options = defaultOptions)->
 
 module.exports = getValueAtPath
 
-#l = new (require '../Logger') 'getValueAtPath'
+#l = new (require '../Logger') 'uberscore/getValueAtPath'
 #
 #o =
 #  '$':

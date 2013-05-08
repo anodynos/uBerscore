@@ -12,7 +12,7 @@ module.exports = isExact
 #
 #_ = require 'lodash'
 #
-#l = (new (require './../Logger') 'isExactLogger', 40, true)
+#l = (new (require './../Logger') 'uberscore/isExact', 40, true)
 #
 #{ objectWithProtoInheritedProps, Class3, expectedPropertyValues
 #

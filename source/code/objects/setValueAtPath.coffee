@@ -37,7 +37,7 @@ module.exports = setValueAtPath
 
 #inline tests
 
-#l = new (require './../Logger')
+#l = new (require './../Logger') 'uberscore/setValueAtPath'
 #
 #o=
 #  '$':

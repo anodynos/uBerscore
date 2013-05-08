@@ -1,6 +1,6 @@
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 
-l = new (require './../Logger') 'Blender', if debugLevel? then debugLevel else 0
+l = new (require './../Logger') 'uberscore/Blender'
 
 # Coffeescript adaptation & changes/extra features by Agelos.Pikoulas@gmail.com
 # Original by Kurt Milam - follows below

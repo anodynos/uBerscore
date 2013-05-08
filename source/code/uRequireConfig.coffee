@@ -3,7 +3,8 @@
 module.exports =
 
   bundle:
-    bundlePath: './source/code' #todo: 9 2 1 not working without it - need to pass some path info...
+#    bundlePath: './source/code' # not needed - as long as this file is on the bundle's root, its assumed.
+
     # our 'main' / index .js file - used by r.js optimizer as
     main: "uberscore"
 #    bundleName: "uBerscore_bundleName_urequireconfig"
@@ -13,12 +14,13 @@ module.exports =
 
     # Export dependencies for the whole bundle
     dependencies:
+      noWeb: ['util'] # todo: fix String instead of Array
 
       # Using []<String>, we 'll discover corresponding variable they bind to
       # from bundle modules that actually import these deps (only from AMD in this version), eg @see `arrayize`.
-#      bundleExports: [
+#      bundleExports: [ #@todo: NOT WORKING - wont use knownVariables ?
 #        'lodash'              # export this global dep
-#        'agreement/isAgree'   # export this module, as a bund-global dependency
+#        'agreement/isAgree'   # export this module, as a bundle-global dependency
 #      ]
 
       # alternatively (more proper, yet verbose) it could have been:
@@ -30,5 +32,5 @@ module.exports =
   build:
     outputPath: './build/dist/uberscore-dev.js'
     template: 'combined'
-    debugLevel: 60
+    debugLevel: 40
 #    verbose: true

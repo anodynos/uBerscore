@@ -3,7 +3,6 @@ _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.
 #__isNode = true
 ###DEV ONLY ###
 
-l = new (require './../Logger') 'Blender', 0
 type = require '../type'
 getValueAtPath = require '../objects/getValueAtPath'
 
@@ -155,10 +154,12 @@ class Blender
     # add base Blender defaults @todo: (4 4 3) Devise a new pattern for options uDerive :-)
     (@_optionsList or= []).unshift Blender.defaultOptions
 
+    @l = new (require './../Logger') 'uberscore/Blender'
+
     # check if we have options: 1st param is blenderBehavior [], 2nd is options {}
     if _.isArray @blenderBehaviors[0]
 
-      l.debug("We might have options:", @blenderBehaviors[1], "@_optionsList (defaults):", @_optionsList) if l.deb 20
+      @l.debug("We might have options:", @blenderBehaviors[1], "@_optionsList (defaults):", @_optionsList) if @l.deb 20
       @_optionsList.push @blenderBehaviors[1] # user/param @options override all others
       @blenderBehaviors = @blenderBehaviors[0]
 
@@ -166,8 +167,8 @@ class Blender
     @_optionsList.unshift options = {}      # store all under local 'options'
     _.extend.apply undefined, @_optionsList # options are overwritten by subclass/construction values
 
-    l.debugLevel = options.debugLevel
-    l.debug("Final blender options:", options) if l.deb 10
+    @l.debugLevel = options.debugLevel
+    @l.debug("Final blender options:", options) if @l.deb 10
 
     # copy all to this, the blender instance of XXXBlender
     _.extend @, options
@@ -285,7 +286,7 @@ class Blender
     if _.isFunction @[actionName]
       return @[actionName]
     else
-      throw l.err "_B.Blender.blend: Error: Invalid BlenderBehavior `actionName` = ", actionName,
+      throw @l.err "_B.Blender.blend: Error: Invalid BlenderBehavior `actionName` = ", actionName,
                 " - no Function by that name is found in a preceding BlenderBehavior or Blender it self.",
                 " belowBlenderBehaviorIndex=#{belowBlenderBehaviorIndex}",
                 " @currentBlenderBehaviorIndex=#{@currentBlenderBehaviorIndex}",
@@ -319,15 +320,15 @@ class Blender
          _.isFunction(currentBBSrcDstSpec) # or (not _.isObject nextBBSrcDstSpec ) #todo: need this ?
             break # skip all other bbOrder, if it was terminal.
 
-      l.debug("At bbOrder='#{bbOrder}'",
+      @l.debug("At bbOrder='#{bbOrder}'",
             (if bbOrder is 'path'
-              " @path=#{l.prettify @path}"
+              " @path=#{@l.prettify @path}"
             else
               " bbOrderValues[bbOrder]='#{bbOrderValues[bbOrder]}'"),
-            " currentBBSrcDstSpec =\n", currentBBSrcDstSpec ) if l.deb 80
+            " currentBBSrcDstSpec =\n", currentBBSrcDstSpec ) if @l.deb 80
 
       if _.isUndefined bbOrderValues[bbOrder]
-        throw l.err  """
+        throw @l.err  """
           _.Blender.blend: Error: Invalid BlenderBehavior `order` '#{bbOrder}',
           while reading BlenderBehavior ##{bbi} :\n""", @blenderBehaviors[bbi],
           "\n\nDefault BlenderBehavior order is ", @defaultBBOrder
@@ -335,15 +336,16 @@ class Blender
 
       else # nextBBSrcDstSpec is used mainly for debuging
         if bbOrder is 'path'
-          nextBBSrcDstSpec = getValueAtPath currentBBSrcDstSpec, @path[1..@path.length], {
-                      terminateKey: if @isExactPath then undefined else @pathTerminator} #default is '|'
+          nextBBSrcDstSpec = 
+            getValueAtPath currentBBSrcDstSpec, @path[1..@path.length], {
+                           terminateKey: if @isExactPath then undefined else @pathTerminator} #default is '|'
 
           nextBBSrcDstSpec = nextBBSrcDstSpec['|'] if _.isObject nextBBSrcDstSpec
 
         else
           nextBBSrcDstSpec = currentBBSrcDstSpec[bbOrderValues[bbOrder]] or currentBBSrcDstSpec['*'] # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
 
-        l.debug(70,
+        @l.debug(70,
           if nextBBSrcDstSpec is undefined
             "Found NO nextBBSrcDstSpec at all - go to NEXT BlenderBehavior"
           else
@@ -362,13 +364,13 @@ class Blender
                     if _.isFunction nextBBSrcDstSpec
                       "Found a Function "
                     else
-                      throw "Unknown nextBBSrcDstSpec = " + l.prettify nextBBSrcDstSpec
+                      throw "Unknown nextBBSrcDstSpec = " + @l.prettify nextBBSrcDstSpec
         ,
           " \nbbOrder='#{bbOrder}'",
           " \nbbOrderValues[bbOrder]='#{bbOrderValues[bbOrder]}'",
           " \nnextBBSrcDstSpec=\n", nextBBSrcDstSpec
 #          " \ncurrentBBSrcDstSpec=\n", currentBBSrcDstSpec
-        ) if l.deb 70
+        ) if @l.deb 70
 
         currentBBSrcDstSpec = nextBBSrcDstSpec
 
@@ -457,15 +459,15 @@ class Blender
       for prop in props # props for {} is ['prop1', 'prop2', ...], for [] its [1,2,3,...]
         @path.push prop
 
-        l.debug("""
+        @l.debug("""
             @path = /#{@path.join('/')}
             '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
-          """, dst[prop], '    <--  ', src[prop]) if l.deb 50
+          """, dst[prop], '    <--  ', src[prop]) if @l.deb 50
 
         # go through @certainBlenderBehaviors, until an 'action' match is found.
         visitNextBB = true
         for bb, bbi in @blenderBehaviors when visitNextBB
-          l.debug("Currently at @blenderBehaviors[#{bbi}] =\n", bb) if l.deb 60
+          @l.debug("Currently at @blenderBehaviors[#{bbi}] =\n", bb) if @l.deb 60
 
           nextBBSrcDstSpec = @getNextAction bb, bbi,
               # last argument is bbOrderValues, eg : `{scr:'[]', dst: '{}', path:['a','property']}`
@@ -481,7 +483,7 @@ class Blender
 
             if not _.isFunction action
               if not _.isString action
-                throw l.err  """
+                throw @l.err  """
                   _B.Blender.blend: Error: Invalid BlenderBehavior `action` (neither 'Function' nor 'String') : """, action
               else # try to find the actionName (String) as an existing Function.
                 action = @getAction action, bbi # throws error if none is found, hence no other check needed
@@ -503,17 +505,17 @@ class Blender
               result = result[1]
               visitNextBB = true
 
-            l.debug("""
+            @l.debug("""
               Action Called - Value assigning:  @path =""", @path.join('/'), """
-              \n  value =""", l.prettify result) if l.deb 20
+              \n  value =""", @l.prettify result) if @l.deb 20
 
             dst[prop] = result # actually assign, by default all values
 
           else # we have some special ActionResult:
-            l.debug("Action Called - ActionResult = ", result) if l.deb 30
+            @l.debug("Action Called - ActionResult = ", result) if @l.deb 30
             if result in [Blender.DELETE, Blender.DELETE_NEXT]
               delete dst[prop]
-#              l.debug 70, "DELETEd prop = #{l.prettify prop}"
+#              @l.debug 70, "DELETEd prop = #{l.prettify prop}"
 
             if result in [Blender.NEXT, Blender.DELETE_NEXT]
               visitNextBB = true
@@ -595,7 +597,7 @@ class Blender
 
   ###
    The default behavior is to overwrite all keys of destination
-   with the respective value of source.
+   with the respective value of source - like _.extend, but deep.
 
    When destination is a `Primitive` or `Undefined`, we simply overwrite it
    with either the (primitive) value or reference (for Object types)
@@ -621,36 +623,36 @@ class Blender
     # and source also happens to be an Object as well, then we 'merge',
     # i.e we deepOverwrite.
     Array:
-      Array: 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
-      Object: 'deepOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
-      Function: 'deepOverwrite'
+      '[]': 'deepOverwrite' # 'A' is short for 'Array' (as also is '[]').
+      '{}': 'deepOverwrite' # '{}' is type.toShort('Object')
+      '->': 'deepOverwrite'
 
-    Object:
-      Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
+    '{}':
+      'O': 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
       Array: 'deepOverwrite'
       Function: 'deepOverwrite'
 
-    Function:
-      Object: 'deepOverwrite' # 'O' is short for 'Object' (as also is '{}').
-      Array: 'deepOverwrite'
-      Function: 'deepOverwrite'
+    '->':
+      '{}': 'deepOverwrite'
+      '[]': 'deepOverwrite'
+      '->': 'deepOverwrite'
 
 
 module.exports = Blender
 
-#### DEBUG ###
-if l.deb 40
-  YADC = require('YouAreDaChef').YouAreDaChef
-
-  YADC(Blender)
-    .before /overwriteOrReplace|deepOverwrite|overwrite|print/, (match, prop, src, dst, blender)->
-      l.debug 40, """
-       YADC:#{match} @path = /#{blender.path.join('/')}
-       '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
-      """, dst[prop],'    <--  ', src[prop]
-
-    .before /getAction/, (match, actionName)->
-      l.debug 50, "getAction(actionName = #{actionName})"
+#### DEBUG @todo: make it work for instance methods & per instance ###
+#if @l.deb 40
+#  YADC = require('YouAreDaChef').YouAreDaChef
+#
+#  YADC(Blender)
+#    .before /overwriteOrReplace|deepOverwrite|overwrite|print/, (match, prop, src, dst, blender)->
+#      @l.debug 40, """
+#       YADC:#{match} @path = /#{blender.path.join('/')}
+#       '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
+#      """, dst[prop],'    <--  ', src[prop]
+#
+#    .before /getAction/, (match, actionName)->
+#      @l.debug 50, "getAction(actionName = #{actionName})"
 
 ###
 @todo: (3 5 4) Make XxxBlender constructors return a reference to `.blend` function instead of a blender
