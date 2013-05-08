@@ -13,9 +13,9 @@ class DeepCloneBlender extends Blender
     order: ['dst', 'src']
 
     "*":
-      'Array': 'deepCloneOverwrite' # 'A' is short for 'Array' (as also is '[]').
-      'Object': 'deepCloneOverwrite' # '[]' is type.toShort('Array') and '{}' is type.toShort('Object')
-      'Function': 'deepCloneOverwrite'
+      '[]': 'deepCloneOverwrite' # '[]' is type.toShort('Array')
+      '{}': 'deepCloneOverwrite' # '{}' is type.toShort('Object')
+      '->': 'deepCloneOverwrite'
       'Undefined': -> Blender.SKIP
 
     deepCloneOverwrite: (prop, src, dst, blender)->

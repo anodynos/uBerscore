@@ -152,7 +152,7 @@ class Blender
           * DONT overwrite `blend` or `_blend` (or `overwrite`, `deepOverwrite` etc)!
   ###
   constructor: (@blenderBehaviors...)->
-    # add base Blender defaults
+    # add base Blender defaults @todo: (4 4 3) Devise a new pattern for options uDerive :-)
     (@_optionsList or= []).unshift Blender.defaultOptions
 
     # check if we have options: 1st param is blenderBehavior [], 2nd is options {}
@@ -652,4 +652,51 @@ if l.deb 40
     .before /getAction/, (match, actionName)->
       l.debug 50, "getAction(actionName = #{actionName})"
 
+###
+@todo: (3 5 4) Make XxxBlender constructors return a reference to `.blend` function instead of a blender
+that is an just {} (with the .blend function among others).
 
+For everything else to be available, `blend.__proto__` has to be the `blender` it self.
+
+Use the following pattern or find a new one
+class A
+  constructor:(@a='a')->
+    @say.__proto__ = @
+    return @say
+
+
+  say:(msg)->"A Hello, #{msg}"
+
+class B extends A
+  constructor:(@b='b')->
+    return super
+
+class C extends B
+  constructor:(@c='c')->
+    return super
+
+  say:(msg)->"C Hello, #{msg}"
+
+#a = new A
+#l.log a
+
+c = new C
+l.log c.say
+l.log c.b
+
+l.log c.say("goodmorning")
+l.log c("Its working!")
+###
+
+
+###
+ @todo: Allow for
+    'Something': anything by 'undefined' or 'null')
+    'Nothing': opposite of 'Something'
+    'Nested': {} or ->
+###
+
+###
+ @todo: Allow for `'Number': _B.Blender.SKIP` (or perhaps even `'Number': 'Blender.SKIP'` )
+ instead of `'Number': -> _B.Blender.SKIP`. It'll be quite painfull in vanilla Javascript.
+###

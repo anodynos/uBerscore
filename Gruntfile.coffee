@@ -35,7 +35,9 @@ gruntFunction = (grunt) ->
     }
 
     urequire:
-      _defaults:
+      # any urequire task starting with '_' is ignored and only used for uDerive
+
+      _defaults: # these are the uDerived defaults, when a task has no 'derive'.
         bundle:
           bundlePath: "#{sourceDir}"
           ignore: [/^draft/]
@@ -50,11 +52,15 @@ gruntFunction = (grunt) ->
 
       uberscoreUMD:
         outputPath: "#{buildDir}"
-        #template: 'UMD' # 'UMD' is default
+        #derive: ['_defaults'] # not needed - by default it deep uDerives all '_defaults'. To avoid use `derive:[]`.
+        #template: 'UMD' # Not needed - 'UMD' is default
 
-      uberscoreDev: # combined
-        main: 'uberscore' # if 'main' is missing, its assumed to be bundleName,
-                          # which in turn is assumed to be grunt's @target ('uberscoreDev' in this case)
+      uberscoreDev:
+        main: 'uberscore' # if 'main' is missing, then main is assumed to be `bundleName`,
+                          # which in turn is assumed to be grunt's @target ('uberscoreDev' in this case).
+                          # Having 'uberscoreDev' as the bundleName/main, but no module by that name (or 'index' or 'main')
+                          # will cause a compilation error. Its better to be precise anyway, in case this config is used outside grunt.
+
         outputPath: './build/dist/uberscore-dev.js'
         template: 'combined'
 
@@ -62,7 +68,7 @@ gruntFunction = (grunt) ->
 #        main: uberscore
 #        ignore: ['inspect', 'Logger'] #@todo: make this baby work (use moduleInjection?) !
 
-      spec:
+      spec: # deep inherits all '_defaults'
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
         dependencies:
@@ -74,7 +80,7 @@ gruntFunction = (grunt) ->
             # assert = chai.assert #todo(for uRequire 4 5 5) allow for . notation to refer to export!
 
       specCombined:
-        derive: ['specs'] # deep inherits all of 'spec' BUT none of '_defaults':-)
+        derive: ['spec'] # deep inherits all of 'spec' BUT none of '_defaults':-)
         outputPath: "#{buildSpecDir}_combined/index-combined.js"
         template: 'combined'
         #main: 'index' # not needed: if `bundle.main` is undefined it defaults
@@ -85,11 +91,12 @@ gruntFunction = (grunt) ->
 
     shell:
       ###    shell:uRequireXXX not used anymore - grunt-urequire is used instead! ###
-#      uRequire:
+      uRequire:
 #        # use a uRequire config, changing the template, outputPath via CMD options (which have precedence over configFiles)
 #        command_NotUsed: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD"
+#
 #        # use a 2nd uRequireConfig for demonstration, instead of the above. Configs on the right have precedence
-#        command: "urequire config source/code/uRequireConfig_UMDBuild.json,source/code/uRequireConfig.coffee"
+        command: "urequire config source/code/uRequireConfig_UMDBuild.json,source/code/uRequireConfig.coffee"
 #
 #      uRequireCombined:
 #        command: "urequire config source/code/uRequireConfig.coffee -v"
