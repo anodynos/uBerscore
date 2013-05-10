@@ -70,23 +70,21 @@ class Blender
 
     ###
       Terminates a path in a blenderBehavior spec - better not touch for now!
-
       @todo: rethink it, allow terminator-like syntax in bbSrcDstPathSpec
     ###
     pathTerminator: '|'
 
     ###
       @todo: only has partial implementation - no specs
-      @todo: make true the default
     ###
-    isExactPath: false
+    isExactPath: true
 
 
     ###
-      allow paths to be expressed as '/path/to/stuff'
+      allow paths to be expressed as '/path/to/stuff' instead of nested object keys
       @todo: (2 2 2): allow it to change per BB
     ###
-    pathSeparator: '/'
+    pathSeparator: ':'
 
     debugLevel: 0
 
@@ -232,7 +230,7 @@ class Blender
             # to   {my:{path:{to:{there:{'|':'something'}}}}
             # blending in :) with existing bbSpec
             pathItems =
-                if @pathSeparator then (path for path in key.split(@pathSeparator) when path) else []
+                if @pathSeparator then (path.trim() for path in key.split(@pathSeparator) when path) else []
 
               if pathItems.length > 1
                 newV = bbSrcDstPathSpec

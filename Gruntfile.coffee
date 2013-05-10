@@ -35,8 +35,7 @@ gruntFunction = (grunt) ->
     }
 
     urequire:
-      # any urequire task starting with '_' is ignored and only used for uDerive
-
+                 # any urequire task starting with '_' is ignored and only used for uDerive
       _defaults: # these are the uDerived defaults, when a task has no 'derive'.
         bundle:
           bundlePath: "#{sourceDir}"
@@ -68,7 +67,7 @@ gruntFunction = (grunt) ->
 #        main: uberscore
 #        ignore: ['inspect', 'Logger'] #@todo: make this baby work (use moduleInjection?) !
 
-      spec: # deep inherits all '_defaults'
+      spec: # deep inherits all '_defaults', by default :-)
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
         dependencies:
@@ -84,7 +83,8 @@ gruntFunction = (grunt) ->
         outputPath: "#{buildSpecDir}_combined/index-combined.js"
         template: 'combined'
         #main: 'index' # not needed: if `bundle.main` is undefined it defaults
-                       # to `bundle.bundleName` or 'index' or 'main' with the price of a warning!
+                       # to `bundle.bundleName` or 'index' or 'main' (whichever found 1st as a module on bundleRoot)
+                       # with the price of a warning!
         dependencies:
           variableNames:
             uberscore: ['_B', 'uberscore']

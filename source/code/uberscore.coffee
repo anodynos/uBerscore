@@ -22,9 +22,6 @@ class uberscore
 
   # extending, the deep way, TO BE DEPRACATED when Blender comes properly into play
   deepExtend: require './blending/deepExtend'
-  deepCloneDefaults: require 'blending/deepCloneDefaults'
-
-
 
   # Objects
   okv: require './objects/okv'

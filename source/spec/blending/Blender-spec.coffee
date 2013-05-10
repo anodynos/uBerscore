@@ -2,62 +2,6 @@ if chai?
   assert = chai.assert
   expect = chai.expect
 
-### FAKE mocha/chai style tests START###
-#if not chai?
-#  basePath = '../../code/'
-#  #todo: (3 4 2) Find a way to run real specs with 'run', no full build!
-#  l = new (require basePath + 'Logger') 'Blender & merging'
-#  errorCount = 0; hasError = false; level = 0; indent = ->("   " for i in [0..level]).join('')
-#  describe = (msg, fn)->
-#    l.verbose indent() + msg;
-#    level++; fn(msg); level--
-#    if errorCount and level is 0
-#      l.warn 'Error count:' + errorCount
-#
-#  it = (msg, expectedFn)->
-#    hasError = false; expectedFn();
-#    if hasError
-#      errorCount++
-#      l.warn(indent() + msg + ' - false')
-#    else
-#      l.ok(indent() + msg + ' - OK')
-#  expect = (v)-> hasError = true if not v
-#  ### fake mocha/chai style tests ###
-#
-#  _ = require 'lodash'
-#  _B = do()->
-#      isRefDisjoint = require basePath + 'objects/isRefDisjoint'
-#      isDisjoint = require basePath + 'objects/isDisjoint'
-#      getRefs = require basePath + 'objects/getRefs'
-#      isIqual = require basePath + 'objects/isIqual'
-#      getRefs = require basePath + 'objects/getRefs'
-#      isEqualArraySet = require basePath + 'collections/array/isEqualArraySet'
-#      isEqual = require basePath + 'objects/isEqual'
-#      isIqual = require basePath + 'objects/isIqual'
-#      isExact = require basePath + 'objects/isExact'
-#      isIxact = require basePath + 'objects/isIxact'
-#      Blender = require basePath + 'blending/Blender'
-#      DeepCloneBlender = require basePath + 'blending/blenders/DeepCloneBlender'
-#      DeepDefaultsBlender = require basePath + 'blending/blenders/DeepDefaultsBlender'
-#
-#      {isEqual, isIqual, isExact, isIxact, getRefs, isEqualArraySet, getRefs,
-#      isRefDisjoint, isDisjoint, Blender, DeepCloneBlender, DeepDefaultsBlender}
-#
-#  { objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues
-#
-#    project, team, bundle
-#    bundle_project_team
-#
-#    earth
-#    laboratory
-#    experiment
-#    earth_laboratory_experiment
-#    experiment_laboratory_earth
-#    laboratory_experiment
-#  } = require '../spec-data'
-### FAKE mocha/chai style tests END###
-
-
 describe 'Blender:', ->
   
   describe 'Internals: blender.adjustBlenderBehavior:', ->
@@ -83,7 +27,7 @@ describe 'Blender:', ->
             'null': longTypeNamesBb['Object'].Null
   
         blender = new _B.Blender longTypeNamesBb
-        expect(_.isEqual blender.blenderBehaviors[0], expectedAdjustedBb)
+        expect(_.isEqual blender.blenderBehaviors[0], expectedAdjustedBb).to.be.true
 
 
       it "works with bbOrder specs ['src', 'path', 'dst']", ->
@@ -92,7 +36,7 @@ describe 'Blender:', ->
 
             Function:->                              # its an 'src' item, hence it will become "->"
             String:                                  # its an 'src' item, hence it will become "''"
-              'bundle/dependencies/variableNames/*': # paths with seperator '/' are expanded eg. `{bundle:dependencies:variableNames}`
+              'bundle:dependencies:variableNames:*': # paths with seperator '/' are expanded eg. `{bundle:dependencies:variableNames}`
 
                 basics : '|':                        # terminator of 'path'
 
@@ -101,7 +45,7 @@ describe 'Blender:', ->
                   Array: 'someArrayAction, found on a preceding blenderBehavior or blender'
                   String: (prop, src, dst, blender)-> B.Blender.SKIP
 
-              'bundle/dependencies/_knownVariableNames':  # expanded to `{bundle:dependencies:_knownVariableNames}`
+              'bundle:dependencies:_knownVariableNames':  # expanded to `{bundle:dependencies:_knownVariableNames}`
                                                           # but merged (blended:-) with {bundle:dependencies:...} above
 
                   String: Array: Function:                # these are still path names, they aren't shortified
@@ -123,21 +67,23 @@ describe 'Blender:', ->
                   "*":
                     basics:
                       "|":
-                        "{}": longTypePathBb['String']['bundle/dependencies/variableNames/*'].basics['|']['Object']
-                        "[]": longTypePathBb['String']['bundle/dependencies/variableNames/*'].basics['|']['Array']
-                        "''": longTypePathBb['String']['bundle/dependencies/variableNames/*'].basics['|']['String']
+                        "{}": longTypePathBb['String']['bundle:dependencies:variableNames:*'].basics['|']['Object']
+                        "[]": longTypePathBb['String']['bundle:dependencies:variableNames:*'].basics['|']['Array']
+                        "''": longTypePathBb['String']['bundle:dependencies:variableNames:*'].basics['|']['String']
 
                 _knownVariableNames:
                   String:
                     Array:
                       Function:
                         "|":
-                          "->": longTypePathBb['String']['bundle/dependencies/_knownVariableNames'].String.Array.Function['|']['Function']
+                          "->": longTypePathBb['String']['bundle:dependencies:_knownVariableNames'].String.Array.Function['|']['Function']
                           "[]": "someArrayAction"
 
           someAction: longTypePathBb.someAction
 
-        expect _.isEqual (new _B.DeepCloneBlender longTypePathBb).blenderBehaviors[0], expectedAdjustededBb
+        expect(
+          new _B.DeepCloneBlender(longTypePathBb).blenderBehaviors[0]
+        ).to.deep.equal expectedAdjustededBb
 
 #      it "ignores PROBLEMATIC specs with 'src' and 'dst' & 'path'", ->
 #
@@ -160,33 +106,33 @@ describe 'Blender:', ->
     blender = new _B.Blender
 
     it "overwrites undefined / null:", ->
-      expect blender.blend(undefined, 6, 18) is 18
-      expect blender.blend(undefined, 'a string') is 'a string'
-      expect blender.blend(null, 16.7) is 16.7
-      expect blender.blend(null, 'a string') is 'a string'
-      expect _.isEqual(blender.blend(undefined, 18, {prop:'someValue'}), {prop:'someValue'})
+      expect(blender.blend undefined, 6, 18).to.equal 18
+      expect(blender.blend undefined, 'a string').to.equal 'a string'
+      expect(blender.blend null, 16.7).to.equal 16.7
+      expect(blender.blend null, 'a string').to.equal 'a string'
+      expect(blender.blend undefined, 18, {prop:'someValue'}).to.deep.equal {prop:'someValue'}
 
     it "overwrites primitives", ->
-      expect blender.blend(6, 18) is 18
-      expect blender.blend('a string', 18, 'another string') is 'another string'
-      expect _.isEqual(blender.blend('a string', 18, {prop:'someValue'}), {prop:'someValue'})
+      expect(blender.blend 6, 18).to.equal 18
+      expect(blender.blend 'a string', 18, 'another string').to.equal 'another string'
+      expect(blender.blend 'a string', 18, {prop:'someValue'}).to.deep.equal {prop:'someValue'}
 
   describe 'Options passing:', ->
-    copyProto = (->); inherited = (->)
 
     it "deepCloneBlender.anOption is someOptions.anOption", ->
       someOptions = {anOption:->'I am a function'}
       deepCloneBlender = new _B.DeepCloneBlender [], someOptions
-      expect(deepCloneBlender.anOption is someOptions.anOption)
+      expect(deepCloneBlender.anOption).to.equal someOptions.anOption
 
     it "real options: ", ->
       deepCloneBlender = new _B.DeepCloneBlender
-      expect(deepCloneBlender.inherited is false)
-      expect(deepCloneBlender.copyProto is false)
+      expect(deepCloneBlender.inherited).to.be.false
+      expect(deepCloneBlender.copyProto).to.be.false
 
-      deepCloneBlender = new _B.DeepCloneBlender [], {inherited: inherited, copyProto: copyProto }
-      expect(deepCloneBlender.inherited is inherited)
-      expect(deepCloneBlender.copyProto is copyProto)
+      myCopyProto = (->); myInherited = (->)
+      deepCloneBlender = new _B.DeepCloneBlender [], {inherited: myInherited, copyProto: myCopyProto }
+      expect(deepCloneBlender.inherited).to.equal myInherited
+      expect(deepCloneBlender.copyProto).to.equal myCopyProto
 
     describe "Options go up the inheritance:", ->
       class SomeBlender extends _B.Blender
@@ -201,18 +147,18 @@ describe 'Blender:', ->
 
       it "respecting subclassed options #1", ->
         someBlender = new SomeBlender
-        expect(someBlender.someOption is "someOptionValue")
+        expect(someBlender.someOption).to.equal "someOptionValue"
 
         someBlender = new SomeBlender [], someOption: "someRedefinedOptionValue"
-        expect(someBlender.someOption is "someRedefinedOptionValue")
+        expect(someBlender.someOption).to.equal "someRedefinedOptionValue"
 
       it "respecting subclassed options #2", ->
         someOtherBlender = new SomeOtherBlender
-        expect(someOtherBlender.someOption is "someOptionValue of SomeOtherBlender")
+        expect(someOtherBlender.someOption).to.equal "someOptionValue of SomeOtherBlender"
 
         someOtherBlender = new SomeOtherBlender [], someOption: "someRedefinedOptionValue"
-        expect(someOtherBlender.someOption is "someRedefinedOptionValue")
-        expect(someOtherBlender.someOtherOption is "someOtherOptionValue")
+        expect(someOtherBlender.someOption).to.equal "someRedefinedOptionValue"
+        expect(someOtherBlender.someOtherOption).to.equal is "someOtherOptionValue"
 
 
   describe 'Blender behaviors:', ->
@@ -234,15 +180,12 @@ describe 'Blender:', ->
         deepCloneBlenderAddingNumbers =
           new _B.DeepCloneBlender 'Number': 'Number': (prop, src, dst)-> dst[prop] + src[prop] * 2
 
-        result = deepCloneBlenderAddingNumbers.blend {}, o1, o2
-
-        expect(_.isEqual result,
+        expect(deepCloneBlenderAddingNumbers.blend {}, o1, o2).to.deep.equal
           p1:25
           p2:
             p21:'Another String'
             p22: [45, 86, 'String in array']
           p3: 'Some string'
-        )
 
       it "src Array items dont just overwrite the destination Array ones: they are doubled (if numbers) & then pushed to dst.", ->
         deepCloneBlenderAddingNumbers =
@@ -252,33 +195,29 @@ describe 'Blender:', ->
                   item = bldr.blend({}, {hack:item}).hack
                   dst[prop].push if _.isNumber(item) then item * 2  else item
 
-                return _B.Blender.SKIP
+                _B.Blender.SKIP
           )
-        result = (deepCloneBlenderAddingNumbers.blend {}, o1, o2)
-        expect(_.isEqual result,
+
+        expect(deepCloneBlenderAddingNumbers.blend {}, o1, o2).to.deep.equal
           p1:10
           p2:
             p21:'Another String'
             p22: [5, 6, 'String in array', 40, 80]
           p3: 'Some string'
-        )
 
-
-      it "Lets filter objects: Strings are banned", ->
+      it "filters objects - Strings are banned:", ->
         deepCloneBlenderOmmitingStrings =
           new _B.DeepCloneBlender(
             order: ['src']
             'String': (prop, src, dst, bldr)-> _B.Blender.SKIP
           )
-        result = (deepCloneBlenderOmmitingStrings.blend {}, o1, o2)
-        expect(_.isEqual result,
+        result =
+        expect(deepCloneBlenderOmmitingStrings.blend {}, o1, o2).to.deep.equal
           p1:10
           p2:
             p22: [20, 40]
-        )
 
     describe 'Advanced examples:', -> # @todo
-
       o1 =
         p1: 5
         p2:
@@ -328,25 +267,25 @@ describe 'Blender:', ->
 
           weirdBlender = new WeirdBlender
 
-          for blender,bi in [addingNumbersAndConcatEmToStringBlender, weirdBlender] #both should behave the same
+          for blender, bi in [addingNumbersAndConcatEmToStringBlender, weirdBlender] #both should behave the same
             it "works {}<--o1<--o2 with blender ##{bi}", ->
-              result = (blender.blend {}, o1, o2)
-              expect(_.isEqual result,
+
+              expect(blender.blend {}, o1, o2).to.deep.equal
                 p1: 25
                 p2:
                   p21: 128 * 4
                   p22: [45, 'String--got a Numba * 3-->:120']
                 p3: 'Some string'
-              )
+
 
             it "works {}<--o2<--o1 with blender ##{bi}", ->
-              result = (blender.blend {}, o2, o1)
-              expect(_.isEqual result,
+              result =
+              expect(blender.blend {}, o2, o1).to.deep.equal
                 p1: 20
                 p2:
                   p21: o1.p2.p21 # Function is copied by reference
                   p22: [30, '40--got a String-->:String']
                 p3: 'Some string'
-              )
 
-      #describe 'Cloning whole hierarchies: cloning protos (and their protos etc):', -> # @todo
+      # @todo
+      #describe 'Cloning whole hierarchies: cloning protos (and their protos etc):', ->
