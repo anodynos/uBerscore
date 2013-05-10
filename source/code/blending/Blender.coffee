@@ -638,7 +638,8 @@ class Blender
 
 module.exports = Blender
 
-#### DEBUG @todo: make it work for instance methods & per instance ###
+# @todo: for DEBUGing make it work for instance methods & per instance ###
+# @todo:
 #if @l.deb 40
 #  YADC = require('YouAreDaChef').YouAreDaChef
 #
@@ -664,7 +665,6 @@ class A
     @say.__proto__ = @
     return @say
 
-
   say:(msg)->"A Hello, #{msg}"
 
 class B extends A
@@ -682,7 +682,7 @@ class C extends B
 
 c = new C
 l.log c.say
-l.log c.b
+l.log c.a, c.b, c.c
 
 l.log c.say("goodmorning")
 l.log c("Its working!")

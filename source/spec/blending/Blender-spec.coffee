@@ -1,6 +1,5 @@
-if chai?
-  assert = chai.assert
-  expect = chai.expect
+assert = chai.assert
+expect = chai.expect
 
 describe 'Blender:', ->
   

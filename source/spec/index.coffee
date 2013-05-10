@@ -1,14 +1,9 @@
 # Should be automatically generated (but its not right now!)
-
-#collection
-
-
 require "blending/Blender-spec"
 require "blending/deepExtend-spec"
 require "blending/lodash-merge-spec"
 require "blending/Mergers_Blender-spec"
 require "blending/DeepDefaultsBlender-spec"
-
 
 require "objects/getInheritedPropertyNames-spec"
 require "objects/getRefs-spec"

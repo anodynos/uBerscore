@@ -1,5 +1,6 @@
-# note: works with uRequire 0.3.0alpha12, last time I checked!
-
+# example for building uberscore-dev.js
+# use as `$ urequire config source/code/uRequireConfig.coffee -d 0`
+# note: works with uRequire 0.3.0beta1
 module.exports =
 
   bundle:

@@ -27,7 +27,7 @@ l = new (require '../Logger') 'uberscore/isEqual', 0
 isEqualDefaults =
   inherited: false # if true, examine all (inherited) properties, not just *own*
 
-  exact: false # if true, then all refs must point to the same objects, not lokkalike clones!
+  exact: false # if true, then all refs must point to the same objects, not loolkalike clones!
 
   exclude: ['constructor'] # keys to be excluded - <String> of excluded key names.
                            # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true

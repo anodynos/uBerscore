@@ -25,6 +25,7 @@ class uberscore
 
   # Objects
   okv: require './objects/okv'
+
   # mutators
   mutate: require './objects/mutate'
   setValueAtPath: require './objects/setValueAtPath'

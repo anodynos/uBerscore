@@ -1,7 +1,7 @@
 _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
 
 ###
- A helper to create an object literal with a dynamic (calculated) keys on the fly.
+ A helper to create an object literal with dynamic (calculated) keys on the fly.
 
  Js/coffee right now dont like this:
  ```

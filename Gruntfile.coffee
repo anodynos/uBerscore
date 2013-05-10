@@ -1,59 +1,61 @@
-_fs = require 'fs'
+fs = require 'fs'
+pkg = JSON.parse fs.readFileSync './package.json', 'utf-8'
+
+sourceDir     = "source/code"
+buildDir      = "build/code"
+sourceSpecDir = "source/spec"
+buildSpecDir  = "build/spec"
+distDir       = "build/dist"
 
 gruntFunction = (grunt) ->
-
-  sourceDir     = "source/code"
-  buildDir      = "build/code"
-  sourceSpecDir = "source/spec"
-  buildSpecDir  = "build/spec"
-  distDir       = "build/dist"
-
-  pkg = JSON.parse _fs.readFileSync './package.json', 'utf-8'
 
   gruntConfig =
     pkg: "<json:package.json>"
 
     meta:
       banner: """
-      /*!
+      /*
       * <%= pkg.name %> - version <%= pkg.version %>
-      * Compiled on <%= grunt.template.today(\"yyyy-mm-dd\") %>
+      * Compiled on <%= grunt.template.today(\"yyyy-mm-dd h:MM:ss\") %>
       * <%= pkg.repository.url %>
       * Copyright(c) <%= grunt.template.today(\"yyyy\") %> <%= pkg.author.name %> (<%= pkg.author.email %> )
       * Licensed <%= pkg.licenses[0].type %> <%= pkg.licenses[0].url %>
       */
       """
+      bannerMin: """
+      /* <%= pkg.name %> <%= pkg.version %> (<%= grunt.template.today(\"yyyy-mm-dd\") %>), <%= pkg.repository.url %>
+      <%= pkg.author.email %>, Lisense: <%= pkg.licenses[0].type %>*/
+      """
       varVERSION: "var VERSION = '<%= pkg.version %>'; //injected by grunt:concat"
+      varVERSIONMin: "var VERSION='<%= pkg.version %>';"
       mdVersion: "# uBerscore v<%= pkg.version %>"
 
-    options: {
-      sourceDir
-      buildDir
-      sourceSpecDir
-      buildSpecDir
-      distDir
-    }
+    options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
 
     urequire:
-                 # any urequire task starting with '_' is ignored and only used for uDerive
-      _defaults: # these are the uDerived defaults, when a task has no 'derive'.
+      # These are the defaults, when a task has no 'derive' at all. Use derive:[] to skip deriving it.
+      # @note that any urequire task starting with '_' is ignored as a grunt target and only used for `derive`-ing.
+      _defaults:
         bundle:
           bundlePath: "#{sourceDir}"
-          ignore: [/^draft/]
+          ignore: [/^draft/, 'uRequireConfig_UMDBuild.json', 'uRequireConfig.coffee'] #completelly ignore these
           dependencies:
             bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
               'lodash':"_",                               # precise syntax
               'agreement/isAgree': 'isAgree'
             noWeb: ['util']
         build:
-          verbose: false
-          debugLevel: 0
+          verbose: false # false is default
+          debugLevel: 0  # 0 is default
 
+      # a simple UMD build
       uberscoreUMD:
+        # 'build': # `build` and `bundle` hashes are not needed - keys are safelly recognised, even if they're not in them.
         outputPath: "#{buildDir}"
         #derive: ['_defaults'] # not needed - by default it deep uDerives all '_defaults'. To avoid use `derive:[]`.
         #template: 'UMD' # Not needed - 'UMD' is default
 
+      # a 'combined' build, that also works without AMD loaders on Web
       uberscoreDev:
         main: 'uberscore' # if 'main' is missing, then main is assumed to be `bundleName`,
                           # which in turn is assumed to be grunt's @target ('uberscoreDev' in this case).
@@ -63,10 +65,29 @@ gruntFunction = (grunt) ->
         outputPath: './build/dist/uberscore-dev.js'
         template: 'combined'
 
-#      uberscore-min:
-#        main: uberscore
-#        ignore: ['inspect', 'Logger'] #@todo: make this baby work (use moduleInjection?) !
+      # A combined build, that is `derive`d from 'uberscoreDev' (& specifically '_defaults')
+      # that uses re.js/uglify2 for minification.
+      uberscoreMin:
+        derive: ['uberscoreDev', '_defaults'] # need to specify we also need '_defaults', in this order.
+        outputPath: './build/dist/uberscore-min.js'
+        optimize: 'uglify2' # doesn't have to be a String. `true` selects 'uglify2' also. It can also be 'uglify'.
+                            # Even more interestingly, u can pass any 'uglify2' keys,
+                            # the r.js way (https://github.com/jrburke/r.js/blob/master/build/example.build.js)
+                            # eg {optimize: uglify2: output: beautify: true}
 
+      # An example on how to reference (`derive`-ing from) external urequire config file(s),
+      # while overriding some of its options.
+      #
+      # @note its not deriving at all from '_defaults', unless its specified.
+      #
+      # Its effectivelly equivalent to issuing
+      #  `$ urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD`
+      uberscoreFileConfig:
+        derive: ['source/code/uRequireConfig.coffee']
+        template: 'UMD'
+        outputPath: 'build/anotherUMDBuild'
+
+      # uRequire-ing the specs: we also have two build as 'UMD' & as 'combined'
       spec: # deep inherits all '_defaults', by default :-)
         bundlePath: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
@@ -76,7 +97,7 @@ gruntFunction = (grunt) ->
             lodash: '_'
             uberscore: '_B'
             'spec-data': 'data'
-            # assert = chai.assert #todo(for uRequire 4 5 5) allow for . notation to refer to export!
+            # assert = chai.assert # @todo(for uRequire 4 5 5) allow for . notation to refer to export!
 
       specCombined:
         derive: ['spec'] # deep inherits all of 'spec' BUT none of '_defaults':-)
@@ -84,26 +105,12 @@ gruntFunction = (grunt) ->
         template: 'combined'
         #main: 'index' # not needed: if `bundle.main` is undefined it defaults
                        # to `bundle.bundleName` or 'index' or 'main' (whichever found 1st as a module on bundleRoot)
-                       # with the price of a warning!
+                       # with the price of a warning! In spec's case, THERE IS a module 'index.coffee' which is picked.
         dependencies:
           variableNames:
             uberscore: ['_B', 'uberscore']
 
     shell:
-      ###    shell:uRequireXXX not used anymore - grunt-urequire is used instead! ###
-      uRequire:
-#        # use a uRequire config, changing the template, outputPath via CMD options (which have precedence over configFiles)
-#        command_NotUsed: "urequire config source/code/uRequireConfig.coffee -o ./build/code -t UMD"
-#
-#        # use a 2nd uRequireConfig for demonstration, instead of the above. Configs on the right have precedence
-        command: "urequire config source/code/uRequireConfig_UMDBuild.json,source/code/uRequireConfig.coffee"
-#
-#      uRequireCombined:
-#        command: "urequire config source/code/uRequireConfig.coffee -v"
-#
-#      uRequireSpec:
-#        command: "urequire UMD ./#{sourceSpecDir} -o ./#{buildSpecDir}"
-
       mocha:
         command: "mocha #{buildSpecDir}/index --recursive --bail --reporter spec"
 
@@ -125,6 +132,14 @@ gruntFunction = (grunt) ->
         stderr: true
 
     concat:
+      'uberscoreUMD':
+        src: [
+          '<banner>'
+          '<banner:meta.varVERSION>'
+          '<%= options.buildDir %>/uberscore.js'
+        ]
+        dest:'<%= options.buildDir %>/uberscore.js'
+
       'uberscoreDev':
         src: [
           '<banner>'
@@ -133,13 +148,13 @@ gruntFunction = (grunt) ->
         ]
         dest:'<%= options.distDir %>/uberscore-dev.js'
 
-      'uberscoreUMD':
+      'uberscoreMin':
         src: [
-          '<banner>'
-          '<banner:meta.varVERSION>'
-          '<%= options.buildDir %>/uberscore.js'
+          '<banner:meta.bannerMin>'
+          '<banner:meta.varVERSIONMin>'
+          '<%= options.distDir %>/uberscore-min.js'
         ]
-        dest:'<%= options.buildDir %>/uberscore.js'
+        dest:'<%= options.distDir %>/uberscore-min.js'
 
     clean:
         files: [
@@ -158,7 +173,7 @@ gruntFunction = (grunt) ->
      # basic commands
      "default": "clean build deploy test"
      "build":   "urequire:uberscoreUMD concat:uberscoreUMD"
-     "deploy":  "urequire:uberscoreDev concat:uberscoreDev"
+     "deploy":  "urequire:uberscoreDev urequire:uberscoreMin concat:uberscoreDev concat:uberscoreMin"
      "test":    "urequire:spec urequire:specCombined mocha run"
      "run":     "runBuildExample runAlmondBuildExample"
 
