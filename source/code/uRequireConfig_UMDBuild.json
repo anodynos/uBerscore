@@ -1,7 +1,8 @@
 {
- "build": {
+  "derive": "source/code/uRequireConfig.coffee",
+  "build": {
   "debugLevel": 0,
-  "verbose": false,
+  "verbose": true,
   "template": "UMD",
   "outputPath": "./build/code"
  }

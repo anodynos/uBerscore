@@ -1,3 +1,5 @@
+# requires grunt 0.4.x
+
 fs = require 'fs'
 pkg = JSON.parse fs.readFileSync './package.json', 'utf-8'
 
@@ -8,6 +10,7 @@ buildSpecDir  = "build/spec"
 distDir       = "build/dist"
 
 gruntFunction = (grunt) ->
+  _ = grunt.util._
 
   gruntConfig =
     pkg: "<json:package.json>"
@@ -35,6 +38,7 @@ gruntFunction = (grunt) ->
     urequire:
       # These are the defaults, when a task has no 'derive' at all. Use derive:[] to skip deriving it.
       # @note that any urequire task starting with '_' is ignored as a grunt target and only used for `derive`-ing.
+      # @todo: On derive: a) allow dropping of cyclic references. b) fix file reference paths ALWAYS being relative to the initial path (the path used for 1st file), instead of file referencing.
       _defaults:
         bundle:
           bundlePath: "#{sourceDir}"
@@ -50,10 +54,10 @@ gruntFunction = (grunt) ->
 
       # a simple UMD build
       uberscoreUMD:
-        # 'build': # `build` and `bundle` hashes are not needed - keys are safelly recognised, even if they're not in them.
-        outputPath: "#{buildDir}"
-        #derive: ['_defaults'] # not needed - by default it deep uDerives all '_defaults'. To avoid use `derive:[]`.
-        #template: 'UMD' # Not needed - 'UMD' is default
+        #'build': # `build` and `bundle` hashes are not needed - keys are safelly recognised, even if they're not in them.
+        #'derive': ['_defaults'] # not needed - by default it deep uDerives all '_defaults'. To avoid use `derive:[]`.
+          #template: 'UMD' # Not needed - 'UMD' is default
+          outputPath: "#{buildDir}"
 
       # a 'combined' build, that also works without AMD loaders on Web
       uberscoreDev:
@@ -126,7 +130,7 @@ gruntFunction = (grunt) ->
       runAlmondBuildExample:
         command: "coffee source/examples/almondBuildExample.coffee"
 
-      _options: # subtasks inherit _options but can override them
+      options:
         failOnError: true
         stdout: true
         stderr: true
@@ -164,14 +168,19 @@ gruntFunction = (grunt) ->
         ]
 
   ### shortcuts generation ###
+  splitTasks = (tasks)->
+    if _.isString tasks
+      _.filter tasks.split(' '), (v)-> v
+    else
+      tasks
 
   # shortcut to all "shell:cmd"
-  grunt.registerTask cmd, "shell:#{cmd}" for cmd of gruntConfig.shell
+  grunt.registerTask cmd, splitTasks "shell:#{cmd}" for cmd of gruntConfig.shell
 
   # generic shortcuts
-  grunt.registerTask shortCut, tasks for shortCut, tasks of {
+  grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # basic commands
-     "default": "clean build deploy test"
+     "default": "build deploy test"
      "build":   "urequire:uberscoreUMD concat:uberscoreUMD"
      "deploy":  "urequire:uberscoreDev urequire:uberscoreMin concat:uberscoreDev concat:uberscoreMin"
      "test":    "urequire:spec urequire:specCombined mocha run"
@@ -185,13 +194,12 @@ gruntFunction = (grunt) ->
      "t":       "test"
   }
 
-  grunt.registerTask shortCut, tasks for shortCut, tasks of {
+  grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
     "alt-c": "cp"
     "alt-b": "b"
     "alt-d": "d"
     "alt-t": "t"
   }
-
 
   grunt.initConfig gruntConfig
   grunt.loadNpmTasks 'grunt-contrib'
@@ -202,7 +210,11 @@ gruntFunction = (grunt) ->
 
 #debug : call with a dummy 'grunt', that spits params on console.log
 #gruntFunction
+#  util:'_': require 'lodash'
 #  initConfig: (cfg)-> console.log 'grunt: initConfig\n', JSON.stringify cfg, null, ' '
 #  loadNpmTasks: (tsk)-> console.log 'grunt: registerTask: ', tsk
-#  registerTask: (shortCut, task)-> console.log 'grunt: registerTask:', shortCut, task
+#  registerTask: (shortCut, task)-> console.log 'grunt: registerTask:', shortCut, ': ', task
+
 module.exports = gruntFunction
+
+
