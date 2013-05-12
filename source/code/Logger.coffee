@@ -62,7 +62,7 @@ class Logger
 
   err:  Logger.getALog "ERROR", '\u001b[31m', console.error #red
   log: Logger.getALog "", '\u001b[0m', console.log          #white
-  verbose: Logger.getALog "", '\u001b[34m', console.log     #???
+  verbose: Logger.getALog "", '\u001b[35m', console.log     #???
   ok: Logger.getALog "", '\u001b[32m', console.log          #green
   warn: Logger.getALog "WARNING", '\u001b[33m', console.log #yellow
 

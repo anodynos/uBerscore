@@ -1,8 +1,4 @@
 # requires grunt 0.4.x
-
-fs = require 'fs'
-pkg = JSON.parse fs.readFileSync './package.json', 'utf-8'
-
 sourceDir     = "source/code"
 buildDir      = "build/code"
 sourceSpecDir = "source/spec"
@@ -13,28 +9,29 @@ gruntFunction = (grunt) ->
   _ = grunt.util._
 
   gruntConfig =
-    pkg: "<json:package.json>"
+    pkg: grunt.file.readJSON('package.json')
 
     meta:
       banner: """
-      /*
-      * <%= pkg.name %> - version <%= pkg.version %>
-      * Compiled on <%= grunt.template.today(\"yyyy-mm-dd h:MM:ss\") %>
-      * <%= pkg.repository.url %>
-      * Copyright(c) <%= grunt.template.today(\"yyyy\") %> <%= pkg.author.name %> (<%= pkg.author.email %> )
-      * Licensed <%= pkg.licenses[0].type %> <%= pkg.licenses[0].url %>
-      */
-      """
+        /*
+        * <%= pkg.name %> - version <%= pkg.version %>
+        * Compiled on <%= grunt.template.today(\"yyyy-mm-dd h:MM:ss\") %>
+        * <%= pkg.repository.url %>
+        * Copyright(c) <%= grunt.template.today(\"yyyy\") %> <%= pkg.author.name %> (<%= pkg.author.email %> )
+        * Licensed <%= pkg.licenses[0].type %> <%= pkg.licenses[0].url %>
+        */\n"""
       bannerMin: """
-      /* <%= pkg.name %> <%= pkg.version %> (<%= grunt.template.today(\"yyyy-mm-dd\") %>), <%= pkg.repository.url %>
-      <%= pkg.author.email %>, Lisense: <%= pkg.licenses[0].type %>*/
-      """
-      varVERSION: "var VERSION = '<%= pkg.version %>'; //injected by grunt:concat"
-      varVERSIONMin: "var VERSION='<%= pkg.version %>';"
-      mdVersion: "# uBerscore v<%= pkg.version %>"
+        /* <%= pkg.name %> <%= pkg.version %> (<%= grunt.template.today(\"yyyy-mm-dd\") %>), <%= pkg.repository.url %>
+           <%= pkg.author.email %>, Lisense: <%= pkg.licenses[0].type %> */\n"""
+      varVERSION: "var VERSION = '<%= pkg.version %>'; //injected by grunt:concat\n"
+      varVERSIONMin: "var VERSION='<%= pkg.version %>\n';"
+      mdVersion: "# uBerscore v<%= pkg.version %>\n"
 
     options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
 
+    ###
+      uRequire config for uBerscore is used as a testbed & example, thus so many comments :-)
+    ###
     urequire:
       # These are the defaults, when a task has no 'derive' at all. Use derive:[] to skip deriving it.
       # @note that any urequire task starting with '_' is ignored as a grunt target and only used for `derive`-ing.
@@ -118,11 +115,8 @@ gruntFunction = (grunt) ->
       mocha:
         command: "mocha #{buildSpecDir}/index --recursive --bail --reporter spec"
 
-      mochaBlending:
-        command: "mocha #{buildSpecDir}/blending --recursive --bail --reporter spec"
-
       doc:
-        command: "codo source/code --title 'uberscore #{pkg.version} API documentation' --cautious"
+        command: "codo source/code --title 'uberscore <%= pkg.version %> API documentation' --cautious"
 
       runBuildExample:
         command: "coffee source/examples/buildExample.coffee"
@@ -131,34 +125,26 @@ gruntFunction = (grunt) ->
         command: "coffee source/examples/almondBuildExample.coffee"
 
       options:
+        verbose: true
         failOnError: true
         stdout: true
         stderr: true
 
     concat:
       'uberscoreUMD':
-        src: [
-          '<banner>'
-          '<banner:meta.varVERSION>'
-          '<%= options.buildDir %>/uberscore.js'
-        ]
+        options: banner: "<%= meta.banner %><%= meta.varVERSION %>"
+        src: ['<%= options.buildDir %>/uberscore.js']
         dest:'<%= options.buildDir %>/uberscore.js'
 
       'uberscoreDev':
-        src: [
-          '<banner>'
-          '<banner:meta.varVERSION>'
-          '<%= options.distDir %>/uberscore-dev.js'
-        ]
-        dest:'<%= options.distDir %>/uberscore-dev.js'
+        options: banner: "<%= meta.banner %><%= meta.varVERSION %>"
+        src: ['<%= options.distDir %>/uberscore-dev.js']
+        dest: '<%= options.distDir %>/uberscore-dev.js'
 
       'uberscoreMin':
-        src: [
-          '<banner:meta.bannerMin>'
-          '<banner:meta.varVERSIONMin>'
-          '<%= options.distDir %>/uberscore-min.js'
-        ]
-        dest:'<%= options.distDir %>/uberscore-min.js'
+        options: banner: "<%= meta.bannerMin %><%= meta.varVERSIONMin %>"
+        src: ['<%= options.distDir %>/uberscore-min.js']
+        dest: '<%= options.distDir %>/uberscore-min.js'
 
     clean:
         files: [
@@ -168,37 +154,32 @@ gruntFunction = (grunt) ->
         ]
 
   ### shortcuts generation ###
-  splitTasks = (tasks)->
-    if _.isString tasks
-      _.filter tasks.split(' '), (v)-> v
-    else
-      tasks
+  splitTasks = (tasks)-> if !_.isString tasks then tasks else (_.filter tasks.split(' '), (v)-> v)
 
-  # shortcut to all "shell:cmd"
-  grunt.registerTask cmd, splitTasks "shell:#{cmd}" for cmd of gruntConfig.shell
+  grunt.registerTask cmd, splitTasks "shell:#{cmd}" for cmd of gruntConfig.shell # shortcut to all "shell:cmd"
 
-  # generic shortcuts
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
-     # basic commands
-     "default": "build deploy test"
-     "build":   "urequire:uberscoreUMD concat:uberscoreUMD"
-     "deploy":  "urequire:uberscoreDev urequire:uberscoreMin concat:uberscoreDev concat:uberscoreMin"
-     "test":    "urequire:spec urequire:specCombined mocha run"
-     "run":     "runBuildExample runAlmondBuildExample"
+     # generic shortcuts
+     "default":   "build deploy test"
+     "build":     "urequire:uberscoreUMD concat:uberscoreUMD"
+     "deploy":    "urequire:uberscoreDev concat:uberscoreDev"
+     "deploymin": "urequire:uberscoreMin concat:uberscoreMin"
+     "test":      "urequire:spec urequire:specCombined mocha run"
+     "run":       "runBuildExample runAlmondBuildExample"
 
     # generic shortcuts
      "cl":      "clean"
      "b":       "build"
      "d":       "deploy"
+     "dm":      "deploymin"
      "m":       "mocha"
      "t":       "test"
-  }
 
-  grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
-    "alt-c": "cp"
-    "alt-b": "b"
-    "alt-d": "d"
-    "alt-t": "t"
+     # IDE shortcuts
+     "alt-c": "cp"
+     "alt-b": "b"
+     "alt-d": "d"
+     "alt-t": "t"
   }
 
   grunt.initConfig gruntConfig
