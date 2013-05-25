@@ -230,7 +230,10 @@ class Blender
             # to   {my:{path:{to:{there:{'|':'something'}}}}
             # blending in :) with existing bbSpec
             pathItems =
-                if @pathSeparator then (path.trim() for path in key.split(@pathSeparator) when path) else []
+                if @pathSeparator
+                  (path.trim() for path in key.split(@pathSeparator) when path)
+                else
+                  []
 
               if pathItems.length > 1
                 newV = bbSrcDstPathSpec
@@ -313,7 +316,7 @@ class Blender
     for bbOrder in blenderBehavior.order
       # bbOrder is either 'src', 'dst' or 'path'
 
-      if (currentBBSrcDstSpec  is undefined ) or # is nextBBSrcDstSpec terminal ?
+      if (currentBBSrcDstSpec is undefined ) or # is nextBBSrcDstSpec terminal ?
          _.isString(currentBBSrcDstSpec ) or
          _.isFunction(currentBBSrcDstSpec) # or (not _.isObject nextBBSrcDstSpec ) #todo: need this ?
             break # skip all other bbOrder, if it was terminal.
@@ -335,7 +338,7 @@ class Blender
       else # nextBBSrcDstSpec is used mainly for debuging
         if bbOrder is 'path'
           nextBBSrcDstSpec = 
-            getValueAtPath currentBBSrcDstSpec, @path[1..@path.length], {
+            getValueAtPath currentBBSrcDstSpec, @path[1..], {
                            terminateKey: if @isExactPath then undefined else @pathTerminator} #default is '|'
 
           nextBBSrcDstSpec = nextBBSrcDstSpec['|'] if _.isObject nextBBSrcDstSpec
@@ -427,10 +430,13 @@ class Blender
   ###
   blend: (dst, sources...)=>
     if _.isEmpty @path #todo: (2 3 1) optimize with a @isRoot = true ?
-      # if there are no sources, then 1st param becames a source and dst = {}
+
+      # if there are no sources, 1st param becames a source
+      # and dst = {} || [] || ??? @todo: proper match of src type
       if _.isUndefined(sources) or _.isEmpty(sources)
         sources = [dst]
-        dst = {}
+        dst = if _.isArray(dst) then [] else {} # @todo: proper match of src type
+
       dstObject = {'$':dst}
       @dstRoot = dst
       for src in sources
@@ -443,10 +449,12 @@ class Blender
 
   # our real `blend` function
   _blend: (dst, sources...)=>
-    # if there are no sources, then 1st param becames a source and dst = {}
+
+    # if there are no sources, 1st param becames a source
+    # and dst = {} || [] || ??? @todo: proper match of src type
     if _.isUndefined(sources) or _.isEmpty(sources)
       sources = [dst]
-      dst = {}
+      dst = if _.isArray(dst) then [] else {}
 
     for src in sources
       props = if _.isArray src
@@ -693,7 +701,12 @@ l.log c("Its working!")
  @todo: Allow for
     'Something': anything by 'undefined' or 'null')
     'Nothing': opposite of 'Something'
-    'Nested': {} or ->
+    'Nested': {} or -> or []
+###
+
+###
+  @todo:
+  rename class @behavior to @behaviors and recognise if its one behavior or many
 ###
 
 ###

@@ -24,7 +24,7 @@ gruntFunction = (grunt) ->
         /* <%= pkg.name %> <%= pkg.version %> (<%= grunt.template.today(\"yyyy-mm-dd\") %>), <%= pkg.repository.url %>
            <%= pkg.author.email %>, Lisense: <%= pkg.licenses[0].type %> */\n"""
       varVERSION: "var VERSION = '<%= pkg.version %>'; //injected by grunt:concat\n"
-      varVERSIONMin: "var VERSION='<%= pkg.version %>\n';"
+      varVERSIONMin: "var VERSION='<%= pkg.version %>'\n;"
       mdVersion: "# uBerscore v<%= pkg.version %>\n"
 
     options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
@@ -39,15 +39,17 @@ gruntFunction = (grunt) ->
       _defaults:
         bundle:
           bundlePath: "#{sourceDir}"
-          ignore: [/^draft/, 'uRequireConfig_UMDBuild.json', 'uRequireConfig.coffee'] #completelly ignore these
+          filenames: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
+
           dependencies:
             bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
               'lodash':"_",                               # precise syntax
               'agreement/isAgree': 'isAgree'
             noWeb: ['util']
+
         build:
           verbose: false # false is default
-          debugLevel: 0  # 0 is default
+          debugLevel: 90  # 0 is default
 
       # a simple UMD build
       uberscoreUMD:
@@ -160,7 +162,7 @@ gruntFunction = (grunt) ->
 
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
-     "default":   "build deploy test"
+     "default":   "build deploy deploymin test"
      "build":     "urequire:uberscoreUMD concat:uberscoreUMD"
      "deploy":    "urequire:uberscoreDev concat:uberscoreDev"
      "deploymin": "urequire:uberscoreMin concat:uberscoreMin"

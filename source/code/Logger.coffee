@@ -26,10 +26,10 @@ class Logger
     if (__isNode? and __isNode) or not __isNode?
       do (inspect = require('util').inspect)-> # 'util' is NOT added by uRequire, using a 'noWeb' declaration
         (o)->
-          pretty = "\u001b[0m#{(inspect o, false, null, true)}"
+          pretty = "\u001b[0m#{(inspect o, false, null, true)}" # @todo: update .inspect call for "node": ">=0.10.x"
           if _.isArray o
             pretty.replace /\n/g, ''
-          if inAgreements o, [_.isObject]
+          if inAgreements o, [_.isObject, _.isRegExp] #_.isObject matches for _.isFunction/Array
             pretty
           else # _.isString, etc
             o
@@ -140,7 +140,7 @@ class Logger
 
   # a helper to simplify decision to Log or not, whoith having to evaluate huge concatenations,
   # just to decide we arent at debuging level anyway.
-  deb:(debugLevel)->
+  deb: (debugLevel)->
     if debugLevel <= @getEffectiveDebugLevel()
       @lastDebugLevelCheck = debugLevel
       return true

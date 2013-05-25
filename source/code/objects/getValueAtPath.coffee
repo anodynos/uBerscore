@@ -70,10 +70,13 @@ getValueAtPath = (o, path, options = defaultOptions)->
     if _.isString path
       path = path.split options.separator
     else
-      if path is undefined
-        return o
+      if _.isNumber path
+        path = [path + '']
       else
-        throw "_B.getValueAtPath Error: invalid path: #{path}"
+        if path is undefined
+          return o
+        else
+          throw "_B.getValueAtPath Error: invalid path: #{path}"
 
   for p in path when p
     lastO = o if o isnt undefined
