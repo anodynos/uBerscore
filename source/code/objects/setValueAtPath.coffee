@@ -1,15 +1,15 @@
 _ = require 'lodash'
 
 #todo: use defaultOptions = {forceCreate: false, separator: '.'}
-
 setValueAtPath = (o, path, val, forceCreate=false, separator='/')-> #
-  if not _.isArray(path)
+  if not _.isArray path
     if _.isString path
       path = path.split separator
+      path = (p for p in path when p) # clean up any empty paths
     else
-      throw "_B.setValueAtPath Error: invalid path: #{path}"
-
-  path = (p for p in path when p)
+      throw """_B.setValueAtPath Error: invalid path: #{path}.
+                Use either an Array, eg ['path1', 'path2']
+                or `separator`-ed String, eg 'path1.path2'"""
 
   if not _.isObject o
     throw "_B.setValueAtPath Error: invalid object: #{o}"

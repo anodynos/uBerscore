@@ -39,7 +39,7 @@ gruntFunction = (grunt) ->
       _defaults:
         bundle:
           bundlePath: "#{sourceDir}"
-          filenames: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
+          filespecs: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
 
           dependencies:
             bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
@@ -50,6 +50,7 @@ gruntFunction = (grunt) ->
         build:
           verbose: false # false is default
           debugLevel: 90  # 0 is default
+#          continue: true
 
       # a simple UMD build
       uberscoreUMD:
@@ -60,10 +61,12 @@ gruntFunction = (grunt) ->
 
       # a 'combined' build, that also works without AMD loaders on Web
       uberscoreDev:
-        main: 'uberscore' # if 'main' is missing, then main is assumed to be `bundleName`,
+        main: 'uberscore' # Tempalte 'combined' requires a 'main' module.
+                          # if 'main' is missing, then main is assumed to be `bundleName`,
                           # which in turn is assumed to be grunt's @target ('uberscoreDev' in this case).
                           # Having 'uberscoreDev' as the bundleName/main, but no module by that name (or 'index' or 'main')
-                          # will cause a compilation error. Its better to be precise anyway, in case this config is used outside grunt.
+                          # will cause a compilation error.
+                          # Its better to be precise anyway, in case this config is used outside grunt.
 
         outputPath: './build/dist/uberscore-dev.js'
         template: 'combined'
@@ -112,6 +115,15 @@ gruntFunction = (grunt) ->
         dependencies:
           variableNames:
             uberscore: ['_B', 'uberscore']
+#        debugLevel: 90  # 0 is default
+
+    watch:
+      urequireDev:
+        files: ["#{sourceDir}/**/*.*"] # subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
+        tasks: 'urequire:uberscoreUMD'
+        options: nospawn: true
+#        debounceDelay: 1000
+
 
     shell:
       mocha:

@@ -8,10 +8,9 @@ module.exports =
 
     # our 'main' / index .js file - used by r.js optimizer as
     main: "uberscore"
-#    bundleName: "uBerscore_bundleName_urequireconfig"
 
-    # do not include any file within these patterns
-    ignore: [/^draft/]
+
+    filespecs: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
 
     # Export dependencies for the whole bundle
     dependencies:

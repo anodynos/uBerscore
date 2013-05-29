@@ -62,6 +62,8 @@ defaultOptions =
 
     @option isReturnLast {truthy} If true, it returns the last non-undefined value found. # @todo: spec it
 
+    @option iter: a callback with objectAtPath, path, o @todo: NOT IMPLEMENTED
+
 ###
 getValueAtPath = (o, path, options = defaultOptions)->
   _.defaults options, defaultOptions if options isnt defaultOptions
