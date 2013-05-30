@@ -31,7 +31,7 @@ type.areEqual = (aType, bType)->
 type.isType = (aType)->  type.toLong(aType) in _.keys type.TYPES
 # {longType : [shortType, others...]
 type.TYPES = {
-  'Arguments': ['args', ".."] #
+  'Arguments': ['args', "..."] #
   'Array'    : ['[]', 'A']
   'Function' : ['->', 'F']
   'String'   : ["''", 'S', '""'] # S
@@ -40,11 +40,12 @@ type.TYPES = {
   'Number'   : ['N']
   'Boolean'  : ['B']
 
-  'Object'   : ['{}', 'O'] # due to order, Object is return only for PLAIN objects (i.e _.isPlainObject), not for [], ->, Boolean, Number etc
+  'Object'   : ['{}', 'O'] # due to order, Object is returned only for PLAIN objects (i.e _.isPlainObject),
+                           # not for [], ->, Boolean, Number etc
                            # @todo: (5 7 2) ammend to work irrespective of order
 
   'Null'     : ['null', "-"]  #
-  'Undefined': ['U', "?"]
+  'Undefined': ['U', "void", "?"]
 }
 
 

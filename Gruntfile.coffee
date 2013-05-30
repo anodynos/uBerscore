@@ -41,6 +41,8 @@ gruntFunction = (grunt) ->
           path: "#{sourceDir}"
           filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
           copy: [/./, '**/*.*'] # 2 ways to say "I want all non-resource files to be coiped to build.outputPath"
+          #resources: []
+
           dependencies:
             exports: bundle: #['lodash', 'agreement/isAgree'] # simple syntax
               'lodash':"_",                               # precise syntax
@@ -49,7 +51,7 @@ gruntFunction = (grunt) ->
 
         build:
           verbose: false # false is default
-          debugLevel: 100  # 0 is default
+          debugLevel: 0 # 0 is default
 #          continue: true
 
       # a simple UMD build
