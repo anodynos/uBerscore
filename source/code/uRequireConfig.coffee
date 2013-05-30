@@ -30,7 +30,9 @@ module.exports =
 
   # these are our build options
   build:
-    outputPath: './build/dist/uberscore-dev.js'
-    template: 'combined'
-    debugLevel: 40
+#    outputPath: './build/dist/uberscore-dev.js'
+#    template: 'combined'
+    outputPath: './build/UMD'
+    template: 'UMD'
+#    debugLevel: 40
 #    verbose: true

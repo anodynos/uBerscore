@@ -25,7 +25,7 @@ gruntFunction = (grunt) ->
            <%= pkg.author.email %>, Lisense: <%= pkg.licenses[0].type %> */\n"""
       varVERSION: "var VERSION = '<%= pkg.version %>'; //injected by grunt:concat\n"
       varVERSIONMin: "var VERSION='<%= pkg.version %>'\n;"
-      mdVersion: "# uBerscore v<%= pkg.version %>\n"
+      mdVersion: "# <%= pkg.name %> v<%= pkg.version %>\n"
 
     options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
 
@@ -49,7 +49,7 @@ gruntFunction = (grunt) ->
 
         build:
           verbose: false # false is default
-          debugLevel: 90  # 0 is default
+          debugLevel: 100  # 0 is default
 #          continue: true
 
       # a simple UMD build
@@ -119,11 +119,19 @@ gruntFunction = (grunt) ->
 
     watch:
       urequireDev:
-        files: ["#{sourceDir}/**/*.*"] # subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
-        tasks: 'urequire:uberscoreUMD'
+        files: ["#{sourceDir}/**/*.*" ] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
+#        files: ["#{sourceDir}/**/*.*" , "!#{sourceDir}/**/draft/*.*", "!#{sourceDir}/**/uRequireConfig*"] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
+        tasks: 'urequire:uberscoreDev'
         options: nospawn: true
 #        debounceDelay: 1000
 
+    esteWatch:
+      options:
+        dirs: ["#{sourceDir}/**/*.*"]
+
+      coffee: (filepath)->
+        console.log filepath
+        return ['urequire:uberscoreUMD']
 
     shell:
       mocha:
@@ -200,6 +208,7 @@ gruntFunction = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib'
   grunt.loadNpmTasks 'grunt-shell'
   grunt.loadNpmTasks 'grunt-urequire'
+  grunt.loadNpmTasks 'grunt-este-watch'
 
   null
 

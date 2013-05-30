@@ -80,7 +80,7 @@ getValueAtPath = (o, path, options = defaultOptions)->
         else
           throw "_B.getValueAtPath Error: invalid path: #{path}"
 
-  for p in path when p
+  for p in path when p+'' #hanldle p being a Number
     lastO = o if o isnt undefined
 
     if not _.isObject o

@@ -17,7 +17,6 @@ getValueAtPath = require './objects/getValueAtPath'
     * get/set DebugLevel
 ###
 class Logger
-
   constructor: (@levelPath, @debugLevel, @newLine = true)->
     @levelPaths = (path for path in levelPath.split('/') when path)
     Logger.loggerCount = (Logger.loggerCount or 0) + 1
@@ -25,14 +24,30 @@ class Logger
   prettify:
     if (__isNode? and __isNode) or not __isNode?
       do (inspect = require('util').inspect)-> # 'util' is NOT added by uRequire, using a 'noWeb' declaration
-        (o)->
-          pretty = "\u001b[0m#{(inspect o, false, null, true)}" # @todo: update .inspect call for "node": ">=0.10.x"
-          if _.isArray o
-            pretty.replace /\n/g, ''
-          if inAgreements o, [_.isObject, _.isRegExp] #_.isObject matches for _.isFunction/Array
-            pretty
-          else # _.isString, etc
-            o
+
+        nodeVerLE_092 = do -> #check if nodejs version is <=0.9.2
+            v = []; v[i] = x*1 for x,i in process.version[1..].split '.'
+            if v[0]>0 or v[1]>9
+              false
+            else
+              if v[1] is 9
+                if v[2] <= 2 then true
+                else false
+              else true
+
+        return (o)-> # our prettify function
+            pretty =
+              if nodeVerLE_092 # diff .inspect call for "node": ">=0.9.3"
+                "\u001b[0m#{inspect o, false, null, true}"
+              else
+                "\u001b[0m#{inspect o, {showHidden:false, depth:null, colors:true}}"
+
+            if _.isArray o
+              pretty.replace /\n/g, ''
+            if inAgreements o, [_.isObject, _.isRegExp] #_.isObject matches for _.isFunction/Array
+              pretty
+            else # _.isString, etc
+              o
     else
       (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation. http://docstore.mik.ua/orelly/webprog/jscript/ch03_12.htm
 
