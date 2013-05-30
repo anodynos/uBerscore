@@ -35,7 +35,7 @@ describe 'Blender:', ->
 
             Function:->                              # its an 'src' item, hence it will become "->"
             String:                                  # its an 'src' item, hence it will become "''"
-              'bundle:dependencies:variableNames:*': # paths with seperator '/' are expanded eg. `{bundle:dependencies:variableNames}`
+              'bundle:dependencies:depsVars:*': # paths with seperator '/' are expanded eg. `{bundle:dependencies:depsVars}`
 
                 basics : '|':                        # terminator of 'path'
 
@@ -44,7 +44,7 @@ describe 'Blender:', ->
                   Array: 'someArrayAction, found on a preceding blenderBehavior or blender'
                   String: (prop, src, dst, blender)-> B.Blender.SKIP
 
-              'bundle:dependencies:_knownVariableNames':  # expanded to `{bundle:dependencies:_knownVariableNames}`
+              'bundle:dependencies:_knownDepsVars':  # expanded to `{bundle:dependencies:_knownDepsVars}`
                                                           # but merged (blended:-) with {bundle:dependencies:...} above
 
                   String: Array: Function:                # these are still path names, they aren't shortified
@@ -62,20 +62,20 @@ describe 'Blender:', ->
           "''":
             bundle:
               dependencies:
-                variableNames:
+                depsVars:
                   "*":
                     basics:
                       "|":
-                        "{}": longTypePathBb['String']['bundle:dependencies:variableNames:*'].basics['|']['Object']
-                        "[]": longTypePathBb['String']['bundle:dependencies:variableNames:*'].basics['|']['Array']
-                        "''": longTypePathBb['String']['bundle:dependencies:variableNames:*'].basics['|']['String']
+                        "{}": longTypePathBb['String']['bundle:dependencies:depsVars:*'].basics['|']['Object']
+                        "[]": longTypePathBb['String']['bundle:dependencies:depsVars:*'].basics['|']['Array']
+                        "''": longTypePathBb['String']['bundle:dependencies:depsVars:*'].basics['|']['String']
 
-                _knownVariableNames:
+                _knownDepsVars:
                   String:
                     Array:
                       Function:
                         "|":
-                          "->": longTypePathBb['String']['bundle:dependencies:_knownVariableNames'].String.Array.Function['|']['Function']
+                          "->": longTypePathBb['String']['bundle:dependencies:_knownDepsVars'].String.Array.Function['|']['Function']
                           "[]": "someArrayAction"
 
           someAction: longTypePathBb.someAction

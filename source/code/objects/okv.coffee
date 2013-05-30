@@ -1,4 +1,4 @@
-_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies: exports: bundle' !
 
 ###
  A helper to create an object literal with dynamic (calculated) keys on the fly.

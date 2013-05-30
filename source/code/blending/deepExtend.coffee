@@ -1,4 +1,4 @@
-_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies: exports: bundle' !
 
 l = new (require './../Logger') 'uberscore/Blender'
 

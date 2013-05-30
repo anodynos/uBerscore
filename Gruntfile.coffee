@@ -38,11 +38,11 @@ gruntFunction = (grunt) ->
       # @todo: On derive: a) allow dropping of cyclic references. b) fix file reference paths ALWAYS being relative to the initial path (the path used for 1st file), instead of file referencing.
       _defaults:
         bundle:
-          bundlePath: "#{sourceDir}"
-          filespecs: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
-
+          path: "#{sourceDir}"
+          filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
+          copy: [/./, '**/*.*'] # 2 ways to say "I want all non-resource files to be coiped to build.outputPath"
           dependencies:
-            bundleExports: #['lodash', 'agreement/isAgree'] # simple syntax
+            exports: bundle: #['lodash', 'agreement/isAgree'] # simple syntax
               'lodash':"_",                               # precise syntax
               'agreement/isAgree': 'isAgree'
             noWeb: ['util']
@@ -95,10 +95,10 @@ gruntFunction = (grunt) ->
 
       # uRequire-ing the specs: we also have two build as 'UMD' & as 'combined'
       spec: # deep inherits all '_defaults', by default :-)
-        bundlePath: "#{sourceSpecDir}"
+        path: "#{sourceSpecDir}"
         outputPath: "#{buildSpecDir}"
         dependencies:
-          bundleExports:
+          exports: bundle:
             chai: 'chai'
             lodash: '_'
             uberscore: '_B'
@@ -113,7 +113,7 @@ gruntFunction = (grunt) ->
                        # to `bundle.bundleName` or 'index' or 'main' (whichever found 1st as a module on bundleRoot)
                        # with the price of a warning! In spec's case, THERE IS a module 'index.coffee' which is picked.
         dependencies:
-          variableNames:
+          depsVars:
             uberscore: ['_B', 'uberscore']
 #        debugLevel: 90  # 0 is default
 

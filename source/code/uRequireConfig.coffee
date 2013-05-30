@@ -4,13 +4,13 @@
 module.exports =
 
   bundle:
-#    bundlePath: './source/code' # not needed - as long as this file is on the bundle's root, its assumed.
+#    path: './source/code' # not needed - as long as this file is on the bundle's root, its assumed.
 
     # our 'main' / index .js file - used by r.js optimizer as
     main: "uberscore"
 
 
-    filespecs: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
+    filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
 
     # Export dependencies for the whole bundle
     dependencies:
@@ -24,7 +24,7 @@ module.exports =
 #      ]
 
       # alternatively (more proper, yet verbose) it could have been:
-      bundleExports:
+      exports: bundle:
         'lodash': ['_']
         'agreement/isAgree': 'isAgree' # test as string also works!
 

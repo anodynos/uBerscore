@@ -9,7 +9,7 @@ describe 'objects/getValueAtPath ', ->
         anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
         '*': IamA: "defaultValue"
         dependencies:
-          variableNames: "Bingo"
+          depsVars: "Bingo"
         someOtherKey:
           '*': notReached: "defaultValue"
           '#': IamA: Stop: "Value"
@@ -21,18 +21,18 @@ describe 'objects/getValueAtPath ', ->
 
     it "primitive", ->
       expect(
-        _B.getValueAtPath o, '$/bundle/dependencies/variableNames'
+        _B.getValueAtPath o, '$/bundle/dependencies/depsVars'
       ).to.deep.equal 'Bingo'
 
     it "object", ->
       expect(
         _B.getValueAtPath o, '$/bundle/dependencies'
-      ).to.deep.equal variableNames: 'Bingo'
+      ).to.deep.equal depsVars: 'Bingo'
 
     it "object, with sep at end", ->
       expect(
         _B.getValueAtPath o, '$/bundle/dependencies/'
-      ).to.deep.equal variableNames: 'Bingo'
+      ).to.deep.equal depsVars: 'Bingo'
 
     it "array item (3rd)", ->
       expect(
@@ -47,16 +47,16 @@ describe 'objects/getValueAtPath ', ->
     it "object, with alternative sep", ->
       expect(
         _B.getValueAtPath o, '$.bundle.dependencies.', separator: '.'
-      ).to.deep.equal variableNames: 'Bingo'
+      ).to.deep.equal depsVars: 'Bingo'
 
     it "undefined, for non existent key", ->
       expect(
-        _B.getValueAtPath o, '$/bundle/dependencies/variableNames/notfound'
+        _B.getValueAtPath o, '$/bundle/dependencies/depsVars/notfound'
       ).to.deep.equal undefined
 
     it "undefined, for path of inexistent keys, with alt sep", ->
       expect(
-        _B.getValueAtPath o, '$>bundle>dependencies>variableNames>notfound>stillNotFound>', separator: '>'
+        _B.getValueAtPath o, '$>bundle>dependencies>depsVars>notfound>stillNotFound>', separator: '>'
       ).to.deep.equal undefined
 
   describe 'retrieving value using *defaultKey*:', ->
@@ -107,5 +107,5 @@ describe 'objects/getValueAtPath ', ->
     it "non existent key, returns last value", ->
       expect(
         _B.getValueAtPath o, '$/bundle/dependencies/someNonFoundKey/', isReturnLast: true
-      ).to.deep.equal variableNames:'Bingo'
+      ).to.deep.equal depsVars:'Bingo'
 

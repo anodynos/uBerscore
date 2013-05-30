@@ -1,5 +1,5 @@
 ###DEV ONLY ###
-_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies.bundleExports' !
+_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies: exports: bundle' !
 #__isNode = true
 ###DEV ONLY ###
 

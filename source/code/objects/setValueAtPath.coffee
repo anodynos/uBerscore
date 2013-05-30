@@ -44,7 +44,7 @@ module.exports = setValueAtPath
 #    bundle:
 #      anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
 #      dependencies:
-#        variableNames: "Bingo"
+#        depsVars: "Bingo"
 #
 #oClone = _.clone o, true
 #l.log setValueAtPath( oClone,

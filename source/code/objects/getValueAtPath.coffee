@@ -122,7 +122,7 @@ module.exports = getValueAtPath
 #
 #      anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
 #      dependencies:
-#        variableNames: "Bingo"
+#        depsVars: "Bingo"
 #        '#': 'No deps when terminal key is found'
 #        "|": terminatedAgain:" again because of terminateKey !"
 #      '*': 'paparo values'
@@ -136,7 +136,7 @@ module.exports = getValueAtPath
 #      anArray: ['arrayItem1', 2, 'arrayItem3':3 ]
 #      '*': IamA: "defaultValue"
 #      dependencies:
-#        variableNames: "Bingo"
+#        depsVars: "Bingo"
 #      someOtherKey:
 #        '*': notReached: "defaultValue"
 #        '#': IamA: Stop: "Value"
