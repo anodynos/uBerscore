@@ -1,3 +1,4 @@
+
 # example for building uberscore-dev.js
 # use as `$ urequire config source/code/uRequireConfig.coffee -d 0`
 # note: works with uRequire 0.3.0beta1
@@ -10,8 +11,8 @@ module.exports =
     main: "uberscore"
 
 
-    filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
-
+    filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*', '!*.md']
+    copy: [/./]
     # Export dependencies for the whole bundle
     dependencies:
       noWeb: ['util'] # todo: fix String instead of Array
@@ -32,7 +33,8 @@ module.exports =
   build:
 #    outputPath: './build/dist/uberscore-dev.js'
 #    template: 'combined'
-    outputPath: './build/UMD'
-    template: 'UMD'
-#    debugLevel: 40
+    outputPath: './build/code'
+#    template: 'UMD'
+    debugLevel: 100
 #    verbose: true
+#    watch: true

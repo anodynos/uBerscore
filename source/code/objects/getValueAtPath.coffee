@@ -5,8 +5,7 @@ defaultOptions =
   stopKey: "#"              # @todo: alternative as callback
   terminateKey: undefined   # @todo: alternative as callback
   defaultKey: "*"           # @todo: alternative as callback
-
-  isReturnLast: false # @todo: doc it & spec it!
+  isReturnLast: false       # @todo: doc it & spec it!
 
 ###
   Gets a value from an Object, with a given path from either a textual description (with separator) or an array of path names.
@@ -53,12 +52,12 @@ defaultOptions =
   @param options {Object}
     @option separator {String} The seperator to split a String path with. The defaultKey is '/'.
 
-    @option stopKey {String} The stopKey to retrieve, if original not found, and then stopp walking returning it.
+    @option stopKey {String} The stopKey to retrieve, if original not found, and then stop walking returning it.
 
     @option defaultKey {String} The defaultKey to retrieve if original not found - walking continues as normal if defaultKey is found
 
     @option terminateKey {String} The key that terminates all further walking and even if the key requested exists, it instead
-                               returns an object with one key (it self) and the value of it self in the original object.
+                               returns an object with one key (the terminateKey) and the value of the terminateKey in the original object.
 
     @option isReturnLast {truthy} If true, it returns the last non-undefined value found. # @todo: spec it
 

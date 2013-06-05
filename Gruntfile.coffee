@@ -39,9 +39,10 @@ gruntFunction = (grunt) ->
       _defaults:
         bundle:
           path: "#{sourceDir}"
-          filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
-          copy: [/./, '**/*.*'] # 2 ways to say "I want all non-resource files to be coiped to build.outputPath"
+          filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*', '!*.md']
           #resources: []
+          copy: [/./]
+          #copy: []
 
           dependencies:
             exports: bundle: #['lodash', 'agreement/isAgree'] # simple syntax
@@ -51,7 +52,7 @@ gruntFunction = (grunt) ->
 
         build:
           verbose: false # false is default
-          debugLevel: 0 # 0 is default
+          debugLevel: 100 # 0 is default
 #          continue: true
 
       # a simple UMD build
@@ -59,7 +60,7 @@ gruntFunction = (grunt) ->
         #'build': # `build` and `bundle` hashes are not needed - keys are safelly recognised, even if they're not in them.
         #'derive': ['_defaults'] # not needed - by default it deep uDerives all '_defaults'. To avoid use `derive:[]`.
           #template: 'UMD' # Not needed - 'UMD' is default
-          outputPath: "#{buildDir}"
+          dstPath: "#{buildDir}"
 
       # a 'combined' build, that also works without AMD loaders on Web
       uberscoreDev:
@@ -70,18 +71,18 @@ gruntFunction = (grunt) ->
                           # will cause a compilation error.
                           # Its better to be precise anyway, in case this config is used outside grunt.
 
-        outputPath: './build/dist/uberscore-dev.js'
+        dstPath: './build/dist/uberscore-dev.js'
         template: 'combined'
 
       # A combined build, that is `derive`d from 'uberscoreDev' (& specifically '_defaults')
       # that uses re.js/uglify2 for minification.
       uberscoreMin:
         derive: ['uberscoreDev', '_defaults'] # need to specify we also need '_defaults', in this order.
-        outputPath: './build/dist/uberscore-min.js'
+        dstPath: './build/dist/uberscore-min.js'
         optimize: 'uglify2' # doesn't have to be a String. `true` selects 'uglify2' also. It can also be 'uglify'.
-                            # Even more interestingly, u can pass any 'uglify2' keys,
+                            # Even more interestingly, u can pass any 'uglify2' (or 'uglify') keys,
                             # the r.js way (https://github.com/jrburke/r.js/blob/master/build/example.build.js)
-                            # eg {optimize: uglify2: output: beautify: true}
+                            # eg optimize: {uglify2: output: beautify: true}
 
       # An example on how to reference (`derive`-ing from) external urequire config file(s),
       # while overriding some of its options.
@@ -93,12 +94,13 @@ gruntFunction = (grunt) ->
       uberscoreFileConfig:
         derive: ['source/code/uRequireConfig.coffee']
         template: 'UMD'
-        outputPath: 'build/anotherUMDBuild'
+        dstPath: 'build/anotherUMDBuild'
 
       # uRequire-ing the specs: we also have two build as 'UMD' & as 'combined'
       spec: # deep inherits all '_defaults', by default :-)
         path: "#{sourceSpecDir}"
-        outputPath: "#{buildSpecDir}"
+        copy: [/./, '**/*.*'] # 2 ways to say "I want all non-resource files to be coiped to build.dstPath"
+        dstPath: "#{buildSpecDir}"
         dependencies:
           exports: bundle:
             chai: 'chai'
@@ -106,10 +108,11 @@ gruntFunction = (grunt) ->
             uberscore: '_B'
             'spec-data': 'data'
             # assert = chai.assert # @todo(for uRequire 4 5 5) allow for . notation to refer to export!
+        #debugLevel: 90  # 0 is default
 
       specCombined:
         derive: ['spec'] # deep inherits all of 'spec' BUT none of '_defaults':-)
-        outputPath: "#{buildSpecDir}_combined/index-combined.js"
+        dstPath: "#{buildSpecDir}_combined/index-combined.js"
         template: 'combined'
         #main: 'index' # not needed: if `bundle.main` is undefined it defaults
                        # to `bundle.bundleName` or 'index' or 'main' (whichever found 1st as a module on bundleRoot)
@@ -117,23 +120,21 @@ gruntFunction = (grunt) ->
         dependencies:
           depsVars:
             uberscore: ['_B', 'uberscore']
-#        debugLevel: 90  # 0 is default
 
     watch:
-      urequireDev:
+      urequireUMD:
         files: ["#{sourceDir}/**/*.*" ] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
-#        files: ["#{sourceDir}/**/*.*" , "!#{sourceDir}/**/draft/*.*", "!#{sourceDir}/**/uRequireConfig*"] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
-        tasks: 'urequire:uberscoreDev'
+        tasks: ['urequire:uberscoreUMD'] #, 'urequire:uberscoreDev']
         options: nospawn: true
-#        debounceDelay: 1000
-
-    esteWatch:
-      options:
-        dirs: ["#{sourceDir}/**/*.*"]
-
-      coffee: (filepath)->
-        console.log filepath
-        return ['urequire:uberscoreUMD']
+        debounceDelay: 2000
+#
+#    esteWatch:
+#      options:
+#        dirs: ["#{sourceDir}/**/*.*"]
+#
+#      "*": (filepath)->
+#        console.log filepath
+#        return ['urequire:uberscoreUMD']
 
     shell:
       mocha:

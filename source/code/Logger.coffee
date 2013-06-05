@@ -17,8 +17,8 @@ getValueAtPath = require './objects/getValueAtPath'
     * get/set DebugLevel
 ###
 class Logger
-  constructor: (@levelPath, @debugLevel, @newLine = true)->
-    @levelPaths = (path for path in levelPath.split('/') when path)
+  constructor: (@levelPath='', @debugLevel=0, @newLine=false)->
+    @levelPaths = (path for path in @levelPath.split('/') when path)
     Logger.loggerCount = (Logger.loggerCount or 0) + 1
 
   prettify:
@@ -176,6 +176,7 @@ class Logger
 
 module.exports = Logger
 
+new Logger
 #todo: specs ?
 #Logger.debugLevel = 15
 #logger10 = new Logger 'logger10', 10
