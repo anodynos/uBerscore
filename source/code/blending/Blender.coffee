@@ -4,7 +4,7 @@ _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies:
 ###DEV ONLY ###
 
 type = require '../type'
-getValueAtPath = require '../objects/getValueAtPath'
+getp = require '../objects/getp'
 
 ###
   Blender: a highly configurable object blender :-)
@@ -338,7 +338,7 @@ class Blender
       else # nextBBSrcDstSpec is used mainly for debuging
         if bbOrder is 'path'
           nextBBSrcDstSpec = 
-            getValueAtPath currentBBSrcDstSpec, @path[1..], {
+            getp currentBBSrcDstSpec, @path[1..], {
                            terminateKey: if @isExactPath then undefined else @pathTerminator} #default is '|'
 
           nextBBSrcDstSpec = nextBBSrcDstSpec['|'] if _.isObject nextBBSrcDstSpec

@@ -28,8 +28,8 @@ class uberscore
 
   # mutators
   mutate: require './objects/mutate'
-  setValueAtPath: require './objects/setValueAtPath'
-  getValueAtPath: require './objects/getValueAtPath'
+  setp: require './objects/setp'
+  getp: require './objects/getp'
   isDisjoint: require './objects/isDisjoint'
   isRefDisjoint: require './objects/isRefDisjoint'
   getRefs: require './objects/getRefs'

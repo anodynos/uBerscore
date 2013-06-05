@@ -52,7 +52,7 @@ gruntFunction = (grunt) ->
 
         build:
           verbose: false # false is default
-          debugLevel: 100 # 0 is default
+          debugLevel: 0 # 0 is default
 #          continue: true
 
       # a simple UMD build
@@ -123,8 +123,8 @@ gruntFunction = (grunt) ->
 
     watch:
       urequireUMD:
-        files: ["#{sourceDir}/**/*.*" ] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
-        tasks: ['urequire:uberscoreUMD'] #, 'urequire:uberscoreDev']
+        files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*" ] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
+        tasks: ['urequire:uberscoreUMD', 'urequire:spec', 'mocha'] #, 'urequire:uberscoreDev']
         options: nospawn: true
         debounceDelay: 2000
 #

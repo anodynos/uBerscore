@@ -1,22 +1,17 @@
 _ = require 'lodash'
 
-defaultOptions =
-  separator: '/'
-  stopKey: "#"              # @todo: alternative as callback
-  terminateKey: undefined   # @todo: alternative as callback
-  defaultKey: "*"           # @todo: alternative as callback
-  isReturnLast: false       # @todo: doc it & spec it!
-
 ###
-  Gets a value from an Object, with a given path from either a textual description (with separator) or an array of path names.
+  Gets a value from an Object, with a given path from either
+  - a textual description (with separator)
+  - or an Array<String> of path names.
 
   Its guaranteed only one path will be followed (or an undefined will be returned)
 
   While walking/retrieving path keys from o, there are some twists:
 
     terminateKey: @todo: spec it!
-      Before looking for any actual key, if this key is found on current object, then walking stopKeys and
-      the value within terminateKey is returned (with terminateKey it self as root).
+      Before looking for any actual key, if this key is found on current object,
+      then walking stopKeys and the value within terminateKey is returned (with terminateKey it self as root).
 
       eg if terminateKey = '|', in
       {
@@ -64,7 +59,14 @@ defaultOptions =
     @option iter: a callback with objectAtPath, path, o @todo: NOT IMPLEMENTED
 
 ###
-getValueAtPath = (o, path, options = defaultOptions)->
+defaultOptions =
+  separator: '/'
+  stopKey: "#"              # @todo: alternative as callback
+  terminateKey: undefined   # @todo: alternative as callback
+  defaultKey: "*"           # @todo: alternative as callback
+  isReturnLast: false       # @todo: doc it & spec it!
+
+getp = (o, path, options = defaultOptions)->
   _.defaults options, defaultOptions if options isnt defaultOptions
 
   if not _.isArray(path)
@@ -77,7 +79,7 @@ getValueAtPath = (o, path, options = defaultOptions)->
         if path is undefined
           return o
         else
-          throw "_B.getValueAtPath Error: invalid path: #{path}"
+          throw "_B.getp Error: invalid path: #{path}"
 
   for p in path when p+'' #hanldle p being a Number
     lastO = o if o isnt undefined
@@ -110,9 +112,9 @@ getValueAtPath = (o, path, options = defaultOptions)->
   else
     o
 
-module.exports = getValueAtPath
+module.exports = getp
 
-#l = new (require '../Logger') 'uberscore/getValueAtPath'
+#l = new (require '../Logger') 'uberscore/getp'
 #
 #o =
 #  '$':
@@ -126,8 +128,8 @@ module.exports = getValueAtPath
 #        "|": terminatedAgain:" again because of terminateKey !"
 #      '*': 'paparo values'
 
-#l.log getValueAtPath o, '$/bundle/some/path', terminateKey:'|'
-#l.log getValueAtPath o, '/$/bundle/dependencies/malakies', isReturnLast: true, terminateKey:'|'
+#l.log getp o, '$/bundle/some/path', terminateKey:'|'
+#l.log getp o, '/$/bundle/dependencies/malakies', isReturnLast: true, terminateKey:'|'
 #
 #o =
 #  '$':
@@ -143,4 +145,4 @@ module.exports = getValueAtPath
 #        '|': terminated: 'terminated value'
 #        someKey: someOtherKey: 'someValue'
 #
-#l.log getValueAtPath o, '$/bundle/leadingToTerminate/someKey/someOtherKey', terminateKey:'|'
+#l.log getp o, '$/bundle/leadingToTerminate/someKey/someOtherKey', terminateKey:'|'

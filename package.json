@@ -1,7 +1,7 @@
 {
   "name": "uberscore",
   "description": "uBerscore js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality & shortcuts that underscore doesn't, wouldn't, shouldn't have.",
-  "version": "0.0.9alpha5",
+  "version": "0.0.9alpha6",
   "homepage": "https://github.com/anodynos/uBerscore",
   "author": {
     "name": "Agelos Pikoulas",

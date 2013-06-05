@@ -1,7 +1,7 @@
 _ = require 'lodash'
 inAgreements = require './agreement/inAgreements'
-setValueAtPath = require './objects/setValueAtPath'
-getValueAtPath = require './objects/getValueAtPath'
+setp = require './objects/setp'
+getp = require './objects/getp'
 ###
   The simplest possible powerfull Logger!
 
@@ -138,11 +138,11 @@ class Logger
   @getStaticDebugLevel = (levelPaths=[])->
     levPaths = _.clone levelPaths
     levPaths.unshift 'debugLevels'
-    val = getValueAtPath Logger, levPaths
+    val = getp Logger, levPaths
     lastPath = levPaths.pop() # WHERE IS THE REAL REPEAT/UNTIL CONSTRUCT ?
 
     while (_.isUndefined val?._value) and lastPath
-      val = getValueAtPath Logger, levPaths
+      val = getp Logger, levPaths
       lastPath = levPaths.pop()
 
     return val?._value
@@ -151,7 +151,7 @@ class Logger
   # @param String levelPath eg 'uberscore/objects/isIqual'
   # @param Number level eg 30
   @setDebugLevel = (level, levelPath)->
-    setValueAtPath Logger, 'debugLevels/' + levelPath + '/_value', level, forceCreate = true
+    setp Logger, 'debugLevels/' + levelPath + '/_value', level, create: true
 
   # a helper to simplify decision to Log or not, whoith having to evaluate huge concatenations,
   # just to decide we arent at debuging level anyway.
@@ -176,7 +176,6 @@ class Logger
 
 module.exports = Logger
 
-new Logger
 #todo: specs ?
 #Logger.debugLevel = 15
 #logger10 = new Logger 'logger10', 10
@@ -213,4 +212,3 @@ new Logger
 #l2.debug 30, 'arxiditses2', l2.getFederatedDebugLevel() # not debuging, cause there's no debugLevel for 'paparologies/***'
 #
 #console.log l.getDebugLevel is l.__proto__.getDebugLevel
-

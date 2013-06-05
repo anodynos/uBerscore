@@ -9,8 +9,6 @@ module.exports =
 
     # our 'main' / index .js file - used by r.js optimizer as
     main: "uberscore"
-
-
     filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*', '!*.md']
     copy: [/./]
     # Export dependencies for the whole bundle
@@ -35,6 +33,6 @@ module.exports =
 #    template: 'combined'
     outputPath: './build/code'
 #    template: 'UMD'
-    debugLevel: 100
+    #debugLevel: 100
 #    verbose: true
 #    watch: true
