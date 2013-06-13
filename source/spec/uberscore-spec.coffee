@@ -21,7 +21,7 @@ describe """
       expect( window.uberscore ).to.equal "Old global `uberscore`"
 
       # assign back ?
-      #window._B = _uB
+      window._B = _uB
 
   else
     it "NOT TESTING `rootExports`, I am on node/#{if __isAMD then 'AMD' else 'plain'}!", ->

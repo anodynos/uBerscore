@@ -39,20 +39,17 @@ gruntFunction = (grunt) ->
       _defaults:
         bundle:
           path: "#{sourceDir}"
-          filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*', '!*.md']
-          #resources: []
+          filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
           copy: [/./]
-          #copy: []
-
           dependencies:
-            exports: bundle: #['lodash', 'agreement/isAgree'] # simple syntax
-              'lodash':"_",                               # precise syntax
-              'agreement/isAgree': 'isAgree'
-            noWeb: ['util']
+            exports:
+              bundle: # ['lodash', 'agreement/isAgree'] # simple syntax
+                'lodash':"_",                        # precise syntax
+                'agreement/isAgree': 'isAgree'
 
         build:
           verbose: false # false is default
-          debugLevel: 0 # 0 is default
+          debugLevel: 0  # 0 is default
 #          continue: true
 
       # a simple UMD build
@@ -127,14 +124,6 @@ gruntFunction = (grunt) ->
         tasks: ['urequire:uberscoreUMD', 'urequire:spec', 'mocha'] #, 'urequire:uberscoreDev']
         options: nospawn: true
         debounceDelay: 2000
-#
-#    esteWatch:
-#      options:
-#        dirs: ["#{sourceDir}/**/*.*"]
-#
-#      "*": (filepath)->
-#        console.log filepath
-#        return ['urequire:uberscoreUMD']
 
     shell:
       mocha:

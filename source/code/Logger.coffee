@@ -23,7 +23,7 @@ class Logger
 
   prettify:
     if (__isNode? and __isNode) or not __isNode?
-      do (inspect = require('util').inspect)-> # 'util' is NOT added by uRequire, using a 'noWeb' declaration
+      do (inspect = require('node!util').inspect)-> # 'util' is added by uRequire only on nodejs execution
 
         nodeVerLE_092 = do -> #check if nodejs version is <=0.9.2
             v = []; v[i] = x*1 for x,i in process.version[1..].split '.'
@@ -64,7 +64,7 @@ class Logger
       args.unshift "#{color}" if not (__isWeb? and __isWeb)
       args.unshift "\n" if @newLine
       args.push '\u001b[0m' if not (__isWeb? and __isWeb) #reset color
-      cons.apply null, args
+      cons.apply console, args #console context needed for chrome http://stackoverflow.com/questions/8159233/typeerror-illegal-invocation-on-console-log-apply
 
       # return printable args
       try

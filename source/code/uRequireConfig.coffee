@@ -9,11 +9,10 @@ module.exports =
 
     # our 'main' / index .js file - used by r.js optimizer as
     main: "uberscore"
-    filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*', '!*.md']
+    filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
     copy: [/./]
     # Export dependencies for the whole bundle
     dependencies:
-      noWeb: ['util'] # todo: fix String instead of Array
 
       # Using []<String>, we 'll discover corresponding variable they bind to
       # from bundle modules that actually import these deps (only from AMD in this version), eg @see `arrayize`.
@@ -23,16 +22,15 @@ module.exports =
 #      ]
 
       # alternatively (more proper, yet verbose) it could have been:
-      exports: bundle:
-        'lodash': ['_']
-        'agreement/isAgree': 'isAgree' # test as string also works!
+      exports:
+        bundle:
+          'lodash': ['_']
+          'agreement/isAgree': 'isAgree' # test as string also works!
 
   # these are our build options
   build:
 #    outputPath: './build/dist/uberscore-dev.js'
 #    template: 'combined'
-    outputPath: './build/code'
-#    template: 'UMD'
-    #debugLevel: 100
+    debugLevel: 0
 #    verbose: true
 #    watch: true
