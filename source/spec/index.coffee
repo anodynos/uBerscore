@@ -4,6 +4,7 @@ require "blending/deepExtend-spec"
 require "blending/lodash-merge-spec"
 require "blending/Mergers_Blender-spec"
 require "blending/DeepDefaultsBlender-spec"
+require "blending/ArrayizePushBlender-spec"
 
 require "objects/getInheritedPropertyNames-spec"
 require "objects/getRefs-spec"

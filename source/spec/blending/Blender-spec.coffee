@@ -1,8 +1,8 @@
 assert = chai.assert
 expect = chai.expect
 
-describe 'Blender:', ->
-  
+describe 'Blender & DeepCloneBlender:', ->
+
   describe 'Internals: blender.adjustBlenderBehavior:', ->
   
     describe "corectly transforms nested types of srcDstSpecs to short format", ->

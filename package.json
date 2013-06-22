@@ -1,7 +1,7 @@
 {
   "name": "uberscore",
   "description": "uBerscore js is (now) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality & shortcuts that underscore doesn't, wouldn't, shouldn't have.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "homepage": "https://github.com/anodynos/uBerscore",
   "author": {
     "name": "Agelos Pikoulas",
@@ -39,10 +39,11 @@
   "devDependencies": {
     "chai": "*",
     "urequire": "0.3.0beta1",
+    "grunt-urequire": "0.4.4",
     "grunt": "0.3.x",
     "grunt-shell": "*",
-    "grunt-contrib": "*",
-    "grunt-urequire": "0.4.2",
+    "grunt-contrib-clean": "0.4.1",
+    "grunt-contrib-concat": "0.1.3",
     "grunt-contrib-watch": "*"
   }
 }

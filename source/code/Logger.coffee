@@ -23,7 +23,7 @@ class Logger
 
   prettify:
     if (__isNode? and __isNode) or not __isNode?
-      do (inspect = require('node!util').inspect)-> # 'util' is added by uRequire only on nodejs execution
+      do (inspect = require('util').inspect)-> # 'util' node-only execution via urequire config `bundle.dependencies.node`
 
         nodeVerLE_092 = do -> #check if nodejs version is <=0.9.2
             v = []; v[i] = x*1 for x,i in process.version[1..].split '.'

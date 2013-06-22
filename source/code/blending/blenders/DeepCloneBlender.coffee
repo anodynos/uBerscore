@@ -15,7 +15,7 @@ class DeepCloneBlender extends Blender
     "*":
       '[]': 'deepCloneOverwrite' # '[]' is type.toShort('Array')
       '{}': 'deepCloneOverwrite' # '{}' is type.toShort('Object')
-      '->': 'deepCloneOverwrite'
+      '->': (prop, src)-> src[prop] # just copy/overwrite function reference
       'Undefined': -> Blender.SKIP
 
     deepCloneOverwrite: (prop, src, dst, blender)->

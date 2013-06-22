@@ -42,6 +42,7 @@ gruntFunction = (grunt) ->
           filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
           copy: [/./]
           dependencies:
+            node: 'util'
             exports:
               bundle: # ['lodash', 'agreement/isAgree'] # simple syntax
                 'lodash':"_",                        # precise syntax
@@ -49,7 +50,7 @@ gruntFunction = (grunt) ->
 
         build:
           verbose: false # false is default
-          debugLevel: 0  # 0 is default
+          debugLevel: 0 # 0 is default
 #          continue: true
 
       # a simple UMD build
@@ -119,7 +120,7 @@ gruntFunction = (grunt) ->
             uberscore: ['_B', 'uberscore']
 
     watch:
-      urequireUMD:
+      urequireDev:
         files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*" ] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
         tasks: ['urequire:uberscoreUMD', 'urequire:spec', 'mocha'] #, 'urequire:uberscoreDev']
         options: nospawn: true
@@ -197,19 +198,15 @@ gruntFunction = (grunt) ->
   }
 
   grunt.initConfig gruntConfig
-  grunt.loadNpmTasks 'grunt-contrib'
-  grunt.loadNpmTasks 'grunt-shell'
   grunt.loadNpmTasks 'grunt-urequire'
-  grunt.loadNpmTasks 'grunt-este-watch'
+  grunt.loadNpmTasks 'grunt-shell'
+  grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-concat'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
+
+  #grunt.loadNpmTasks 'grunt-este-watch'
 
   null
-
-#debug : call with a dummy 'grunt', that spits params on console.log
-#gruntFunction
-#  util:'_': require 'lodash'
-#  initConfig: (cfg)-> console.log 'grunt: initConfig\n', JSON.stringify cfg, null, ' '
-#  loadNpmTasks: (tsk)-> console.log 'grunt: registerTask: ', tsk
-#  registerTask: (shortCut, task)-> console.log 'grunt: registerTask:', shortCut, ': ', task
 
 module.exports = gruntFunction
 
