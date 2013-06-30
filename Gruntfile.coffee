@@ -8,25 +8,23 @@ distDir       = "build/dist"
 gruntFunction = (grunt) ->
   _ = grunt.util._
 
+  pkg = grunt.file.readJSON('package.json')
+
+  banner = """
+      /*
+      * #{ pkg.name } - version #{ pkg.version }
+      * Compiled on #{ grunt.template.today("yyyy-mm-dd h:MM:ss") }
+      * #{ pkg.repository.url }
+      * Copyright(c) #{ grunt.template.today("yyyy") } #{ pkg.author.name } (#{ pkg.author.email } )
+      * Licensed #{ pkg.licenses[0].type } #{ pkg.licenses[0].url }
+      */\n"""
+
+  bannerMin = """
+    /* #{ pkg.name } #{ pkg.version } (#{ grunt.template.today("yyyy-mm-dd") }), #{ pkg.repository.url }
+       #{ pkg.author.email }, Lisense: #{ pkg.licenses[0].type } */\n"""
+
   gruntConfig =
-    pkg: grunt.file.readJSON('package.json')
-
-    meta:
-      banner: """
-        /*
-        * <%= pkg.name %> - version <%= pkg.version %>
-        * Compiled on <%= grunt.template.today(\"yyyy-mm-dd h:MM:ss\") %>
-        * <%= pkg.repository.url %>
-        * Copyright(c) <%= grunt.template.today(\"yyyy\") %> <%= pkg.author.name %> (<%= pkg.author.email %> )
-        * Licensed <%= pkg.licenses[0].type %> <%= pkg.licenses[0].url %>
-        */\n"""
-      bannerMin: """
-        /* <%= pkg.name %> <%= pkg.version %> (<%= grunt.template.today(\"yyyy-mm-dd\") %>), <%= pkg.repository.url %>
-           <%= pkg.author.email %>, Lisense: <%= pkg.licenses[0].type %> */\n"""
-      varVERSION: "var VERSION = '<%= pkg.version %>'; //injected by grunt:concat\n"
-      varVERSIONMin: "var VERSION='<%= pkg.version %>'\n;"
-      mdVersion: "# <%= pkg.name %> v<%= pkg.version %>\n"
-
+    meta: {banner, bannerMin}
     options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
 
     ###
@@ -41,16 +39,24 @@ gruntFunction = (grunt) ->
           path: "#{sourceDir}"
           filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
           copy: [/./]
+          resources: [                           # example: declaring resource converter to perform some 'concat/inject' job.
+            [ '*inject VERSION to uberscore.js', # inject the VERSION variable inside the module's code, BEFORE running the template
+              ['uberscore.js']  # note we are looking to change the converted `uberscore.js` (not `uberscore.coffee`)
+              (source)-> """var VERSION = '#{ pkg.version }'; //injected by urequire resource\n
+                            #{source}"""
+              # no dstFilename converter needed
+            ]
+          ]
           dependencies:
-            node: 'util'
+            node: 'util'   # 'util' will not be added to deps array, will be available only on nodejs execution. Same as 'node!myDep'
             exports:
-              bundle: # ['lodash', 'agreement/isAgree'] # simple syntax
-                'lodash':"_",                        # precise syntax
+              bundle:   # ['lodash', 'agreement/isAgree'] # simple syntax
+                'lodash':"_",                             # precise syntax
                 'agreement/isAgree': 'isAgree'
 
         build:
           verbose: false # false is default
-          debugLevel: 0 # 0 is default
+          debugLevel: 40 # 0 is default
 #          continue: true
 
       # a simple UMD build
@@ -59,6 +65,14 @@ gruntFunction = (grunt) ->
         #'derive': ['_defaults'] # not needed - by default it deep uDerives all '_defaults'. To avoid use `derive:[]`.
           #template: 'UMD' # Not needed - 'UMD' is default
           dstPath: "#{buildDir}"
+
+          resources: [ # example: perform some 'concat' job.
+            [ '*!concat/add banner to uberscore.js', # '!' means 'isAfterTemplate: true'
+              ['uberscore.js']                       # note we are looking to change the dstFilename `uberscore.js` (not `uberscore.coffee`)
+              (source, srcFilename)->"#{banner}\n#{source}"
+              #no dstFilename converter needed
+            ]
+          ]
 
       # a 'combined' build, that also works without AMD loaders on Web
       uberscoreDev:
@@ -94,6 +108,16 @@ gruntFunction = (grunt) ->
         template: 'UMD'
         dstPath: 'build/anotherUMDBuild'
 
+      # An example of building only a sub-tree of the whole bundle.
+      # Here we want to build only Logger (& its dependencies) in a 'combined' build using almond.
+      # So we need `main: 'Logger'`, which is infered from grunt task/target name
+      # @todo: Its somewhat ineffiecient in urequire 0.4, cause all modules are converted to AMD, used as input to rjs.optimize
+      # which only picks the dependent ones. Future urequire version should fix this.
+      Logger: # bundle.main & consequently bundle.name inherit task/target 'Logger' name
+        template: 'combined'
+        optimize: true
+        dstPath: 'build/Logger-min.js'
+
       # uRequire-ing the specs: we also have two build as 'UMD' & as 'combined'
       spec: # deep inherits all '_defaults', by default :-)
         path: "#{sourceSpecDir}"
@@ -106,7 +130,6 @@ gruntFunction = (grunt) ->
             uberscore: '_B'
             'spec-data': 'data'
             # assert = chai.assert # @todo(for uRequire 4 5 5) allow for . notation to refer to export!
-        #debugLevel: 90  # 0 is default
 
       specCombined:
         derive: ['spec'] # deep inherits all of 'spec' BUT none of '_defaults':-)
@@ -122,9 +145,8 @@ gruntFunction = (grunt) ->
     watch:
       urequireDev:
         files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*" ] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
-        tasks: ['urequire:uberscoreUMD', 'urequire:spec', 'mocha'] #, 'urequire:uberscoreDev']
-        options: nospawn: true
-        debounceDelay: 2000
+        tasks: ['urequire:uberscoreDev'] #, 'urequire:spec', 'mocha']
+        options: nospawn: true                                     # works only with `nospawn: true`
 
     shell:
       mocha:
@@ -146,18 +168,13 @@ gruntFunction = (grunt) ->
         stderr: true
 
     concat:
-      'uberscoreUMD':
-        options: banner: "<%= meta.banner %><%= meta.varVERSION %>"
-        src: ['<%= options.buildDir %>/uberscore.js']
-        dest:'<%= options.buildDir %>/uberscore.js'
-
       'uberscoreDev':
-        options: banner: "<%= meta.banner %><%= meta.varVERSION %>"
+        options: banner: "<%= meta.banner %>"
         src: ['<%= options.distDir %>/uberscore-dev.js']
         dest: '<%= options.distDir %>/uberscore-dev.js'
 
       'uberscoreMin':
-        options: banner: "<%= meta.bannerMin %><%= meta.varVERSIONMin %>"
+        options: banner: "<%= meta.bannerMin %>"
         src: ['<%= options.distDir %>/uberscore-min.js']
         dest: '<%= options.distDir %>/uberscore-min.js'
 
@@ -176,7 +193,7 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
      "default":   "build deploy deploymin test"
-     "build":     "urequire:uberscoreUMD concat:uberscoreUMD"
+     "build":     "urequire:uberscoreUMD" #concat:uberscoreUMD
      "deploy":    "urequire:uberscoreDev concat:uberscoreDev"
      "deploymin": "urequire:uberscoreMin concat:uberscoreMin"
      "test":      "urequire:spec urequire:specCombined mocha run"
