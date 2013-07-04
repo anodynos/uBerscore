@@ -118,8 +118,8 @@ describe 'isEqual:', ->
           expect(_B.isEqual new String('AAA 112'), new String('AAA 111')).to.be.false
 
       it 'Date', ->
-        expect(_B.isEqual new Date('2012-12-12'), new Date('2012-12-12')).to.be.true
-        expect(_B.isEqual new Date('2012-12-13'), new Date('2012-12-12')).to.be.false
+        expect(_B.isEqual new Date('2012/12/12'), new Date('2012/12/12')).to.be.true
+        expect(_B.isEqual new Date('2012/12/13'), new Date('2012/12/12')).to.be.false
 
       it 'RegExp', ->
         expect(_B.isEqual /abc/, /abc/).to.be.true
