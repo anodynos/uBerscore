@@ -6,6 +6,8 @@
 #                   true: all === items are not pushed.
 #                   Function (a,b){} : items where unique(a, b) is truthy are not pushed @todo: NOT IMPLEMETED
 
+arrayize = require 'collections/array/arrayize.coffee'
+
 class ArrayizePushBlender extends require('./DeepCloneBlender')
 
   constructor: (@blenderBehaviors...)->
@@ -16,20 +18,12 @@ class ArrayizePushBlender extends require('./DeepCloneBlender')
     order: ['src']
     unique: false
 
-    #todo: make this default (but define a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise.
-#    '*': 'pushToArray'
-#    'Undefined': ->_B.Blender.SKIP
-#    'Null': ->_B.Blender.SKIP
-
-    'Array': 'pushToArray'
-    'String': 'pushToArray'
-    'Number': 'pushToArray'
-    'Undefined': 'pushToArray'
+    '*': 'pushToArray'   #todo: (derive a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise ?)
 
     pushToArray: (prop, src, dst, bl)->
-      #l.log "pushToArray #{prop} = #{src[prop]}"
-      dst[prop] = _B.arrayize dst[prop]
-      srcArray = _B.arrayize src[prop]
+#      console.log "pushToArray #{prop}, #{src[prop]} --- #{dst[prop]}"
+      dst[prop] = arrayize dst[prop]
+      srcArray = arrayize src[prop]
 
       if _.isEqual srcArray[0], [null] # `[null]` is a signpost for 'reset array'.
         dst[prop] = []

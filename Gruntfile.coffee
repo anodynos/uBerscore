@@ -143,9 +143,9 @@ gruntFunction = (grunt) ->
             uberscore: ['_B', 'uberscore']
 
     watch:
-      urequireDev:
+      urequireUMD:
         files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*" ] # new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
-        tasks: ['urequire:uberscoreDev'] #, 'urequire:spec', 'mocha']
+        tasks: ['urequire:uberscoreUMD', 'urequire:spec', 'mocha']
         options: nospawn: true                                     # works only with `nospawn: true`
 
     shell:
