@@ -6,9 +6,10 @@
 #                   true: all === items are not pushed.
 #                   Function (a,b){} : items where unique(a, b) is truthy are not pushed @todo: NOT IMPLEMETED
 
-arrayize = require 'collections/array/arrayize.coffee'
+arrayize = require 'collections/array/arrayize'
+DeepCloneBlender = require('./DeepCloneBlender')
 
-class ArrayizePushBlender extends require('./DeepCloneBlender')
+class ArrayizePushBlender extends DeepCloneBlender
 
   constructor: (@blenderBehaviors...)->
     (@defaultBlenderBehaviors or= []).push ArrayizePushBlender.behavior
@@ -21,13 +22,12 @@ class ArrayizePushBlender extends require('./DeepCloneBlender')
     '*': 'pushToArray'   #todo: (derive a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise ?)
 
     pushToArray: (prop, src, dst, bl)->
-#      console.log "pushToArray #{prop}, #{src[prop]} --- #{dst[prop]}"
       dst[prop] = arrayize dst[prop]
       srcArray = arrayize src[prop]
 
       if _.isEqual srcArray[0], [null] # `[null]` is a signpost for 'reset array'.
         dst[prop] = []
-        srcArray = srcArray[1..] # The remaining items of the array are the 'real' items to push.
+        srcArray = srcArray[1..]       # The remaining items of the array are the 'real' items to push.
 
       itemsToPush =
         if bl.unique                                    # @todo: does unique belong to blender or blenderBehavior ?

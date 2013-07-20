@@ -1,5 +1,4 @@
-_ = require 'lodash'
-type = require './type'
+type = require 'types/type'
 
 # Returns true if the data type is "plain" in terms of not having
 # nested items in it.

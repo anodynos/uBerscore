@@ -18,9 +18,8 @@
   which will have precedence over the respective arguments.
 
 ###
-_ = require 'lodash'
-type = require '../type'
-isPlain = require '../isPlain'
+type = require 'types/type'
+isPlain = require 'types/isPlain'
 isEqualArraySet = require '../collections/array/isEqualArraySet'
 l = new (require '../Logger') 'uberscore/isEqual', 0
 

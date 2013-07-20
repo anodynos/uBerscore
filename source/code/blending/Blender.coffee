@@ -3,8 +3,8 @@ _ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies:
 #__isNode = true
 ###DEV ONLY ###
 
-type = require '../type'
-getp = require '../objects/getp'
+type = require 'types/type'
+getp = require 'objects/getp'
 
 ###
   Blender: a highly configurable object blender :-)
@@ -659,6 +659,7 @@ module.exports = Blender
 #      """, dst[prop],'    <--  ', src[prop]
 #
 #    .before /getAction/, (match, actionName)->
+#    .before /getAction/, (match, actionName)->
 #      @l.debug 50, "getAction(actionName = #{actionName})"
 
 ###
@@ -666,40 +667,12 @@ module.exports = Blender
 that is an just {} (with the .blend function among others).
 
 For everything else to be available, `blend.__proto__` has to be the `blender` it self.
-
-Use the following pattern or find a new one
-class A
-  constructor:(@a='a')->
-    @say.__proto__ = @
-    return @say
-
-  say:(msg)->"A Hello, #{msg}"
-
-class B extends A
-  constructor:(@b='b')->
-    return super
-
-class C extends B
-  constructor:(@c='c')->
-    return super
-
-  say:(msg)->"C Hello, #{msg}"
-
-#a = new A
-#l.log a
-
-c = new C
-l.log c.say
-l.log c.a, c.b, c.c
-
-l.log c.say("goodmorning")
-l.log c("Its working!")
 ###
 
 
 ###
  @todo: Allow for
-    'Something': anything by 'undefined' or 'null')
+    'Something': anything but 'undefined' or 'null')
     'Nothing': opposite of 'Something'
     'Nested': {} or -> or []
 ###

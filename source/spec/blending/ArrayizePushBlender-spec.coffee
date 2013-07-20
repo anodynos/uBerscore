@@ -76,11 +76,33 @@ describe "ArrayizePushBlender:", ->
           arrayizePusher.blend /./, '123'
         ).to.deep.equal [/./, '123']
 
+    describe "Reseting the destination array with signpost `[null]` as 1st src item", ->
+      dstArray = ['items', 'to be', 'removed']
+      result = arrayizePusher.blend dstArray, [[null], 11, 22, 33]
 
-    it "resets destination array & then pushes - using signpost `[null]` as 1st src item", ->
-      expect(
-        arrayizePusher.blend ['items', 'to be', 'removed'], [[null], 11, 22, 33]
-      ).to.deep.equal [11, 22, 33]
+      it "resets destination array to a new one ", ->
+        expect(result).to.not.equal dstArray
+
+      it "resets destination array & then pushes - ", ->
+        expect(result).to.deep.equal [11, 22, 33]
+
+    describe "Arrays with reference values:", ->
+      dstArray = [{a:1}, {b:2}, {c:3}]
+      srcArray = [{d:4}, {e:5}, {f:6}]
+      result = arrayizePusher.blend dstArray, srcArray
+
+      it "All refs are pushed to destination & result is dstArray", ->
+        expect(result).to.equal dstArray
+        expect(result).to.deep.equal [dstArray[0], dstArray[1], dstArray[2],
+                                      srcArray[0], srcArray[1], srcArray[2]]
+
+      it "leaves dst items untouched", ->
+        for i in [0..2]
+          expect(result[i]).to.equal dstArray[i]
+
+      it "leaves source items untouched, pushed as exact refs to destination", ->
+        for i in [0..2]
+          expect(result[i+3]).to.equal srcArray[i]
 
 
   describe "arrayizeUniquePusher:", ->

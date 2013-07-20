@@ -4,6 +4,7 @@ urequire:  # uRequire Module Configuration
 ###
   The main class that gets exported (but all methods are static and independent :-)
 ###
+
 class uberscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
   # some libs are required as bundleRelative others as fileRelative,
@@ -51,8 +52,9 @@ class uberscore
   inAgreements: require 'agreement/inAgreements'
 
   # typing
-  type: require 'type'
-  isPlain: require 'isPlain'
+  type: require 'types/type'
+  isPlain: require 'types/isPlain'
+  isObject: require 'types/isObject'
 
   # Logging / debugging
   Logger: require './Logger'

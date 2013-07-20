@@ -1,11 +1,9 @@
-_ = require 'lodash'
 ###
   Takes object o & returns a fn, that returns a defaultVal if a key asked is not there.
 
   Formally. its simply a `o[key] ? 'default value'`: a val for a 'key' asked, or a 'default value' if that `o[key]` is undefined.
 
   `defaultKey` defaults to '*' for Objects/Functions, or a large num for arrays
-
 
   @param o {Object} The object to query for keys
   @param defaultKey {String} The default key name , "*" is chosen if its not given
@@ -14,9 +12,11 @@ _ = require 'lodash'
 
   @return function(key) that returns value for key, or default value (if undefined)
 ###
-certain = (o, defaultKey, defaultVal, isStrict=false)->
+isObject = require 'types/isObject'
 
-  if not (_.isPlainObject(o) or _.isFunction(o)) # either {}, or -> hold properties. Arrays are a bad case for certain :-)
+certain = (o, defaultKey, defaultVal, isStrict=false)->
+  if not (isObject(o) or _.isFunction(o)) # either {}, or -> hold properties. Arrays are a bad case for certain :-)
+                                          # _.isPlainObject doesn't work if its constructor is user defined.
     throw """
       Error: _B.certain: o is neither an Object or Function.
       o=#{JSON.stringify o, null, ''}
@@ -39,7 +39,6 @@ certain = (o, defaultKey, defaultVal, isStrict=false)->
     val
 
 module.exports = certain
-
 # @todo: test specs!!!
 #l = console.log
 #o = {a:1,b:2,c:3}

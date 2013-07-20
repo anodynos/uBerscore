@@ -1,6 +1,5 @@
-_ = require 'lodash'
 Blender = require '../Blender'
-type = require '../../type'
+type = require 'types/type'
 DeepCloneBlender = require './DeepCloneBlender'
 
 ###

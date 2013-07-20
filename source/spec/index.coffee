@@ -20,8 +20,7 @@ require "collections/go-spec"
 require "collections/array/arrayize-spec"
 require "collections/array/isEqualArraySet-spec"
 
-require "type-spec"
-require "isPlain-spec"
+require "types/types-spec"
 
 require "spec-data"
 require "uberscore-spec"

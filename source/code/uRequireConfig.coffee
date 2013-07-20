@@ -5,35 +5,23 @@
 module.exports =
 
   bundle:
-#    path: './source/code' # not needed - as long as this file is on the bundle's root, its assumed.
+    #path: './source/code' # not needed - as long as this file is on the bundle's root, its assumed.
 
-    # our 'main' / index .js file - used by r.js optimizer as
     main: "uberscore"
 
     filez: ['**/*.*', '!**/draft/*.*', '!uRequireConfig*']
 
     copy: [/./]
-    # Export dependencies for the whole bundle
-    dependencies:
 
-      # Using []<String>, we 'll discover corresponding variable they bind to
-      # from bundle modules that actually import these deps (only from AMD in this version), eg @see `arrayize`.
-#      bundleExports: [ #@todo: NOT WORKING - wont use knownVariables ?
-#        'lodash'              # export this global dep
-#        'agreement/isAgree'   # export this module, as a bundle-global dependency
-#      ]
-
-      # alternatively (more proper, yet verbose) it could have been:
-      exports:
-        bundle:
-          'lodash': ['_']
-          'agreement/isAgree': 'isAgree' # test as string also works!
+    dependencies: exports: bundle:
+      'lodash': ['_']
+      'agreement/isAgree': 'isAgree' # test as string also works!
 
   # these are our build options
   build:
 #   outputPath: './build/dist/uberscore-dev.js'
     outputPath: './build/UMD'
 #    template: 'combined'
-    debugLevel: 0
+    debugLevel: 30
 #    verbose: true
 #    watch: true

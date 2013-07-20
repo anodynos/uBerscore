@@ -1,7 +1,3 @@
-_ = require 'lodash'
-
-
-#isPlain = require '../isPlain'
 ###
   Deflattens ALL references of Array or Objects, returns them as an array.
   @param oa <Object|Array> The Object or Array to get all references
