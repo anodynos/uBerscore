@@ -1,4 +1,3 @@
-_ = require 'lodash'
 getRefs = require './getRefs'
 isDisjoint = require './isDisjoint'
 ###

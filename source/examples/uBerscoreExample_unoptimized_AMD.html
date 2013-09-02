@@ -21,7 +21,7 @@
   <script>
     require.config({
       // set baseUrl to point to the 'bundle', relative to this HTML
-      baseUrl: '../../build/code', // needed only if loading as individual AMD/UMD (without optimization)
+      baseUrl: '../../build/UMD', // needed only if loading as individual AMD/UMD (without optimization)
 
       // all libraries are now relative to the bundle/baseUrl
       paths: {
@@ -69,18 +69,18 @@
       _B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
 
       console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! '));
-//
-//      console.log("Checking noConflict(), reclaim globals _B & uberscore.");
-//      console.log("Current values:");
-//      console.log(_B);
-//      console.log(uberscore);
-//      var local_B = _B.noConflict();
-//      console.log("noConflict() was called - new values:");
-//      console.log("Old global `_B` is '" + _B + "'");
-//      console.log("Old global `uberscore` is '" + uberscore + "'");
-//
-//      console.log("local_B still works, sorted by key");
-//      local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
+
+      console.log("Checking noConflict(), reclaim globals _B & uberscore.");
+      console.log("Current values:");
+      console.log(_B);
+      console.log(uberscore);
+      var local_B = _B.noConflict();
+      console.log("noConflict() was called - new values:");
+      console.log("Old global `_B` is '" + _B + "'");
+      console.log("Old global `uberscore` is '" + uberscore + "'");
+
+      console.log("local_B still works, sorted by key");
+      local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
     });
   </script>
 </html>

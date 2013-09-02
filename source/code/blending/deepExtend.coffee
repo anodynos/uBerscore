@@ -1,100 +1,105 @@
-_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies: exports: bundle' !
 
-l = new (require './../Logger') 'uberscore/Blender'
+loggerPath = './../'  # uRequire : testing with 'weird' & untrusted dependencies
 
-# Coffeescript adaptation & changes/extra features by Agelos.Pikoulas@gmail.com
-# Original by Kurt Milam - follows below
+define ['require', 'exports', 'module', loggerPath + 'Logger'],
+  (require, exports, module, Logger, dummy_param, another_dummy_param)-> # uRequire : testing uRequire require, exports, module trio
 
-# Changes/extra features
-# - extra: allow lodash'es 'shadowed' variables
-# - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
-# - null _deletes_ object key, as well as array item
-# - copying Function over Object should replace it first
-# todo DEPRACATE it, once Blender is in place!
+    isHash = require './../types/./isHash' # uRequire : use non-normalized fileRelative to demonstrate replaceDep recognises it
+    isHash2 = require 'types/./isHash'     # uRequire : use non-normalized bundleRelative to demonstrate it not added again & replaceDep recognises it
 
-#/**
-#   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
-#   * Copyright (C) 2012 Kurt Milam - http://xioup.com | Source: https://gist.github.com/1868955
-#   *
-#   * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-#   *
-#   * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#   *
-#   * You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
-#   **/
-shadowed = [
-  'constructor'
-  'hasOwnProperty'
-  'isPrototypeOf'
-  'propertyIsEnumerable'
-  'toLocaleString'
-  'toString'
-  'valueOf'
-  ]
+    l = new Logger 'uberscore/Blender'
 
-deepExtend = (obj, sources...) ->
-  parentRE = /\${\s*?_\s*?}/
+    # Coffeescript adaptation & changes/extra features by Agelos.Pikoulas@gmail.com
+    # Original by Kurt Milam - follows below
 
-  #for source in sources
-  for source in sources
-    for own prop of source
-      if _.isUndefined(obj[prop])
-        obj[prop] = source[prop]
-      else
-        ###
-        String
-        ###
-        if _.isString(source[prop]) and parentRE.test(source[prop])
-          if _.isString(obj[prop])
-            obj[prop] = source[prop].replace parentRE, obj[prop]
+    # Changes/extra features
+    # - extra: allow lodash'es 'shadowed' variables
+    # - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
+    # - null _deletes_ object key, as well as array item
+    # - copying Function over Object should replace it first
+    # todo DEPRACATE it, once Blender is in place!
 
-        else
-          ### Array ###
-          if _.isArray(obj[prop]) or _.isArray(source[prop])
-            if not _.isArray(obj[prop]) or not _.isArray(source[prop])
-              throw """
-                deepExtend: Error: Trying to combine an array with a non-array.
+    #/**
+    #   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
+    #   * Copyright (C) 2012 Kurt Milam - http://xioup.com | Source: https://gist.github.com/1868955
+    #   *
+    #   * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    #   *
+    #   * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+    #   *
+    #   * You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
+    #   **/
+    shadowed = [
+      'constructor'
+      'hasOwnProperty'
+      'isPrototypeOf'
+      'propertyIsEnumerable'
+      'toLocaleString'
+      'toString'
+      'valueOf'
+      ]
 
-                Property: #{prop}
-                destination[prop]: #{l.prettify obj[prop]}
-                source[prop]: #{l.prettify source[prop]}
-                """
-            else
-              obj[prop] = _.reject deepExtend(obj[prop], source[prop]), (item)-> item in [null, undefined]
+    deepExtend = (obj, sources...) ->
+      parentRE = /\${\s*?_\s*?}/
 
+      #for source in sources
+      for source in sources
+        for own prop of source
+          if _.isUndefined(obj[prop])
+            obj[prop] = source[prop]
           else
-            ### Object ###
-#            if ( _.isObject(obj[prop]) and
-#                 not (_.isFunction(obj[prop]) and prop in shadowed)) or #lodash.merge appears to have this behavior: these functions are deleted
-#                _.isObject(source[prop])
-            #@todo : fix Functions as well: They are Objects, but the also need their properties _merged_
-            if _.isPlainObject(obj[prop]) or _.isPlainObject(source[prop])
-              if not _.isPlainObject(obj[prop]) or not _.isPlainObject(source[prop])
-                throw """
-                  deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
+            ###
+            String
+            ###
+            if _.isString(source[prop]) and parentRE.test(source[prop])
+              if _.isString(obj[prop])
+                obj[prop] = source[prop].replace parentRE, obj[prop]
 
-                  Property: #{prop}
-                  destination[prop]: #{l.prettify obj[prop]}
-                  source[prop]: #{l.prettify source[prop]}
-                """
-              else
-                obj[prop] = deepExtend(obj[prop], source[prop])
-
-            # All non-nested sources (consider Functions as well, how naive!)
             else
-              val = source[prop]
-              if (val in [null, undefined]) and (_.isPlainObject obj)
-                delete obj[prop]
+              ### Array ###
+              if _.isArray(obj[prop]) or _.isArray(source[prop])
+                if not _.isArray(obj[prop]) or not _.isArray(source[prop])
+                  throw """
+                    deepExtend: Error: Trying to combine an array with a non-array.
+
+                    Property: #{prop}
+                    destination[prop]: #{l.prettify obj[prop]}
+                    source[prop]: #{l.prettify source[prop]}
+                    """
+                else
+                  obj[prop] = _.reject deepExtend(obj[prop], source[prop]), (item)-> item in [null, undefined]
+
               else
-                obj[prop] = val
+                ### Object ###
+    #            if ( _.isObject(obj[prop]) and
+    #                 not (_.isFunction(obj[prop]) and prop in shadowed)) or #lodash.merge appears to have this behavior: these functions are deleted
+    #                _.isObject(source[prop])
+                #@todo : fix Functions as well: They are Objects, but the also need their properties _merged_
+                if isHash(obj[prop]) or isHash(source[prop])
+                  if not isHash(obj[prop]) or not isHash(source[prop])
+                    throw """
+                      deepExtend: Error trying to combine a PlainObject with a non-PlainObject.
 
-  # _.reject(obj, (item)->_.isNull item)  # @todo: without this, its not consistent
-                                          # in `[1,2,3,4], ["${_}",null]`
-                                          # VS `{a:[1,2,3,4]}, {a:["${_}",null]}`
-                                          # but leave it to the outside user to decide!
-  obj
+                      Property: #{prop}
+                      destination[prop]: #{l.prettify obj[prop]}
+                      source[prop]: #{l.prettify source[prop]}
+                    """
+                  else
+                    obj[prop] = deepExtend(obj[prop], source[prop])
 
-module.exports = deepExtend
+                # All non-nested sources (consider Functions as well, how naive!)
+                else
+                  val = source[prop]
+                  if (val in [null, undefined]) and (isHash obj)
+                    delete obj[prop]
+                  else
+                    obj[prop] = val
+
+      # _.reject(obj, (item)->_.isNull item)  # @todo: without this, its not consistent
+                                              # in `[1,2,3,4], ["${_}",null]`
+                                              # VS `{a:[1,2,3,4]}, {a:["${_}",null]}`
+                                              # but leave it to the outside user to decide!
+      obj
 
 
 ## Inline dev tests

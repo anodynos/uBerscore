@@ -1,4 +1,4 @@
-# uBerscore v0.0.11
+# uBerscore v0.0.13
 
 An anorthodox, extensible, overloaded, highly experimental facade of *underscore* facilities & leftovers.
 
@@ -6,10 +6,10 @@ uBerscore.js is an early experiment: a 'higher' level data manipulator for all k
 
 There will be no documentation before 0.1 and consider it likely to change...
 
-But do see `blending` that powers [uRequire](https://github.com/anodynos/uRequire)'s versatile configuration structure to get some ideas.
-Also checkout `go` & the wicked `isEquals/isIquals/isExact` etc.
+But do see `blending` that powers [uRequire](https://github.com/anodynos/uRequire)'s versatile [configuration deriving](http://urequire.org/masterdefaultsconfig.coffee#deriving) to get some ideas.
+Also checkout the wicked `isEquals/isIquals/isExact/isLike` etc.
 
-One thing to note: uBerscore its running on the WEB (both with AMD and as plain `<script/>`) & in nodejs through the UMD conversion / single-file combination of [uRequire v0.4](https://github.com/anodynos/uRequire)
+One thing to note: [uBerscore-dev.js](https://github.com/anodynos/uBerscore/blob/master/build/dist/uberscore-dev.js) its running on the WEB (both with AMD and as plain `<script/>`) and in nodejs through the single-file 'combined' conversion [uRequire](https://github.com/anodynos/uRequire)
 
 # License
 The MIT License

@@ -1,6 +1,8 @@
 assert = chai.assert
 expect = chai.expect
 
+l = new _B.Logger 'DeepDefaultsBlender-spec', null, true
+
 { objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues
 
   project, team, bundle
@@ -19,12 +21,12 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
   describe "Default settings:", ->
     deepDefaultsBlender = new _B.DeepDefaultsBlender
 
-    describe "bundle, project, team", ->
+    describe "bundle, project, team:", ->
 
       result = deepDefaultsBlender.blend {}, bundle, project, team
 
       it "_.isEqual result, bundle_project_team", ->
-        expect(_.isEqual result, bundle_project_team).to.be.true
+        expect(result).to.be.deep.equal bundle_project_team
 
       it "_.isRefDisjoint result with each of bundle, project, team", ->
         for o in [bundle, project, team]
@@ -35,7 +37,7 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
       result = deepDefaultsBlender.blend {}, earth, laboratory, experiment
 
       it "_.isEqual result, earth_laboratory_experiment", ->
-        expect(_.isEqual result, earth_laboratory_experiment).to.be.true
+        expect(result).to.be.deep.equal earth_laboratory_experiment
 
       it "_.isRefDisjoint result with each of earth, laboratory, experiment", ->
         for o in [bundle, project, team]
@@ -46,7 +48,7 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
       result = deepDefaultsBlender.blend {}, experiment, laboratory, earth
 
       it "_.isEqual result, experiment_laboratory_earth", ->
-        expect(_.isEqual result, experiment_laboratory_earth).to.be.true
+        expect(result).to.be.deep.equal experiment_laboratory_earth
 
       it "_.isRefDisjoint result with each of experiment, laboratory, earth", ->
         for o in [experiment, laboratory, earth]
@@ -57,13 +59,11 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
       result = deepDefaultsBlender.blend {}, laboratory, experiment
 
       it "_.isEqual result, laboratory_experiment", ->
-        expect(_.isEqual result, laboratory_experiment).to.be.true
+        expect(result).to.be.deep.equal laboratory_experiment
 
       it "_.isRefDisjoint result with each of laboratory, experiment", ->
         for o in [laboratory, experiment]
           expect(_B.isRefDisjoint result, o).to.be.true
-
-
 
   describe 'Using path in BlenderBehavior.order: ', ->
 
@@ -78,7 +78,7 @@ describe "Defaults: The DeepDefaultsBlender, overwritting only null/undefined & 
       'order': ['src', 'path']
       Array: # our 'src'
         life: people: '|': # 'path' follows 'src' in order. @todo: allow '/life/people'
-          (prop, src, dst, blender)->
+          (prop, src, dst)->
               for person in src[prop]
                 if not _.isArray dst[prop]
                   dst[prop] = []

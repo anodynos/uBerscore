@@ -13,6 +13,8 @@ expect = chai.expect
 oClone = _.clone objectWithProtoInheritedProps
 c3Clone = _.clone c3
 
+l = new _B.Logger 'spec/objects/isEqual'
+
 describe 'isEqual:', ->
 
   describe "lodash _.isEqual tests on _B.isEqual:", ->
@@ -23,6 +25,11 @@ describe 'isEqual:', ->
         args3 = (-> arguments)(1, 2)
         expect(_B.isEqual args1, args2).to.be.true
         expect(_B.isEqual args1, args3).to.be.false
+
+        #_B test, not lodash
+        if _B.isLodash() # false is underscore.isEqual (-> arguments)(1, 2, 3), {'0':1, '1':2, '2':3}
+          expect(_B.isEqual args1, {'0':1, '1':2, '2':3}).to.be.true
+        expect(_B.isEqual args1, [1, 2, 3]).to.be.false
 
     it "should return `false` when comparing values with circular references to unlike values", ->
       array1 = ["a", null, "c"]
@@ -43,43 +50,65 @@ describe 'isEqual:', ->
       object1.b = object1
       expect(_B.isEqual object1, object2).to.be.false
 
-    it "should pass the correct `callback` arguments", ->
-      args = undefined
-      _B.isEqual("a", "b", ->
-        args or (args = [].slice.call(arguments))
-      )
+    if _B.isLodash() then describe "callback (lodash only):", ->
 
-      expect(args).to.be.deep.equal ["a", "b"]
+      it "respects returning true", ->
+        expect(_B.isEqual 111, '111', (a, b)-> a+'' is b+'').to.be.true
 
-    it "should correct set the `this` binding", ->
-      actual = _B.isEqual("a", "b", (a, b) ->
-        this[a] is this[b]
-      ,
-        a: 1
-        b: 1
-      )
-      expect(actual).to.be.true
+      it "is undecided if callback returns undefined", ->
+        a = {a:'a', b:'b', c:'EQUAL', d:4}
+        b = {a:'a', b:'b', c:{d:'Not really equal, but assumed as so'}, d:4}
 
-    it "should handle comparisons if `callback` returns `undefined`", ->
-      actual = _B.isEqual("a", "a", ->)
-      expect(actual).to.be.true
+        expect(_B.isEqual a, b, (a, b)->
+          if a is 'EQUAL' then true else undefined).to.be.true
 
-    it "should return a boolean value even if `callback` does not", ->
-      actual = _B.isEqual("a", "a", -> "a")
-      expect(actual).to.be.true
-      _.each [ # falsey value
-          ''
-          0
-          false
-          NaN
-          null
-          undefined
-        ], (value) ->
-              actual = _B.isEqual("a", "b", -> value)
-              expect(actual).to.be.false
+      it "options are passed to lodash's _.isEqual (called internally if no options)", ->
+        a = {a:'a', b:'b', c:4}
+        b = {a:'a', b:'b', c:4}
+
+        expect(_B.isEqual a, b, (a, b, options)->
+          return false if not _.isEqual options, _B.isEqual.defaults
+        ).to.be.true
+
+      it "options with callback & ctx are passed to _B.isEqual (with options)", ->
+        a = {a:'a', b:'b', c:4}
+        b = {a:'a', b:'b', c:4}
+        ctx = {}
+        expect(_B.isEqual a, b, opts={path:[], callback:(a, b, options)->
+          return false if (options isnt opts) or (this isnt ctx)}, ctx
+        ).to.be.true
+
+      it "should pass the correct arguments (ctx & options) to `callback`", ->
+        args = undefined
+        cb = ->
+        ctx = {}
+        expect(_B.isEqual "a", "b", (->
+          args = [].slice.call arguments
+          return @ is ctx), ctx
+        ).to.be.true
+        expect(args).to.be.deep.equal ["a", "b", _B.isEqual.defaults]
+
+      it "should correct set the `this` binding", ->
+        expect(_B.isEqual "a", "b", ((a, b)-> @[a] is @[b]), {a:1, b: 1}).to.be.true
+
+      it "should handle comparisons if `callback` returns `undefined`", ->
+        expect(_B.isEqual("a", "a", ->)).to.be.true
+        expect(_B.isEqual("a", "b", ->)).to.be.false
+
+      it "should treat all truthy as true ", ->
+        for truthy in [ 'hey', {}, [], 1, true]
+          do (truthy)->
+            expect(_B.isEqual "a", "b", -> truthy).to.be.true
+
+      it "should treat all falsey (except undefined) as false ", ->
+        for falsey in [ '', 0, NaN, null]
+          do (falsey)->
+            expect(_B.isEqual "a", "a", -> falsey).to.be.false
 
   describe "rudimentary checks:", ->
+
     describe "primitives:", ->
+
       it "one undefined", ->
         expect(_B.isEqual undefined, objectWithProtoInheritedProps).to.be.false
         expect(_B.isEqual objectWithProtoInheritedProps, undefined).to.be.false
@@ -90,7 +119,9 @@ describe 'isEqual:', ->
 
       it "both undefined/null", ->
         expect(_B.isEqual undefined, undefined).to.be.true
+        expect(_B.isEqual [undefined], [undefined]).to.be.true
         expect(_B.isEqual null, null).to.be.true
+        expect(_B.isEqual [null], [null]).to.be.true
 
       it "one undefined, other null", ->
         expect(_B.isEqual null, undefined).to.be.false
@@ -129,7 +160,7 @@ describe 'isEqual:', ->
         it 'as primitive', ->
           expect(_B.isEqual true, true).to.be.true
           expect(_B.isEqual true, false).to.be.false
-        it 'as Boolean {}', ->
+        it 'as Boolean Object', ->
           expect(_B.isEqual new Boolean(true), true).to.be.true
           expect(_B.isEqual new Boolean(true), false).to.be.false
           expect(_B.isEqual false, new Boolean(false)).to.be.true
@@ -142,12 +173,19 @@ describe 'isEqual:', ->
           expect(_B.isEqual false, 0).to.be.false
           expect(_B.isEqual false, '').to.be.false
 
-    describe 'Simple Objects & all functions', ->
-
+    describe 'Simple Objects & functions:', ->
       it 'empty objects & arrays', ->
         expect(_B.isEqual [], []).to.be.true
         expect(_B.isEqual {}, {}).to.be.true
+
+      it "empty different `_.isObject`s aren't equal", ->
         expect(_B.isEqual {}, []).to.be.false
+        expect(_B.isEqual {}, ->).to.be.false
+        expect(_B.isEqual [], ->).to.be.false
+
+      it "present keys are important, even if undefined", ->
+        expect(_.isEqual {a:1, b:undefined}, {a:1}).to.be.false
+        expect(_.isEqual {a:1}, {a:1, b:undefined}).to.be.false
 
       it 'functions, with/without props', ->
         f1 = ->
@@ -161,10 +199,195 @@ describe 'isEqual:', ->
         expect(_B.isExact f1, f2).to.be.false
         expect(_B.isIqual f1, f2).to.be.false
 
-    describe "callback:", ->
-      it "returns true", ->
-        expect(_B.isEqual 111, '111', (a, b)-> a+'' is b+'').to.be.true
+    describe 'Arrays & lookalikes :', ->
+      arr1 = [1, 2, '3', [4], {a:1}]
+      arr2 = [1, 2, '3', [4], {a:1}]
+      arrLookalike = {'0':1, '1':2, '2':'3', '3':[4], '4':{a:1}}
 
+      it "simple Arrays", ->
+        expect(_B.isEqual arr1, arr2).to.be.true
+
+      it "Arrays with missing items", ->
+        delete arr2[2]
+        expect(_B.isEqual arr1, arr2).to.be.false
+
+      it "Array lookalikes arent equal", ->
+        expect(_B.isEqual arr1, arrLookalike).to.be.false
+
+  describe "Argument's `isEqual` function:", ->
+    class A
+      constructor: (@val)->
+      isEqual: (other)-> (other?.val || other) is 'YEAH'
+
+    it 'recognsises & uses isEqual function on either side', ->
+      a = new A('whatever')
+      b = new A('YEAH')
+      expect(_B.isEqual a, b).to.be.true
+      expect(_B.isEqual a, 'YEAH').to.be.true
+      expect(_B.isEqual b, 'YEAH').to.be.true
+      expect(_B.isEqual b, a).to.be.false
+      expect(_B.isEqual a, null).to.be.false
+      expect(_B.isEqual a, undefined).to.be.false
+
+  describe "options.exclude - excludes properties from test:", ->
+
+    describe "on Arrays:", ->
+
+      it 'excludes index as Number or String', ->
+        a = [1, 2, 3, 99, 5]
+        b = [1, 2, 3, 44, 5]
+        expect(_B.isEqual a, b).to.be.false
+        expect(_B.isEqual a, b, exclude:[3]).to.be.true
+        expect(_B.isEqual a, b, exclude:['3']).to.be.true
+
+      it 'excludes index & property with options.allProps', ->
+        a = [1, 2, 3, 99, 5]
+        a.prop = 1
+        a.badProp = 13
+
+        b = [1, 2, 3, 44, 5]
+        b.prop = 1
+        b.badProp = 13
+
+        expect(_B.isEqual a, b).to.be.false
+        expect(_B.isEqual a, b, {exclude:[3], allProps:true}).to.be.true
+
+        b.badProp = 1113
+        expect(_B.isEqual a, b, {exclude:[3], allProps:true}).to.be.false
+        expect(_B.isEqual a, b, {exclude:[3, 'badProp'], allProps:true}).to.be.true
+        expect(_B.isEqual a, b, {exclude:['badProp', '3'], allProps:true}).to.be.true
+
+    it 'excludes properties & number-like properties as numbers', ->
+      a = {a:1, b:2, '3':99, badProp: 5}
+      b = {a:1, b:2, '3':44, badProp: 15}
+      expect(_B.isEqual a, b).to.be.false
+      expect(_B.isEqual a, b, exclude:[3, 'badProp']).to.be.true
+      expect(_B.isEqual a, b, exclude:['badProp', '3']).to.be.true
+
+  describe "options.allProps - considers all properties of Objects (i.e primitive imposters, functions, arrays etc):", ->
+
+    it 'considers properties of primitive as Object:', ->
+      a = new Number(111)
+      b = new Number(111)
+      a.prop = 1
+      b.prop = 2
+      expect(_B.isEqual a, b).to.be.true
+      expect(_B.isEqual a, b, allProps:true).to.be.false
+      b.prop = 1
+      expect(_B.isEqual a, b, allProps:true).to.be.true
+
+    it "considers properties (not just items) on Arrays", ->
+      arr1 = [1, 2, '3', [4], {a:1}]
+      arr2 = [1, 2, '3', [4], {a:1}]
+      arr1.prop = [1]
+      arr2.prop = [2]
+      expect(_B.isEqual arr1, arr2).to.be.true
+      expect(_B.isEqual arr1, arr2, allProps:true).to.be.false
+      arr2.prop = [1]
+      expect(_B.isEqual arr1, arr2, allProps:true).to.be.true
+
+  describe "options.onlyProps - ignores value & type of property containers (primitives as Object, functions etc):", ->
+
+    it 'cares only about properties, on equal values', ->
+      a = new Number(111)
+      b = new Number(111)
+      a.prop = 1
+      b.prop = 2
+      expect(_B.isEqual a, b, onlyProps:true).to.be.false
+      b.prop = 1
+      expect(_B.isEqual a, b, onlyProps:true).to.be.true
+
+    describe 'cares only about properties, on NON-equal values:', ->
+
+      it "ignores Number Object value, only properties matter", ->
+        a = new Number(111)
+        b = new Number(112)
+        a.prop = 1
+        b.prop = 2
+
+        expect(_B.isEqual b, a, onlyProps:true).to.be.false
+
+        b.prop = 1
+        expect(_B.isEqual b, a, onlyProps:true).to.be.true
+
+      it "ignores different Functions, only properties matter", ->
+        a = -> 'Hello'
+        b = -> 'Goodbye'
+        a.prop = 1
+        b.prop = 2
+        expect(_B.isEqual a, b, onlyProps:true).to.be.false
+
+        b.prop = 1
+        expect(_B.isEqual a, b, onlyProps:true).to.be.true
+
+      it "DOES NOT ignore String Object 'value', as each char is a property!", ->
+        a = new String('111')
+        b = new String('112')
+        a.prop = 1
+        b.prop = 1
+
+        expect(_B.isEqual b, a, onlyProps:true).to.be.false
+
+    describe 'only properties matter, even on NON-equal types:', ->
+
+      it 'ignores type of Objects, along with value', ->
+        a = new RegExp(/./)
+        b = new Boolean(false)
+        a.prop = 1
+        b.prop = 2
+
+        expect(_B.isEqual a, b, onlyProps:true).to.be.false
+
+        b.prop = 1
+        expect(_B.isEqual a, b, onlyProps:true).to.be.true
+
+      it 'works on property containers hashes, instances, Arguments, Functions & Arrays etc:', ->
+        hash = {'0':1, '1':2, '2':3}
+        arr = [1, 2, 3]
+        args = do (a=1, b=2, c=3)-> arguments
+        func = -> 'Hi'
+        func['0'] = 1
+        func['1'] = 2
+        func['2'] = 3
+
+        class A
+          constructor: ->
+            @['0'] = 1
+            @['1'] = 2
+            @['2'] = 3
+        instance = new A
+
+        expect(_B.isEqual hash, arr).to.be.false
+        expect(_B.isEqual instance, arr).to.be.false
+        expect(_B.isEqual args, arr).to.be.false
+        expect(_B.isEqual hash, func).to.be.false
+
+        expect(_B.isEqual hash, arr, onlyProps:true).to.be.true
+        expect(_B.isEqual instance, arr, onlyProps:true).to.be.true
+        expect(_B.isEqual args, arr, onlyProps:true).to.be.true
+        expect(_B.isEqual hash, func, onlyProps:true).to.be.true
+        expect(_B.isEqual instance, func, onlyProps:true).to.be.true
+
+    describe "works along with like:", ->
+
+      it '1st args as primitive', ->
+        b = new Number(111)
+        b.prop = 1
+        expect(_B.isEqual 1, b, onlyProps:true).to.be.false
+        expect(_B.isEqual 1, b, {onlyProps:true, like:true}).to.be.true
+        expect(_B.isEqual b, 1, {onlyProps:true, like:true}).to.be.false
+
+      it 'both as Object imporsters, 2nd has more props', ->
+        a = new Number(111)
+        b = new Boolean(false)
+        a.prop = 1
+        b.prop = 1
+        b.prop2 = 2
+        expect(_B.isEqual a, b, {onlyProps:true, like:true}).to.be.true
+        expect(_B.isEqual b, a, {onlyProps:true, like:true}).to.be.false
+
+        a.prop2 = 2
+        expect(_B.isEqual b, a, {onlyProps:true, like:true}).to.be.true
 
   describe "options.inherited - Objects with inherited properties:", ->
 
@@ -172,7 +395,7 @@ describe 'isEqual:', ->
 
       it "_B.isEqual is true", ->
         expect(_B.isEqual objectWithProtoInheritedProps, expectedPropertyValues, undefined,undefined, inherited:true).to.be.true
-        expect(_B.isEqual expectedPropertyValues, objectWithProtoInheritedProps, undefined, undefined,  inherited:true).to.be.true
+        expect(_B.isEqual expectedPropertyValues, objectWithProtoInheritedProps, inherited:true).to.be.true
 
       it "_.isEqual fails", ->
         expect(_.isEqual objectWithProtoInheritedProps, expectedPropertyValues).to.be.false
@@ -204,7 +427,7 @@ describe 'isEqual:', ->
     describe "coffeescript object with inherited properties:", ->
 
       it "_B.isEqual is true", ->
-        expect(_B.isEqual c3, expectedPropertyValues, inherited:true).to.be.true #alt `options` passing style (in callback's place)
+        expect(_B.isEqual c3, expectedPropertyValues, {inherited:true, exclude:['constructor']}).to.be.true #alt `options` passing style (in callback's place)
         expect(_B.isIqual expectedPropertyValues, c3).to.be.true
 
       it "_.isEqual fails", ->
@@ -225,8 +448,8 @@ describe 'isEqual:', ->
         c3CloneProto.__proto__ = c3.__proto__
 
         it "_B.isIqual is true", ->
-          expect(_B.isEqual c3CloneProto, expectedPropertyValues, undefined, undefined, inherited:true).to.be.true
-          expect(_B.isIqual expectedPropertyValues, c3CloneProto).to.be.true
+          expect(_B.isEqual c3CloneProto, expectedPropertyValues, {inherited:true, exclude:['constructor']}).to.be.true
+          expect(_B.isIqual [expectedPropertyValues], [c3CloneProto]).to.be.true
 
         it "_.isEqual fails", ->
           expect(_.isEqual c3CloneProto , expectedPropertyValues).to.be.false
@@ -275,7 +498,6 @@ describe 'isEqual:', ->
         expect(_.isEqual object, objectDeepClone1).to.be.true
         expect(_.isEqual object, objectDeepClone2).to.be.true
 
-
     describe "isIxact : isEqual with inherited & exact :", ->
 
       describe "shallow inherited clone: inheritedShallowClone:", ->
@@ -293,4 +515,75 @@ describe 'isEqual:', ->
 
         it 'isIqual is true:', ->
           expect(_B.isIqual object, inheritedDeepClone).to.be.true
+
+  describe "options.path:", ->
+    a1 = {a:{a1:a2:1}, b:{b1:1, b2:     {b3:3}       } }
+    a2 = {a:{a1:a2:1}, b:{b1:1, b2:     {b3:3333}      } }
+
+    it "contains the keys as they are processed, 1st obj misses props", ->
+      expect(_B.isEqual a1, a2, options={path:[]}).to.be.false
+      expect(options.path).to.be.deep.equal ['b', 'b2', 'b3']
+
+    it "contains the keys as they are processed, 2nd obj misses props", ->
+      expect(_B.isEqual a2, a1, null, null, options={path:[]}).to.be.false
+      expect(options.path).to.be.deep.equal ['b', 'b2', 'b3']
+
+  describe "_B.isLike : _B.isEqual with like:true (1st arg can be a partial of 2nd arg)", ->
+    a1 ={a:1, b:{b1:1}}
+    b1 ={a:1, b:{b1:1, b2:2}, c:3}
+
+    a2 =
+      a:1
+      b:
+        bb:2
+      c: [1, {p2:2}, 4 ]
+
+    b2 =
+      a:1
+      b:
+        bb:2
+        missingFrom: a: "a"
+      missingFrom: "a"
+      c: [1, {p2:2, p3:3}, 4, {p:5}, 6]
+
+    it "is true if 1st args's properties are _B.isLike to 2nd arg's", ->
+      expect(_B.isLike a1, b1).to.be.true
+      expect(_B.isEqual a1, b1).to.be.false
+
+      expect(_B.isLike a2, b2).to.be.true
+      expect(_B.isEqual a2, b2).to.be.false
+
+    it "is false if 1st args's properties are not _B.isLike to 2nd arg's", ->
+      expect(_B.isLike b1, a1).to.be.false
+      expect(_B.isEqual b1, a1).to.be.false
+
+      expect(_B.isLike b2, a2).to.be.false
+      expect(_B.isEqual b2, a2).to.be.false
+
+  describe "aliases like _B.isLike : ", ->
+    a1 ={a:1, b:{b1:1}}
+    b1 ={a:1, b:_b={b1:1, b2:2}, c:3}
+
+    it "pass options in place of the constructor", ->
+      expect(_B.isLike b1, a1, path:path=[]).to.be.false
+      expect(path).to.be.deep.equal ['b', 'b2']
+
+    it "pass options in its proper place", ->
+      expect(_B.isLike b1, a1, undefined, undefined, path:path=[]).to.be.false
+      expect(path).to.be.deep.equal ['b', 'b2']
+
+    it "passes callback & options in its proper place & as an option", ->
+      callback = (val1, val2)->
+        if (val1 is _b) or path[0] is 'c' #or (val1 is 3)
+          true
+        #else undefined, which is ignored as a decision
+
+      expect(_B.isLike b1, a1, callback, undefined, {path:path=[]}).to.be.true
+      expect(_B.isLike b1, a1, null, undefined, {path:path=[], callback:callback}).to.be.true
+
+    it "options in its proper place DOESN NOT has precedence over callback's place", ->
+      expect(_B.isLike b1, a1, path:path1=[], undefined, path:path2=[]).to.be.false
+      expect(path1).to.be.deep.equal ['b', 'b2']
+      expect(path2).to.be.empty
+
 

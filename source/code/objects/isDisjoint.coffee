@@ -1,4 +1,3 @@
-_ = require 'lodash'
 ###
   Returns true if there are is no common value
   between the two objects/arrays (i.e their intersection is empty)

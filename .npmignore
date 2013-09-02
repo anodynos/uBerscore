@@ -2,9 +2,7 @@
 /node_modules/
 /libs/
 /source/
-/grunt*
-/samples
-/package.coffee
+/Gruntfile.coffee
 /.npmignore
 /*.bat
 /*.sh

@@ -6,37 +6,30 @@
 #                   true: all === items are not pushed.
 #                   Function (a,b){} : items where unique(a, b) is truthy are not pushed @todo: NOT IMPLEMETED
 
-arrayize = require 'collections/array/arrayize'
-DeepCloneBlender = require('./DeepCloneBlender')
+define ['require', 'exports', 'module', 'collections/array/arrayize'],
+  (require, exports, module, arrayize)->
+    class ArrayizePushBlender extends (require './DeepCloneBlender')
 
-class ArrayizePushBlender extends DeepCloneBlender
+      @behavior:
+        order: ['src']
+        unique: false
 
-  constructor: (@blenderBehaviors...)->
-    (@defaultBlenderBehaviors or= []).push ArrayizePushBlender.behavior
-    super
+        '*': 'pushToArray'   #todo: (derive a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise ?)
 
-  @behavior:
-    order: ['src']
-    unique: false
+        pushToArray: (prop, src, dst)->
+          dst[prop] = arrayize dst[prop]
+          srcArray = arrayize src[prop]
 
-    '*': 'pushToArray'   #todo: (derive a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise ?)
+          if _.isEqual srcArray[0], [null] # `[null]` is a signpost for 'reset array'.
+            dst[prop] = []
+            srcArray = srcArray[1..]       # The remaining items of the array are the 'real' items to push.
 
-    pushToArray: (prop, src, dst, bl)->
-      dst[prop] = arrayize dst[prop]
-      srcArray = arrayize src[prop]
+          itemsToPush =
+            if @unique                                    # @todo: does unique belong to blender or blenderBehavior ?
+              (v for v in srcArray when v not in dst[prop]) # @todo: unique can be a fn: isEqual/isIqual/etc or any other equal fn.
+            else
+              srcArray                                      # add 'em all
 
-      if _.isEqual srcArray[0], [null] # `[null]` is a signpost for 'reset array'.
-        dst[prop] = []
-        srcArray = srcArray[1..]       # The remaining items of the array are the 'real' items to push.
-
-      itemsToPush =
-        if bl.unique                                    # @todo: does unique belong to blender or blenderBehavior ?
-          (v for v in srcArray when v not in dst[prop]) # @todo: unique can be a fn: isEqual/isIqual/etc or any other equal fn.
-        else
-          srcArray                                      # add 'em all
-
-      dst[prop].push v for v in itemsToPush
-      dst[prop]
-      #_B.Blender.SKIP # no need to assign, we mutated dst[prop] #todo: needed or not ?
-
-module.exports = ArrayizePushBlender
+          dst[prop].push v for v in itemsToPush
+          dst[prop]
+          #_B.Blender.SKIP # no need to assign, we mutated dst[prop] #todo: needed or not ?

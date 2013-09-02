@@ -8,13 +8,8 @@
 ###
 isIqual = (require './isIqual')
 
-isIxact = (a, b, callback, thisArg, options={})->
+isIxact = (a, b, callback, ctx, options={})->
   options.exact = true
-  isIqual.apply undefined, [a, b, callback, thisArg, options]
+  isIqual a, b, callback, ctx, options
 
 module.exports = isIxact
-#
-#l = (new (require './../Logger') 'uberscore/isIxact', 40, true)
-#_ = require 'lodash'
-#{ objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = require '../../spec/spec-data'
-

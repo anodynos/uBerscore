@@ -26,7 +26,11 @@
 
      require.config ({
       // set baseUrl to point to the 'bundle', relative to this HTML
-      baseUrl: '../../build/code', // needed only if loading as individual AMD/UMD (without optimization)
+
+      baseUrl: '../../build/UMD', // needed only if loading as individual AMD/UMD (without optimization)
+//      baseUrl: '../../build/AMDunderscore',
+//      baseUrl: '../../build/UMDunderscore',
+//      baseUrl: '../../build/UMDreplaceDep',
 
       // all libraries are now relative to the bundle/baseUrl
       paths: {
@@ -34,9 +38,8 @@
         mocha: "../../libs/mocha",
 
         lodash: "../../libs/lodash.min",
-//        underscore: "../../libs/lodash.min",
-        //lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash
-        backbone: "../../libs/backbone",
+        underscore: "../../libs/underscore-min", // drop in 'alternative' of lodash
+        //backbone: "../../libs/backbone",
 
         // ** uRequire note: **
         // if the following 'rjs.paths.uberscore' exists,
@@ -51,7 +54,8 @@
       shim: {
         mocha: { deps: [], exports: "mocha"},
         lodash: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
-        backbone: {deps: ['lodash'], exports: "Backbone"}
+        underscore: { deps: [], exports: "_"} // needed only when 'lodash' is 'underscore'
+        //backbone: {deps: ['lodash'], exports: "Backbone"}
       }
     });
 

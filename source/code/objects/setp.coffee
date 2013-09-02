@@ -1,5 +1,3 @@
-_ = require 'lodash'
-
 #todo: use defaultOptions = {options.create: false, separator: '.'}
 #todo rename to set
 ###

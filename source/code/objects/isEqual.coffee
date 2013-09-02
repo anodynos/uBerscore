@@ -4,8 +4,7 @@
     * `inherited` : if true, it checks all properties of inheritance chain (__proto_ chain)
        for both a & b and decides if their root-level properties are also isEqual ,,,options
 
-    * `exclude`: array of excluded keys, default is ['constructor']
-               #todo: add a callback Function version
+    * `exclude`: array of excluded keys
 
     * `exact`: if true, then reference value types (Objects, Arrays, Functions etc) should be exactly === equal.
 
@@ -14,102 +13,129 @@
   The `options` object can be passed as the 5th parameter (to maintain compatibility with *lodash*),
   but also as the 3rd, in place of callback.
 
-  In all cases you can pass `callback` and `thisArg` as properties of `options`,
+  In all cases you can pass `callback` and `ctx` as properties of `options`,
   which will have precedence over the respective arguments.
 
 ###
 type = require 'types/type'
 isPlain = require 'types/isPlain'
+isHash = require 'types/isHash'
 isEqualArraySet = require '../collections/array/isEqualArraySet'
-l = new (require '../Logger') 'uberscore/isEqual', 0
+l = new (require '../Logger') 'uberscore/isEqual'
 
-isEqualDefaults =
-  inherited: false # if true, examine all (inherited) properties, not just *own*
-
-  exact: false # if true, then all refs must point to the same objects, not loolkalike clones!
-
-  exclude: ['constructor'] # keys to be excluded - <String> of excluded key names.
-                           # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
-
-  functionAsObject: false #todo: NOT IMPLEMETED # if true, function/function or function/object equality only cares about properties
-
-  allKeys: false #:todo: NOT IMPLEMENTD # if true, all keys are considered for all Object types (eg Array props but also String, Number etc)
-
-
-isEqual = (a, b, callback, thisArg, options=isEqualDefaults)->
-
+isEqual = (a, b, callback, ctx, options=isEqual.defaults)->
+  # options handling - might be in callback's place
   # if callback is actually the options object, destructure it
-  if _.isPlainObject(callback) and
-      _.isUndefined(thisArg) and (options is isEqualDefaults)
-        options = _.clone options, true #dont touch isEqualDefaults!
-        options[p] or= callback[p] for p in _.keys(isEqualDefaults)
+  if isHash(callback)
+    options = _.defaults callback, options
+  if options isnt isEqual.defaults
+    _.defaults (options or= {}), isEqual.defaults
 
   callback = options.callback if options.callback
-  thisArg = options.thisArg if options.thisArg
-
-  _.defaults(options, isEqualDefaults) if options isnt isEqualDefaults
+  ctx = options.ctx if options.ctx
 
   # handle callback irrespective of other options
   if _.isFunction(callback)
-    cbResult = callback.apply thisArg, [a, b]
+    if not callback.optioned
+      cb = callback
+      callback = (a,b)-> cb.call this, a, b, options
+      callback.optioned = true
+      options.callback = callback if options.callback
+    cbResult = callback.call ctx, a, b # @todo we could pass options, but need to be consistent with lodash's cb
     if cbResult isnt undefined # respect only non-undefined as truthy or falsey
       return (if cbResult then true else false)
-  else callback = undefined # lodash doesnt like non-function callbacks!
+  else
+    callback = undefined # lodash doesnt like non-function callbacks!
+    options.callback = undefined
 
   l.debug 'options = ', options if l.deb 20
 
-  # if we aren't option.exact=true, _isEqual *true* is true enough
-  aType = type(a); bType = type(b)
-  if not (options.exact or options.inherited) and (_.isObject(a) or _.isObject(b))
-    if _.isEqual a, b, callback, thisArg
-      l.debug 'return true - non exact _.isEqual' if l.deb 40
-      return true
-      # no else: just cause _.isEqual is false, we can't yet decide;
-      # not for inherited anyway
-
-  # perhaps we have a strict `exact` match for Object types
-  # or a & b really look different
-  #
   # Lets eliminate some rudimentary cases
   if a is b
     l.debug 'return true - a is b' if l.deb 40
     return true
+
+  return a.isEqual b if _.isFunction a?.isEqual
+  return b.isEqual a if _.isFunction b?.isEqual
+
+  # if we aren't using any _B options, then _.isEqual is enough
+  if (_.isEqual isEqual.defaults, (_.pick options, _.keys isEqual.defaults))
+    l.debug "return _.isEqual a, b - no _B.isEqual options" if l.deb 40
+    return  _.isEqual a, b, callback, ctx # @todo: needed ? callback was handled before
+
+  # check equality of value types, if we dont just care about
+  # `onlyProps` with both a & b being 'Objects' (even `new Boolean` or `new Number` etc)
+  # onlyProps & like: ignores value & lack of a's props
+  if not (options.onlyProps and _.isObject(b) and (_.isObject(a) or options.like))
+
+    if type(a) isnt type(b) # types returns the real type, eg type(new Number) is 'Number'
+      l.debug 'return false - type(a) isnt type(b) and not options.onlyProps' if l.deb 40
+      return false
+
+    isValueType = (x)-> isPlain(x) or _.isFunction(x) # (function is considered a value)
+    if isValueType(a) or isValueType(b)
+      if not _.isEqual a, b, callback, ctx
+        return false
+      else
+        return true if not (options.allProps) # true is not enough - we need to check props
+
+  # if we've passed this point, it means we care
+  # about properties about any type (even plain)
+  # or we have some nested type ({} or [])
+  aKeys = getProps a, options
+  bKeys = getProps b, options
+
+  if not options.like
+    if (aKeys.length isnt bKeys.length) or     # quickly return false for
+       (not isEqualArraySet aKeys, bKeys)      # different set of keys
+          if _.isArray(options.path)
+            if not (key = _.difference(aKeys, bKeys)[0]) # both ways with _.difference
+              key = _.difference(bKeys, aKeys)[0]
+            options.path.push key
+          return false
+
+  for prop in aKeys # xKeys are equal
+    options.path.push prop if _.isArray options.path
+
+    if options.exact
+      if a[prop] isnt b[prop] # `exact` equality required for nested props
+        l.debug 'return false - exact ref not same' if l.deb 40
+        return false
+
+    if not isEqual a[prop], b[prop], callback, ctx, options # 2nd chance: use isEqual instead as last resort!
+      l.debug 'return false - not isEqual nested for prop =', prop, 'values = ', a[prop], b[prop] if l.deb 40
+      return false
+
+    options.path.pop() if _.isArray options.path
+
+  l.debug 'return true - all properties considered true' if l.deb 40
+  return true
+
+isEqual.defaults =
+  inherited: false # if true, examine all (inherited) properties, not just *own*
+
+  exact: false # if true, then all refs must point to the same objects, not loolkalike clones!
+
+  like: false # if true, check only if 1st arg's are isEqual with the 2nd's, even if the 2nd has more properties to it
+
+  path: undefined # path: pass an Array, populated with key/index as objects/arrays are traversed - usefull for debuging!
+
+  exclude: [] # keys to be excluded - <String> of excluded key names.
+                           # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
+
+  allProps: false # if true, all props are considered for all Object types (eg Array props but also String, Number etc)
+
+  onlyProps: false # if true, equality only cares about properties, NOT values OR types of function, Number, Boolean etc
+                   # forces allProps behavior on all types (incl Arrays)
+
+
+getProps = (oa, options={})->
+  isExcluded = (prop)-> _.any options.exclude, (p)->p+'' is prop+'' # allows to check for 3 or '3'
+
+  if _.isArray(oa) and not (options.allProps or options.onlyProps)
+    i for i in [0...oa.length] when not isExcluded i
   else
-    if isPlain(a) or isPlain(b) or _.isFunction(a) or _.isFunction(b)
-      l.debug 'return  _.isEqual a, b' if l.deb 40
-      return _.isEqual a, b
-
-  # if we've passed this point, it means for both a & b we have
-  # the same non-plain types (ie. we have naturally nested properties)
-
-  if (options.inherited or options.exact)
-
-    if options.inherited
-      aKeys = (p for p of a when p not in options.exclude)
-      bKeys = (p for p of b when p not in options.exclude)
-    else
-      aKeys = (p for own p of a when p not in options.exclude)
-      bKeys = (p for own p of b when p not in options.exclude)
-
-    return false if (aKeys.length isnt bKeys.length) or   # quickly return false for
-                    (not isEqualArraySet aKeys, bKeys) # different set of keys
-
-    for prop in aKeys # xKeys are equal
-      #if l.deb 40 l.debug 'prop=', prop, 'a[prop]=', a[prop], 'b[prop]=', b[prop]
-      if options.exact # and (_.isObject(a[prop]) or _.isObject(b[prop]))
-        if a[prop] isnt b[prop] #exact match required for all nested references of a
-          l.debug 'return false - exact ref not same' if l.deb 40
-          return false
-
-      if not _.isEqual a[prop], b[prop], callback, thisArg # todo: might not be needed: use base case
-        if not isEqual a[prop], b[prop], callback, thisArg, options # 2nd chance: use isEqual instead as last resort!
-          l.debug 'return false - not isEqual nested for prop =', prop, 'values = ', a[prop], b[prop] if l.deb 40
-          return false
-
-    l.debug 'return true - all properties considered true' if l.deb 40
-    return true
-
-  l.debug 'return false - nothing left to check!' if l.deb 40
-  false
+    pi for pi of oa when (not isExcluded pi) and
+      (options.inherited or {}.hasOwnProperty.call(oa, pi))
 
 module.exports = isEqual

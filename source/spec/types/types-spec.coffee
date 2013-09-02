@@ -42,21 +42,21 @@ describe 'types & its associates:', ->
               expect(_B.type.isType shortType ).to.be.true
 
               expect( _B.type.areEqual longType, shortType).to.be.true
-              null
-      null
     null
 
   describe '`type` recognises all Object/Hashes {} correctly :', ->
     it "`type` correctly treats instances as Object, unlike lodash's `_.isPlainObject(anInstance) is false`", ->
-      expect(_.isPlainObject anInstance ).to.be.false # how bad is that ? We cant safely distinquish an {} from all others, if its an instance.
+      if _B.isLodash()
+        expect(_.isPlainObject anInstance ).to.be.false # how bad is that ? We cant safely distinquish an {} from all others, if its an instance.
       expect(_B.type anInstance ).to.equal 'Object'
 
-  describe "`_B.isObject` uses the above to solve distinquishing an {} from other types (->, []), even if {} is an instance.", ->
-    it "`_B.isObject` recognises all {} as Objects, all Arrays & Functions are NON Objects", ->
-      expect(_B.isObject anInstance ).to.be.true
-      expect(_B.isObject {}).to.be.true
-      expect(_B.isObject []).to.be.false
-      expect(_B.isObject ->).to.be.false
+  describe "`_B.isHash` uses the above to solve distinquishing an {} from other types (->, []), even if {} is an instance.", ->
+    it "`_B.isHash` recognises all {} as Objects, all Arrays & Functions are NON Objects", ->
+      expect(_B.isHash anInstance ).to.be.true
+      expect(_B.isHash {}).to.be.true
+      expect(_B.isHash []).to.be.false
+      expect(_B.isHash ->).to.be.false
+      []
 
     it "`_.isObject` is too broad - considers Arrays & Functions as `Object`", ->
       expect(_.isObject anInstance ).to.be.true
@@ -64,23 +64,22 @@ describe 'types & its associates:', ->
       expect(_.isObject []).to.be.true  # that's too broad, it forces us to explicitelly use isArray
       expect(_.isObject ->).to.be.true  # again's too broad, it forces us to explicitelly use isFunction
 
-    it "`_.isPlainObject` (lodash) is too strict - non `Object` constructed {} are not Object!", ->
-      expect(_.isPlainObject {} ).to.be.true          # ok... but
-      expect(_.isPlainObject anInstance ).to.be.false # ... very bad!
-      expect(_.isPlainObject []).to.be.false          # ok, but still woobly
-      expect(_.isPlainObject ->).to.be.false          # ok, but still woobly
+    if _B.isLodash()
+      it "`_.isPlainObject` (lodash) is too strict - non `Object` constructed {} are not Object!", ->
+        expect(_.isPlainObject {} ).to.be.true          # ok... but
+        expect(_.isPlainObject anInstance ).to.be.false # ... very bad!
+        expect(_.isPlainObject []).to.be.false          # ok, but still woobly
+        expect(_.isPlainObject ->).to.be.false          # ok, but still woobly
 
-  describe '`isObject` recognises all types correctly:', ->
+  describe '`_Β.isHash` recognises all types correctly:', ->
     for typeName, values of oOs
       for value in values
         do (typeName, value)->
-          it "`isObject` for '#{typeName}' returns '#{if typeName is 'Object' then 'true' else 'false'}", ->
+          it "`_B.isHash` for '#{typeName}' returns '#{if typeName is 'Object' then 'true' else 'false'}", ->
             if typeName is 'Object'
-              expect( _B.isObject value).to.be.true
+              expect( _B.isHash value).to.be.true
             else
-              expect( _B.isObject value).to.be.false
-            null
-      null
+              expect( _B.isHash value).to.be.false
     null
 
   describe 'isPlain correctly recognises plain (non-nested) value types:', ->
@@ -93,6 +92,4 @@ describe 'types & its associates:', ->
                 expect( _B.isPlain value).to.be.true
               else
                 expect( _B.isPlain value).to.be.false
-              null
-      null
     null

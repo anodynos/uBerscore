@@ -1,5 +1,3 @@
-_ = require 'lodash'
-
 # Checks if the two sets are equal.
 # Based on _.difference.
 

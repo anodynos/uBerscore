@@ -1,5 +1,3 @@
-_ = require 'lodash'
-
 ###
   Gets a value from an Object, with a given path from either
   - a textual description (with separator)

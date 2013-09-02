@@ -38,10 +38,8 @@ type.TYPES = {
   'Number'   : ['N']
   'Boolean'  : ['B']
 
-  'Object'   : ['{}', 'O'] # due to order, Object is returned only for PLAIN objects (i.e _.isPlainObject),
+  'Object'   : ['{}', 'O'] # due to order, Object is returned only for {} hashes
                            # not for [], ->, Boolean, Number etc
-                           # @todo: (5 7 2) ammend to work irrespective of order
-
   'Null'     : ['null', "-"]  #
   'Undefined': ['U', "void", "?"]
 }

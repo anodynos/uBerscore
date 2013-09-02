@@ -12,11 +12,11 @@
 
   @return function(key) that returns value for key, or default value (if undefined)
 ###
-isObject = require 'types/isObject'
+isHash = require 'types/isHash'
 
 certain = (o, defaultKey, defaultVal, isStrict=false)->
-  if not (isObject(o) or _.isFunction(o)) # either {}, or -> hold properties. Arrays are a bad case for certain :-)
-                                          # _.isPlainObject doesn't work if its constructor is user defined.
+  if not (isHash(o) or _.isFunction(o)) # either {}, or -> hold properties. Arrays are a bad case for certain :-)
+                                          # lodash _.isPlainObject doesn't work if its constructor is user defined.
     throw """
       Error: _B.certain: o is neither an Object or Function.
       o=#{JSON.stringify o, null, ''}

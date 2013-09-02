@@ -1,14 +1,11 @@
-
-_ = require 'lodash'
 ###
- Retrieve all properties of the object that are NOT their own.
+  Retrieve all properties of the object that are NOT their own.
 
   got from http://stackoverflow.com/questions/8024149/is-it-possible-to-get-the-non-enumerable-inherited-property-names-of-an-object
 ###
 getInheritedPropertyNames = (obj) ->
   _getInheritedPropertyNames Object.getPrototypeOf(obj)
 #  _.filter (prop for prop of obj when prop isnt 'constructor'), (v)-> v in ownKeys
-
 
 _getInheritedPropertyNames = (obj) ->
   props = []

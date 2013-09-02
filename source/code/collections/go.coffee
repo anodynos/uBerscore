@@ -1,5 +1,3 @@
-_ = require 'lodash' # not need anymore, we have it as a uRequire 'dependencies: exports: bundle' !
-
 ###
 An extensible, overloaded, anorthodox facade experiment of `_.each`, `_.sortBy`, `_.filter` (and `_.map` and _.ManyMore!) combined.
 

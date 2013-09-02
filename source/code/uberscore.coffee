@@ -1,9 +1,8 @@
 urequire:  # uRequire Module Configuration
   rootExports: ['_B', 'uberscore']
   noConflict: true
-###
-  The main class that gets exported (but all methods are static and independent :-)
-###
+
+### The main class doesnt get exported - onle a sinle instance with all methods ###
 
 class uberscore
   # @todo: instantation of a B object (ala jQuery object) - see B.coffee
@@ -12,54 +11,73 @@ class uberscore
 
   VERSION: if not VERSION? then '{NO_VERSION}' else VERSION # 'VERSION' variable added by grant:concat
 
-  # Blender - blending Objects
-  Blender: require './blending/Blender'
+  '_': _ # require 'lodash' not needed - its injected through dependencies.exports.bundle
 
-  DeepCloneBlender: require './blending/blenders/DeepCloneBlender'
-  DeepExtendBlender: require './blending/blenders/DeepExtendBlender'
-  DeepDefaultsBlender: require './blending/blenders/DeepDefaultsBlender'
-  ArrayizePushBlender: require './blending/blenders/ArrayizePushBlender'
+  isLodash: (lodash = _)->
+    (_.name is 'lodash') or                   # wont work on lodash-min
+    (                                         # use duck typing instead
+      _.isFunction(lodash.isPlainObject) and
+      _.isFunction(lodash.merge) and
+      _.isFunction(lodash.omit)
+     )
 
-  #blendXXX: @todo:(6 5 5) provide default/predefined/common Blender instances,
-  #                        for different purposes!
+  uberscore::[key] = val for key, val of { #add to :: from {}, easier to urequire `replaceCode` in an RC :-)
+    # Blender - blending Objects
+    Blender: require './blending/Blender'
 
-  # extending, the deep way, TO BE DEPRACATED when Blender comes properly into play
-  deepExtend: require './blending/deepExtend'
+    DeepCloneBlender: require './blending/blenders/DeepCloneBlender'
+    DeepExtendBlender: require './blending/blenders/DeepExtendBlender'
+    DeepDefaultsBlender: require './blending/blenders/DeepDefaultsBlender'
+    ArrayizePushBlender: require './blending/blenders/ArrayizePushBlender'
 
-  # Objects
-  okv: require './objects/okv'
+    traverse: require './blending/traverse'
 
-  # mutators
-  mutate: require './objects/mutate'
-  setp: require './objects/setp'
-  getp: require './objects/getp'
-  isDisjoint: require './objects/isDisjoint'
-  isRefDisjoint: require './objects/isRefDisjoint'
-  getRefs: require './objects/getRefs'
-  getInheritedPropertyNames: require "objects/getInheritedPropertyNames"
-  isEqual: require "objects/isEqual"
-  isIqual: require "objects/isIqual"
-  isExact: require "objects/isExact"
-  isIxact: require "objects/isIxact"
+    #blendXXX: @todo:(6 5 5) provide default/predefined/common Blender instances,
+    #                        for different purposes!
 
-  # Collections
-  go: require './collections/go'
-  isEqualArraySet: require "collections/array/isEqualArraySet"
-  arrayize: require './collections/array/arrayize'
+    # extending, the deep way, TO BE DEPRACATED when Blender comes properly into play
+    # key removed in 'min' build, along with its dependency added to `defineArrayDeps`
+    deepExtend: require './blending/deepExtend'
 
-  # Agreements
-  isAgree: require './agreement/isAgree'
-  inAgreements: require 'agreement/inAgreements'
+    # Objects
+    okv: require './objects/okv'
 
-  # typing
-  type: require 'types/type'
-  isPlain: require 'types/isPlain'
-  isObject: require 'types/isObject'
+    # mutators
+    mutate: require './objects/mutate'
+    setp: require './objects/setp'
+    getp: require './objects/getp'
+    isDisjoint: require './objects/isDisjoint'
+    isRefDisjoint: require './objects/isRefDisjoint'
+    getRefs: require './objects/getRefs'
+    getInheritedPropertyNames: require "objects/getInheritedPropertyNames"
+    isEqual: require "objects/isEqual"
+    isIqual: require "objects/isIqual"
+    isExact: require "objects/isExact"
+    isIxact: require "objects/isIxact"
+    isLike: require "objects/isLike"
 
-  # Logging / debugging
-  Logger: require './Logger'
+    # Collections
+    go: require './collections/go'
+    isEqualArraySet: require "collections/array/isEqualArraySet"
+    arrayize: require './collections/array/arrayize'
 
-  # various @todo either DEPRACATE or bring up to a proper decorator ?
-  certain: require './certain'
+    # Agreements
+    isAgree: require './agreement/isAgree'
+    inAgreements: require 'agreement/inAgreements'
+
+    # typing
+    type: require 'types/type'
+    isPlain: require 'types/isPlain'
+    isHash: require 'types/isHash'
+
+    # Logging / debugging
+    Logger: require './Logger'
+
+    # various @todo either DEPRACATE or bring up to a proper decorator ?
+    certain: require './certain'
+
+    CoffeeUtils: require 'utils/CoffeeUtils'
+    CalcCachedProperties: require 'utils/CalcCachedProperties'
+  }
 
 module.exports = new uberscore

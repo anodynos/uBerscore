@@ -135,14 +135,11 @@ describe 'Blender & DeepCloneBlender:', ->
 
     describe "Options go up the inheritance:", ->
       class SomeBlender extends _B.Blender
-        constructor: (@blenderBehaviors...)->
-          (@_optionsList or= []).unshift {someOption: "someOptionValue"}
-          super
+        someOption: "someOptionValue"
 
       class SomeOtherBlender extends _B.Blender
-        constructor: (@blenderBehaviors...)->
-          (@_optionsList or= []).unshift {someOtherOption: "someOtherOptionValue", someOption: "someOptionValue of SomeOtherBlender"}
-          super
+        someOtherOption: "someOtherOptionValue"
+        someOption: "someOptionValue of SomeOtherBlender"
 
       it "respecting subclassed options #1", ->
         someBlender = new SomeBlender
@@ -158,7 +155,6 @@ describe 'Blender & DeepCloneBlender:', ->
         someOtherBlender = new SomeOtherBlender [], someOption: "someRedefinedOptionValue"
         expect(someOtherBlender.someOption).to.equal "someRedefinedOptionValue"
         expect(someOtherBlender.someOtherOption).to.equal is "someOtherOptionValue"
-
 
   describe 'Blender behaviors:', ->
     describe 'Simple examples:', ->
@@ -253,16 +249,12 @@ describe 'Blender & DeepCloneBlender:', ->
 
           ## lets create the exact Blender, using coffee class, so we can *new* or subclass them.
           class FunctionOverWriterBlender extends _B.DeepCloneBlender
-            constructor: (@blenderBehaviors...)->
-              (@defaultBlenderBehaviors or= []).push funcOverwrite
-              super
+            @behavior: funcOverwrite
 
           class UselessBlender extends FunctionOverWriterBlender
 
           class WeirdBlender extends UselessBlender
-            constructor: (@blenderBehaviors...)->
-              (@defaultBlenderBehaviors or= []).push weirdBB
-              super
+            @behavior: weirdBB
 
           weirdBlender = new WeirdBlender
 
