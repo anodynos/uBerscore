@@ -25,6 +25,23 @@ gruntFunction = (grunt) ->
     options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
 
     ### NOTE: uRequire config is used as a testbed & example, thus so many comments :-) ###
+
+    # The `'urequire:XXX'` tasks in summary do some or all of those
+    #  * derive from 'someTask' (and/or '_defaults') with some differences
+    #  * have a `path` as a source
+    #  * filter `filez` within the `path`
+    #  * save everything at `dstPath`
+    #  * converts all modules to UMD/AMD or a single `uberscore-min.js` with `combined` template
+    #  * copies all other (non-module) files at `dstPath`
+    #  * export a global `window._B` with a `noConflict()`
+    #  * uglifies combined file with some `uglify2` settings
+    #  * injects deps in modules
+    #  * injects strings inside code bodies
+    #  * add banners etc
+    #  * manipulate modules:
+    #     * remove some matched code 'skeletons'
+    #     * replace some deps in arrays, `require`s etc
+    #     * remove some code and a dependency from a specific file.
     urequire:
       # @note any urequire task starting with '_' is ignored as grunt target
       # and only used for `derive`-ing.
