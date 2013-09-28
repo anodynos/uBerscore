@@ -1,20 +1,29 @@
 ###
   Just like _.isEqual BUT with more options :
 
-    * `inherited` : if true, it checks all properties of inheritance chain (__proto_ chain)
-       for both a & b and decides if their root-level properties are also isEqual ,,,options
+  *  inherited: false # if true, examine all (inherited) properties, not just *own*
 
-    * `exclude`: array of excluded keys
+  *  exact: false # if true, then all refs must point to the same objects, not loolkalike clones!
 
-    * `exact`: if true, then reference value types (Objects, Arrays, Functions etc) should be exactly === equal.
+  *  like: false # if true, check only if 1st arg's are isEqual with the 2nd's, even if the 2nd has more properties to it
 
-    * more coming - check comments below!
+  *  path: undefined # path: pass an Array, populated with key/index as objects/arrays are traversed - usefull for debuging!
+
+  *  exclude: [] # keys to be excluded - <String> of excluded key names.
+                # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
+
+  *  allProps: false # if true, all props are considered for all Object types (eg Array props but also String, Number etc)
+
+  *  onlyProps: false # if true, equality only cares about properties, NOT values OR types of function, Number, Boolean etc
+                     # forces allProps behavior on all types (incl Arrays)
 
   The `options` object can be passed as the 5th parameter (to maintain compatibility with *lodash*),
   but also as the 3rd, in place of callback.
 
   In all cases you can pass `callback` and `ctx` as properties of `options`,
   which will have precedence over the respective arguments.
+  @todo: integrate docs with defaults definition below
+  @todo: remove dependency from 'lodash' callback, allowing underscore to work the exact same way.
 
 ###
 type = require 'types/type'
@@ -121,7 +130,7 @@ isEqual.defaults =
   path: undefined # path: pass an Array, populated with key/index as objects/arrays are traversed - usefull for debuging!
 
   exclude: [] # keys to be excluded - <String> of excluded key names.
-                           # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
+              # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
 
   allProps: false # if true, all props are considered for all Object types (eg Array props but also String, Number etc)
 

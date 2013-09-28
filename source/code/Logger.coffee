@@ -110,26 +110,27 @@ class Logger
   setDebugPath: (debugPath)-> @debugPath = arrayizeDebugPath debugPath
 
   @addDebugPathLevel: (debugPath, debugLevel)->
-    debugPath = _.clone arrayizeDebugPath debugPath
-    debugPath.unshift 'debugPathsLevels'
-    debugPath.push '_level'
-    setp Logger, debugPath, debugLevel, create: true
+    if not _.isNaN(debugLevel * 1)
+      debugPath = _.clone arrayizeDebugPath debugPath
+      debugPath.unshift 'debugPathsLevels'
+      debugPath.push '_level'
+      setp Logger, debugPath, debugLevel * 1, create: true
+    else
+      throw new Error "debugLevel '#{debugLevel}' isNaN (Not a Number or not Number parsable)"
 
   # retrieve `_level` for given levelPath (eg ['uberscore', 'objects', 'isIqual'])
   # or one above it in the hierarchy (eg ['uberscore', 'objects']).
   # from `Logger.debugPathsLevels` that holds these global _levels
   getDebugPathLevel: (levelPath=@debugPath)->
     levPaths = _.clone levelPath
-    levPaths.unshift 'debugPathsLevels'
-
-    val = getp Logger, levPaths
+    val = getp Logger.debugPathsLevels, levPaths
     lastPath = levPaths.pop() # WHERE IS THE REAL REPEAT/UNTIL CONSTRUCT ?
 
     while (_.isUndefined val?._level) and lastPath
-      val = getp Logger, levPaths
+      val = getp Logger.debugPathsLevels, levPaths
       lastPath = levPaths.pop()
 
-    return val?._level
+    val?._level
 
   isDebug: (level)->
     # check if global Logger.maxDebugLevel allows level
@@ -137,7 +138,7 @@ class Logger
       return false if level > Logger.maxDebugLevel
 
     # check if instance @debugLevel allows level
-    if _.isNumber(@debugLevel)
+    if _.isNumber @debugLevel
       return false if level > @debugLevel
     else
       # check if _level in a global debugPath (or one above it) allows this level

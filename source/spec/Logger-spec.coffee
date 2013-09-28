@@ -65,15 +65,15 @@ describe "Logger debug():", ->
         expect(l.deb 31).to.be.false
         expect(l.deb "something").to.be.undefined
 
-  describe "With debug Path Levels:", ->
+  describe "With debug Path Levels, even as Number parsable strings:", ->
     before ->
       delete _B.Logger.debugPathsLevels
-      _B.Logger.addDebugPathLevel 'foo/bar/froo', 60
-      _B.Logger.addDebugPathLevel 'foo/bar', 40
+      _B.Logger.addDebugPathLevel 'foo/bar/froo', '60'
+      _B.Logger.addDebugPathLevel 'foo/bar', '40'
       _B.Logger.addDebugPathLevel 'foo/', 10
       _B.Logger.addDebugPathLevel 'baz/faux', 12
 
-    it "correctly sets _B.Logger.debugPathsLevels", ->
+    it "correctly sets _B.Logger.debugPathsLevels, as Numbers", ->
       expect(_B.Logger.debugPathsLevels).to.be.deep.equal
         foo:
           _level: 10
@@ -84,7 +84,9 @@ describe "Logger debug():", ->
         baz:
           faux:
             _level:12
-#        _level:5
+
+    it "throws Error if debugLevel is not parsable Number", ->
+      expect(-> _B.Logger.addDebugPathLevel 'baz/faux', 'blah012').to.throw Error, /debugLevel 'blah012' isNaN (Not a Number or not Number parsable)*/
 
     describe "without Logger.maxDebugLevel  ", ->
 

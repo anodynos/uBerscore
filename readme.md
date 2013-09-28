@@ -6,10 +6,15 @@ uBerscore.js is an early experiment: a 'higher' level data manipulator for all k
 
 There will be no documentation before 0.1 and consider it likely to change...
 
-But do see `blending` that powers [uRequire](https://github.com/anodynos/uRequire)'s versatile [configuration deriving](http://urequire.org/masterdefaultsconfig.coffee#deriving) to get some ideas.
-Also checkout the wicked `isEquals/isIquals/isExact/isLike` etc.
+But do see:
 
-One thing to note: [uBerscore-dev.js](https://github.com/anodynos/uBerscore/blob/master/build/dist/uberscore-dev.js) its running on the WEB (both with AMD and as plain `<script/>`) and in nodejs through the single-file 'combined' conversion [uRequire](https://github.com/anodynos/uRequire)
+* [`Gruntfile.coffee`](https://github.com/anodynos/uBerscore/blob/master/Gruntfile.coffee) written with the wicked [uRequire](https://github.com/anodynos/uRequire) configuration, that builds uBerscore's modules in a number of ways, with the most DRY config ever.
+
+Note: [uBerscore-dev.js](https://github.com/anodynos/uBerscore/blob/master/build/dist/uberscore-dev.js) and its minified brother are running on the WEB (both with AMD and as plain `<script/>`) and in nodejs through the single-file 'combined' conversion [uRequire](https://github.com/anodynos/uRequire) with no other dependencies (but 'lodash').
+
+* [`blending/Blender`](https://github.com/anodynos/uBerscore/blob/master/source/code/blending/Blender.coffee) that powers [uRequire](https://github.com/anodynos/uRequire)'s versatile [configuration deriving](http://urequire.org/masterdefaultsconfig.coffee#deriving) to get some ideas.
+
+* The wicked [`isEquals/isIquals/isExact/isLike`](https://github.com/anodynos/uBerscore/blob/master/source/code/objects/isEqual.coffee), that adds options to `_.isEqual`
 
 # License
 The MIT License
