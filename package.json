@@ -40,6 +40,9 @@
   "devDependencies": {
     "chai": "*",
     "urequire": "0.6.x",
+    "coco": "*",
+    "iced-coffee-script": "*",
+    "LiveScript": "*",
     "grunt-urequire": "0.6.x",
     "grunt": "0.4.x",
     "grunt-contrib-clean": "0.4.x",
