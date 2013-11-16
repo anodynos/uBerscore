@@ -10,14 +10,17 @@ define ['types/type', './DeepCloneBlender'], (type, DeepCloneBlender)-> #, usele
     DeepDefaultsBlender is actually a 'filter' to `DeepCloneBlender`, allowing no overwrite of existing primitives while merging objects.
     Since its extending DeepCloneBlender, it creates a deep object copy of all src reference types (objects) to their corresponding on dst.
   ###
-  class DeepDefaultsBlender extends DeepCloneBlender
+#  class DeepDefaultsBlender extends DeepCloneBlender
+#    -> @behavior:
+  DeepDefaultsBlender = DeepCloneBlender.subclass {},
 
-    @behavior:
+    behavior:
+
       order: ['dst', 'src']
 
       # Specifically declare that we want to process (overwrite) undefined & null destination values.
-      "Undefined": @NEXT
-      "Null": @NEXT
+      "Undefined": -> @NEXT
+      "Null": -> @NEXT
 
       # We also need to merge with nested destination types
       # but ONLY when both dst & src are 'compatible' nested types.
@@ -28,20 +31,20 @@ define ['types/type', './DeepCloneBlender'], (type, DeepCloneBlender)-> #, usele
       # We simply NEXT to use DeepCloneBlender's inherited BlenderBehaviors
       # (which will pick 'deepCloneOverwrite' that doesn't simply overwrite).
       # and will SKIP the rest.
-      # @todo: simplify the following BB dstSrcSpec ?
+      # -> @todo: simplify the following BB dstSrcSpec ?
       '{}': # repeating for Array & Function
-        '{}': @NEXT
-        '->': @NEXT
-        "*": @SKIP
+        '{}': -> @NEXT
+        '->': -> @NEXT
+        "*": -> @SKIP
 
       '->':
-        '{}': @NEXT
-        '->': @NEXT
-        "*": @SKIP
+        '{}': -> @NEXT
+        '->': -> @NEXT
+        "*": -> @SKIP
 
       '[]':
-        '[]': @NEXT
-        "*": @SKIP
+        '[]': -> @NEXT
+        "*": -> @SKIP
 
       # SKIP all other destinations (primitives, non undefined/null).
-      "*": @SKIP
+      "*": -> @SKIP

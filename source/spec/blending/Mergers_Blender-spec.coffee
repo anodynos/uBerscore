@@ -1,17 +1,28 @@
-assert = chai.assert
+l = new _B.Logger '_B.clone-spec', null, true
 expect = chai.expect
+
+{
+  equal, notEqual, ok
+  deepEqual, notDeepEqual
+  exact, notExact
+  iqual, notIqual
+  ixact, notIxact
+  like, notLike
+  likeBA, notLikeBA
+} = require '../helpers'
+
 
 { objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = data
 
-describe "Default 'Blender.blend'", ->
+describe "Mergers_Blender-spec", ->
 
-  describe "Default settings: with inherited:false, copyProto:false", ->
+  describe "'Blender.blend' Default settings: {inherited:false, copyProto:false}", ->
     defaultBlender = new _B.Blender
 
     describe "clones POJSO Object (no inheritance)", ->
 
       describe "(shallowClone = defaultBlender.blend {}, expectedPropertyValues)", ->
-#        shallowClone = defaultBlender.blend {}, expectedPropertyValues
+        #shallowClone = defaultBlender.blend {}, expectedPropertyValues
         shallowClone = defaultBlender.blend expectedPropertyValues #same as above
 
         describe "is a shallow clone and compared to source: ", ->
@@ -26,17 +37,17 @@ describe "Default 'Blender.blend'", ->
             expect(_B.isEqualArraySet sRefs, cRefs).to.be.true
 
           it "has a nested object copied by reference", ->
-            expect(shallowClone.aProp1 is expectedPropertyValues.aProp1)
+            equal shallowClone.aProp1, expectedPropertyValues.aProp1
             expect(shallowClone.aProp1).to.not.be.an 'undefined'
 
           it "_.isEqual true (soft equality, same values/JSON)", ->
             expect(_.isEqual shallowClone, expectedPropertyValues).to.be.true
 
           it "_B.isEqual true (soft equality, same values/JSON)", ->
-            expect(_B.isEqual shallowClone, expectedPropertyValues).to.be.true
+            deepEqual shallowClone, expectedPropertyValues
 
           it "_B.isExact true (strict references equality)", ->
-            expect(_B.isExact shallowClone, expectedPropertyValues).to.be.true
+            exact shallowClone, expectedPropertyValues
 
     describe "clones objectWithProtoInheritedProps (with inheritance)", ->
 
@@ -57,17 +68,16 @@ describe "Default 'Blender.blend'", ->
             expect(_.isEqual shallowIncompleteClone, objectWithProtoInheritedProps).to.be.true
 
           it "_B.isEqual true (soft equality, same values/JSON)", ->
-            expect(_B.isEqual shallowIncompleteClone, objectWithProtoInheritedProps).to.be.true
+            deepEqual shallowIncompleteClone, objectWithProtoInheritedProps
 
           it "_B.isExact true (strict references equality, no inherited props)", ->
-            expect(_B.isExact shallowIncompleteClone, objectWithProtoInheritedProps).to.be.true
+            exact shallowIncompleteClone, objectWithProtoInheritedProps
 
           it "_B.isIqual false (inherited props, soft object equality)", ->
-            expect(!_B.isIqual shallowIncompleteClone, objectWithProtoInheritedProps).to.be.true
+            notIqual shallowIncompleteClone, objectWithProtoInheritedProps
 
           it "_B.isIxact false (inherited props equality + strict references equality)", ->
-            expect(!_B.isIxact shallowIncompleteClone, objectWithProtoInheritedProps).to.be.true
-
+            notIxact shallowIncompleteClone, objectWithProtoInheritedProps
 
   describe "Default 'Blender.blend' with inherited:true", ->
     defaultBlenderInheritedCopier = new _B.Blender [], inherited:true
@@ -86,23 +96,23 @@ describe "Default 'Blender.blend'", ->
             expect(_B.isEqualArraySet sRefs, cRefs).to.be.true
 
           it "has copied inherited nested object", ->
-            expect(shallowCloneInheritedCopied.aProp1).to.equal(objectWithProtoInheritedProps.aProp1)
+            equal shallowCloneInheritedCopied.aProp1, objectWithProtoInheritedProps.aProp1
             expect(shallowCloneInheritedCopied.aProp1).to.not.be.an 'undefined'
 
           it "_.isEqual is false (soft equality, not looking at inherited props of source)", ->
             expect(_.isEqual shallowCloneInheritedCopied, objectWithProtoInheritedProps).to.be.false
 
           it "_B.isEqual is false (soft equality, not looking at inherited props of source)", ->
-            expect(_B.isEqual shallowCloneInheritedCopied, objectWithProtoInheritedProps).to.be.false
+            notDeepEqual shallowCloneInheritedCopied, objectWithProtoInheritedProps
 
           it "_B.isExact is false (strict references equality, no inherited props of source)", ->
-            expect(_B.isExact shallowCloneInheritedCopied, objectWithProtoInheritedProps).to.be.false
+            notExact shallowCloneInheritedCopied, objectWithProtoInheritedProps
 
           it "_B.isIqual is true (inherited props, soft object equality)", ->
-            expect(_B.isIqual(shallowCloneInheritedCopied, objectWithProtoInheritedProps)).to.be.true
+            iqual shallowCloneInheritedCopied, objectWithProtoInheritedProps
 
           it "_B.isIxact true (inherited props, strict references equality)", ->
-            expect(_B.isIxact(shallowCloneInheritedCopied, objectWithProtoInheritedProps)).to.be.true
+            ixact shallowCloneInheritedCopied, objectWithProtoInheritedProps
 
   describe "Default 'Blender.blend' with copyProto:true", ->
     defaultBlenderProtoCopier = new _B.Blender [], copyProto:true
@@ -120,7 +130,7 @@ describe "Default 'Blender.blend'", ->
             expect(_B.isEqualArraySet sRefs, cRefs).to.be.true
 
           it "has not copied inherited nested object, but can access it through __proto__ inheritance", ->
-            expect(shallowCloneProtoCopied.aProp1).to.equal(objectWithProtoInheritedProps.aProp1)
+            equal shallowCloneProtoCopied.aProp1, objectWithProtoInheritedProps.aProp1
             expect(shallowCloneProtoCopied.aProp1).to.not.be.an 'undefined'
             expect(objectWithProtoInheritedProps.hasOwnProperty 'aProp1').to.be.false
             expect(shallowCloneProtoCopied.hasOwnProperty 'aProp1').to.be.false
@@ -129,17 +139,16 @@ describe "Default 'Blender.blend'", ->
             expect(_.isEqual(shallowCloneProtoCopied, objectWithProtoInheritedProps)).to.be.true
 
           it "_B.isEqual is true (soft equality, not looking at inherited props of either)", ->
-            expect(_B.isEqual(shallowCloneProtoCopied, objectWithProtoInheritedProps)).to.be.true
+            deepEqual shallowCloneProtoCopied, objectWithProtoInheritedProps
 
           it "_B.isExact is true (strict references equality, no inherited props of either)", ->
-            expect(_B.isExact(shallowCloneProtoCopied, objectWithProtoInheritedProps) ).to.be.true
+            exact shallowCloneProtoCopied, objectWithProtoInheritedProps
 
           it "_B.isIqual is true (inherited props, soft object equality)", ->
-            expect(_B.isIqual(shallowCloneProtoCopied, objectWithProtoInheritedProps)).to.be.true
+            iqual shallowCloneProtoCopied, objectWithProtoInheritedProps
 
           it "_B.isIxact true (inherited props, strict references equality)", ->
-            expect(_B.isIxact(shallowCloneProtoCopied, objectWithProtoInheritedProps)).to.be.true
-
+            ixact shallowCloneProtoCopied, objectWithProtoInheritedProps
 
 describe "DeepCloneBlender .blend:", ->
 
@@ -160,16 +169,16 @@ describe "DeepCloneBlender .blend:", ->
             ).to.be.true
 
           it "nested object is a clone it self - NOT the same reference", ->
-            expect(deepClone.aProp1).to.not.equal(expectedPropertyValues.aProp1)
+            notEqual deepClone.aProp1, expectedPropertyValues.aProp1
 
           it "_.isEqual true (soft equality, same values/JSON)", ->
             expect(_.isEqual deepClone, expectedPropertyValues).to.be.true
 
           it "_B.isEqual true (soft equality, same values/JSON)", ->
-            expect(_B.isEqual deepClone, expectedPropertyValues).to.be.true
+            deepEqual deepClone, expectedPropertyValues
 
           it "_B.isExact is false (strict references equality)", ->
-            expect(_B.isExact deepClone, expectedPropertyValues).to.be.false
+            notExact deepClone, expectedPropertyValues
 
 
     describe "clones objectWithProtoInheritedProps (with inheritance)", ->
@@ -185,7 +194,7 @@ describe "DeepCloneBlender .blend:", ->
             ).to.be.true
 
           it "has NOT copied inherited nested object", ->
-            expect(deepIncompleteClone.aProp1).to.be.an 'undefined'
+            expect(deepIncompleteClone.aProp1 is undefined).to.be.true
 
           describe "equality of deepIncompleteClone, objectWithProtoInheritedProps", ->
 
@@ -193,16 +202,16 @@ describe "DeepCloneBlender .blend:", ->
               expect(_.isEqual deepIncompleteClone, objectWithProtoInheritedProps).to.be.true
 
             it "_B.isEqual true (soft equality, same values/JSON)", ->
-              expect(_B.isEqual deepIncompleteClone, objectWithProtoInheritedProps).to.be.true
+              deepEqual deepIncompleteClone, objectWithProtoInheritedProps
 
             it "_B.isIqual false (inherited props)", ->
-              expect(_B.isIqual deepIncompleteClone, objectWithProtoInheritedProps).to.be.false
+              notIqual deepIncompleteClone, objectWithProtoInheritedProps
 
             it "_B.isExact true (strict references equality)", ->
-              expect(_B.isExact deepIncompleteClone, objectWithProtoInheritedProps).to.be.true
+              exact deepIncompleteClone, objectWithProtoInheritedProps
 
             it "_B.isIxact false (inherited props, scrict references equality)", ->
-              expect(_B.isIxact deepIncompleteClone, objectWithProtoInheritedProps).to.be.false
+              notIxact deepIncompleteClone, objectWithProtoInheritedProps
 
           describe "equality of deepInheritedClone, expectedPropertyValues", ->
 
@@ -210,17 +219,16 @@ describe "DeepCloneBlender .blend:", ->
               expect(_.isEqual deepIncompleteClone, expectedPropertyValues).to.be.false
 
             it "_B.isEqual false (soft equality, same values/JSON)", ->
-              expect(_B.isEqual deepIncompleteClone, expectedPropertyValues).to.be.false
+              notDeepEqual deepIncompleteClone, expectedPropertyValues
 
             it "_B.isIqual false (inherited props)", ->
-              expect(_B.isIqual deepIncompleteClone, expectedPropertyValues).to.be.false
+              notIqual deepIncompleteClone, expectedPropertyValues
 
             it "_B.isExact false (strict references equality)", ->
-              expect(_B.isExact deepIncompleteClone, expectedPropertyValues).to.be.false
+              notExact deepIncompleteClone, expectedPropertyValues
 
             it "_B.isIxact false (inherited props, scrict references equality)", ->
-              expect(_B.isIxact deepIncompleteClone, expectedPropertyValues).to.be.false
-
+              notIxact deepIncompleteClone, expectedPropertyValues
 
   describe "with inherited:true :", ->
 
@@ -229,7 +237,7 @@ describe "DeepCloneBlender .blend:", ->
     describe "clones objectWithProtoInheritedProps (with inheritance)", ->
 
       describe "(deepInheritedClone = deepCloneInheritedBlender .blend {}, objectWithProtoInheritedProps)", ->
-        deepInheritedClone = deepCloneInheritedBlender .blend {}, objectWithProtoInheritedProps
+        deepInheritedClone = deepCloneInheritedBlender.blend objectWithProtoInheritedProps
 
         describe "is a complete deep clone, having deep cloned all inherited props as its own: ", ->
 
@@ -243,32 +251,32 @@ describe "DeepCloneBlender .blend:", ->
               expect(_.isEqual deepInheritedClone, objectWithProtoInheritedProps).to.be.false
 
             it "_B.isEqual false (soft equality, not looking at inherited props of either)", ->
-              expect(_B.isEqual deepInheritedClone, objectWithProtoInheritedProps).to.be.false
+              notDeepEqual deepInheritedClone, objectWithProtoInheritedProps
 
             it "_B.isIqual true (soft equality, inherited props)", ->
-              expect(_B.isIqual deepInheritedClone, objectWithProtoInheritedProps).to.be.true
+              iqual deepInheritedClone, objectWithProtoInheritedProps
 
             it "_B.isExact false (strict references equality)", ->
-              expect(_B.isExact deepInheritedClone, objectWithProtoInheritedProps).to.be.false
+              notExact deepInheritedClone, objectWithProtoInheritedProps
 
             it "_B.isIxact false (inherited props, scrict references equality)", ->
-              expect(_B.isIxact deepInheritedClone, objectWithProtoInheritedProps).to.be.false
+              notIxact deepInheritedClone, objectWithProtoInheritedProps
 
           describe "equality of deepInheritedClone, expectedPropertyValues", ->
             it "_.isEqual true (soft equality, all props are equal )", ->
-              expect(_.isEqual deepInheritedClone, expectedPropertyValues).to.be.true
+              deepEqual deepInheritedClone, expectedPropertyValues
 
             it "_B.isEqual true (soft equality, all props are equal)", ->
-              expect(_B.isEqual deepInheritedClone, expectedPropertyValues).to.be.true
+              deepEqual deepInheritedClone, expectedPropertyValues
 
             it "_B.isIqual true (soft equality, inherited props, all props are equal)", ->
-              expect(_B.isIqual deepInheritedClone, expectedPropertyValues).to.be.true
+              iqual deepInheritedClone, expectedPropertyValues
 
             it "_B.isExact false (strict references equality)", ->
-              expect(_B.isExact deepInheritedClone, expectedPropertyValues).to.be.false
+              notExact deepInheritedClone, expectedPropertyValues
 
             it "_B.isIxact false (inherited props, scrict references equality)", ->
-              expect(_B.isIxact deepInheritedClone, expectedPropertyValues).to.be.false
+              notIxact deepInheritedClone, expectedPropertyValues
 
     describe "Using ['path'] orders in BlenderBehavior:", ->
 

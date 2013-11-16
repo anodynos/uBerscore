@@ -31,6 +31,7 @@ class uberscore
     ArrayizePushBlender: require './blending/blenders/ArrayizePushBlender'
 
     traverse: require './blending/traverse'
+    clone: require './blending/clone'
 
     #blendXXX: @todo:(6 5 5) provide default/predefined/common Blender instances,
     #                        for different purposes!
@@ -78,6 +79,7 @@ class uberscore
 
     CoffeeUtils: require 'utils/CoffeeUtils'
     CalcCachedProperties: require 'utils/CalcCachedProperties'
+    subclass: require 'utils/subclass'
   }
 
 module.exports = new uberscore

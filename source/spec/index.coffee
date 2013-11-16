@@ -6,6 +6,7 @@ require "blending/Mergers_Blender-spec"
 require "blending/DeepDefaultsBlender-spec"
 require "blending/ArrayizePushBlender-spec"
 require "blending/traverse-spec"
+require "blending/clone-spec"
 
 require "objects/getInheritedPropertyNames-spec"
 require "objects/getp-spec"

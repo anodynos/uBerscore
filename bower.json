@@ -1,0 +1,26 @@
+{
+  "name": "uberscore",
+  "version": "0.0.14",
+  "main": "build/dist/uberscore-dev.js",
+  "ignore": [
+    "Gruntfile.coffee",
+    "node_modules",
+    "bower_components",
+    "source/spec/*.*",
+    "source/examples/*.*",
+    "build/UMDplainReplaceDep",
+    "build/nodejsCompileAndCopy",
+    "build/spec_combined",
+    "build/spec",
+    "build/UMDunderscore"
+  ],
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "underscore": ">=1.4.4",
+    "requirejs": "~2.1.x"
+  },
+  "dependencies": {
+    "lodash": "*"
+  }
+}

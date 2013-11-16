@@ -17,19 +17,21 @@ define ['require', 'exports', 'module', 'collections/array/arrayize'],
         '*': 'pushToArray'   #todo: (derive a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise ?)
 
         pushToArray: (prop, src, dst)->
-          dst[prop] = arrayize dst[prop]
-          srcArray = arrayize src[prop]
+          ## arrayize dst[prop]
+          # read as `dst[prop] = arrayize dst[prop]`
+          dstArray = @write dst, prop, arrayize @read dst, prop
+          srcArray = arrayize @read src, prop
 
           if _.isEqual srcArray[0], [null] # `[null]` is a signpost for 'reset array'.
-            dst[prop] = []
+            dstArray = @write dst, prop, []
             srcArray = srcArray[1..]       # The remaining items of the array are the 'real' items to push.
 
           itemsToPush =
             if @unique                                    # @todo: does unique belong to blender or blenderBehavior ?
-              (v for v in srcArray when v not in dst[prop]) # @todo: unique can be a fn: isEqual/isIqual/etc or any other equal fn.
+              (v for v in srcArray when v not in dstArray) # @todo: unique can be a fn: isEqual/isIqual/etc or any other equal fn.
             else
               srcArray                                      # add 'em all
 
-          dst[prop].push v for v in itemsToPush
-          dst[prop]
+          dstArray.push v for v in itemsToPush
+          dstArray
           #_B.Blender.SKIP # no need to assign, we mutated dst[prop] #todo: needed or not ?

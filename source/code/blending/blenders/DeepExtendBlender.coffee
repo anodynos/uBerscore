@@ -19,6 +19,8 @@ define ['../Blender'], (Blender)->
   # - copying Function over Object should replace it first
 
   @see /blending/deepExtend
+
+  #todo: not working with Blender API for read/write/createAs/properties
   ###
 
   class DeepExtendBlender extends Blender
