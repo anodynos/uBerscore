@@ -18,6 +18,8 @@ A new Blender instance is created for each invocation.
   @param blender Blender a blender instance, conveying information such as path etc - see Blender.
          Its also passed as context (this value) in the callback (if callback is unbound).
 
+@todo: breadthFirst, depthFirst
+
 ###
 traverse = (data, callback)->
   dummy = {}                    # needed for blend() that checks for prop on this
@@ -31,10 +33,10 @@ traverse = (data, callback)->
       '*': Blender.SKIP
 
       traverse: (prop, src, dst, blender)->
-        if src[prop] isnt data  # dont pass data / rootSrc with $ property!
+        if @read(src, prop) isnt data  # dont pass data / rootSrc with $ property!
           recurse = callback.call(this, prop, src, blender) # we dont expose dst - not needed
         if recurse isnt false
-          @blend dummy, src[prop]  # recurse - no real dst needed
+          @blend dummy, @read(src,prop)  # recurse - no real dst needed
         @SKIP                      # no assignment to dst[prop] ever!
 
     }], debugLevel:0

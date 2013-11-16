@@ -14,11 +14,15 @@
       <li>'uberscore' dependency is loading through `rjs.baseUrl`, which in turn loads all bundle dependencies *as seperate files*).
     </ul>
 
-    <link rel="stylesheet" href="../../libs/mocha.css" />
+    <link rel="stylesheet" href="../../bower_components/mocha/mocha.css" />
     <div id="mocha"></div>
   </body>
 
-  <script src="../../libs/require.js"></script>
+  <!-- grunt-mocha requires mocha (& chai) as plain <script> -->
+  <script src="../../bower_components/mocha/mocha.js"></script>
+  <script src="../../bower_components/chai/chai.js"></script>
+
+  <script src="../../bower_components/requirejs/require.js"></script>
 
   <script type="text/javascript">
      window._B = "Old global `_B`" ;
@@ -26,20 +30,18 @@
 
      require.config ({
       // set baseUrl to point to the 'bundle', relative to this HTML
-
       baseUrl: '../../build/UMD', // needed only if loading as individual AMD/UMD (without optimization)
 //      baseUrl: '../../build/AMDunderscore',
 //      baseUrl: '../../build/UMDunderscore',
-//      baseUrl: '../../build/UMDreplaceDep',
+//      baseUrl: '../../build/UMDplainReplaceDep',
 
       // all libraries are now relative to the bundle/baseUrl
       paths: {
-        chai:  "../../libs/chai",
-        mocha: "../../libs/mocha",
+        chai:  "../../bower_components/chai/chai",
+        mocha: "../../bower_components/mocha/mocha",
 
-        lodash: "../../libs/lodash.min",
-        underscore: "../../libs/underscore-min", // drop in 'alternative' of lodash
-        //backbone: "../../libs/backbone",
+        lodash: "../../bower_components/lodash/dist/lodash.min",
+        underscore: "../../bower_components/underscore/underscore-min", // drop in 'alternative' of lodash
 
         // ** uRequire note: **
         // if the following 'rjs.paths.uberscore' exists,
@@ -55,22 +57,16 @@
         mocha: { deps: [], exports: "mocha"},
         lodash: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
         underscore: { deps: [], exports: "_"} // needed only when 'lodash' is 'underscore'
-        //backbone: {deps: ['lodash'], exports: "Backbone"}
       }
     });
 
-    // load mocha via requirejs
-    require(['mocha'], function(mocha) {
-        // initialize mocha
-        mocha.setup('bdd');
+    // initialize mocha
+    mocha.setup('bdd');
 
-        require([
-          // load all your unit-tests here, always relative to the bundle/baseUrl
-          "spec/index"
-        ],
-          // once unit-tests are loaded
-          function(){ mocha.run().globals(['_', '_B', 'uberscore']);}
-        );
+    // load unit-tests here, always relative to the bundle/baseUrl
+    require(["spec/index" ], function(){
+        mocha.run().globals(['_', '_B', 'uberscore']);
     });
+
   </script>
 </html>

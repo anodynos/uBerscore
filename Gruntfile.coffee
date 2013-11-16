@@ -1,9 +1,10 @@
 # requires grunt 0.4.x
 sourceDir     = "source/code"
 buildDir      = "build/UMD"
+distDir       = "build/dist"
 sourceSpecDir = "source/spec"
 buildSpecDir  = "build/spec"
-distDir       = "build/dist"
+
 
 gruntFunction = (grunt) ->
   _ = grunt.util._
@@ -99,12 +100,32 @@ gruntFunction = (grunt) ->
                 m.beforeBody = "var VERSION='#{pkg.version}';"
                 # no convFilename needed
             ]
+
+            # example: perform some 'concat' job, AFTER the template conversion is done.
+            [ # '!' means 'isAfterTemplate: true'
+              '!banner:uberscore.js',
+              # some description
+              'concat/add banner to uberscore.js'
+              # note we are looking to change the dstFilename `uberscore.js` (not `uberscore.coffee`).
+              # We could have used ~ to match srcFilename
+              ['uberscore.js']
+              # r.converted holds our converted UMD code,
+              # since this RC runs AFTER the template conversion
+              (r)->"#{banner}\n#{r.converted}"
+              # no convFilename needed
+            ]
+
+
           ]
 
         build:
+          # the following can be truethy/falsy or array of filez specs
+          useStrict: true # default is false
+          bare: false       # default is false
+          globalWindow: false # default is true
+          runtimeInfo: ['!**/*', 'Logger.js'] # default is true, allow it only ont these filez
 
-          # 0 is default, 100 the max
-          debugLevel: 0
+          debugLevel: 0 # 0 is default, 100 the max
 
           # false is default, auto enabled if debugLevel >= 50
           verbose: false
@@ -124,28 +145,18 @@ gruntFunction = (grunt) ->
         #'derive': ['_defaults']
 
         # template is not needed - 'UMD' is default
-        #template: 'UMD'
-
+        template: 'UMDplain'
         # all files converted files are written here
         dstPath: "#{buildDir}"
 
-
-        resources: [
-
-          # example: perform some 'concat' job, AFTER the template conversion is done.
-          [ # '!' means 'isAfterTemplate: true'
-            '!banner:uberscore.js',
-            # some description
-            'concat/add banner to uberscore.js'
-            # note we are looking to change the dstFilename `uberscore.js` (not `uberscore.coffee`).
-            # We could have used ~ to match srcFilename
-            ['uberscore.js']
-            # r.converted holds our converted UMD code,
-            # since this RC runs AFTER the template conversion
-            (r)->"#{banner}\n#{r.converted}"
-            # no convFilename needed
-          ]
-        ]
+      # beautiful AMD code, using github.com/mishoo/UglifyJS2 optimization
+      AMD:
+        template: 'AMD'
+        dstPath: "build/AMD"
+        optimize: uglify2:
+          output: beautify: true
+          compress: false
+          mangle: false
 
       # a 'combined' build, - works with or without AMD loaders
       # on Web & nodejs as a plain `<script>` or `require('dep')`
@@ -175,13 +186,15 @@ gruntFunction = (grunt) ->
       #     * replaces some deps in arrays, `require`s etc
       #     * removes some code and a dependency from a specific file.
       min:
-
-        # need to specify we also need '_defaults', in this order.
+        # derive, just for the example
+        # we need to specify also '_defaults', in this order.
         derive: ['dev', '_defaults']
 
+        ## 'override' this property
         dstPath: './build/dist/uberscore-min.js'
 
-        # doesn't have to be a String. `true` selects 'uglify2' with sane defaults.
+        # Lets optimize / minify the result
+        # Doesn't have to be a String. `true` selects 'uglify2' with sane defaults.
         # It can also be 'uglify'.
         # Even more interestingly, u can pass any 'uglify2' (or 'uglify') keys,
         # the r.js way (https://github.com/jrburke/r.js/blob/master/build/example.build.js)
@@ -259,7 +272,6 @@ gruntFunction = (grunt) ->
       # Its effectivelly equivalent to issuing:
       #  `$ urequire config source/code/uRequireConfig.coffee -o ./build/UMDFileConfigBuild -t UMD`
       fileConfig:
-
         # note: not deriving at all from '_defaults', unless its specified.
         derive: ['source/code/uRequireConfig.coffee']
 
@@ -287,13 +299,12 @@ gruntFunction = (grunt) ->
         dstPath: 'build/Logger-min.js'
 
       # EXAMPLE: replace a bundle dependency with another, perhaps a mock
-      UMDreplaceDep:
-
-        # derive from these two configs
-        derive: ['UMD', '_defaults']
+      UMDplainReplaceDep:
+        # 'UMDplain' template - no dependency on uRequire's NodeRequirer on nodejs
+        template: "UMDplain"
 
         # save to this destination path
-        dstPath: "build/UMDreplaceDep"
+        dstPath: "build/UMDplainReplaceDep"
 
         resources: [
 
@@ -351,7 +362,7 @@ gruntFunction = (grunt) ->
       # EXAMPLE: simple derivation
       UMDunderscore:
         derive: ['AMDunderscore', '_defaults']
-        template: 'UMD'
+        template: 'UMDplain'
         dstPath: "build/UMDunderscore"
 
       # EXAMPLE: marking as Resources, changing behaviors
@@ -359,6 +370,16 @@ gruntFunction = (grunt) ->
         template: 'nodejs'
         filez: ['uRequireConfig*.*']
         dstPath: "build/nodejsCompileAndCopy"
+
+        # the default is to enclose in IFI, even for nodejs template
+        # here we change default behavior
+        bare: true
+
+        # disable adding __isAMD, __isWeb & __isNode variables
+        # if your code doesnt depend on them
+        runtimeInfo: false
+
+        # marking resources examples
         resources: [
 
           # EXAMPLE: compile a .coffee to .js, but dont treat it as a Module
@@ -388,30 +409,44 @@ gruntFunction = (grunt) ->
     watch:
       UMD:
         files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*"]  # note: new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
-        tasks: ['urequire:UMD' , 'urequire:spec', 'mocha', 'run']
+        tasks: ['urequire:UMD' , 'urequire:spec', 'mocha']
 
       dev:
         files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*"]
-        tasks: ['urequire:dev', 'urequire:specCombined', 'concat:specCombinedFakeModule', 'mochaDev', 'run']
+        tasks: ['urequire:dev', 'urequire:specCombined', 'concat:specCombinedFakeModule', 'mochaCmdDev']
 
       min:
         files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*"]
-        tasks: ['urequire:min', 'urequire:specCombined', 'concat:specCombinedFakeModuleMin', 'mochaDev', 'run']
+        tasks: ['urequire:min', 'urequire:specCombined', 'concat:specCombinedFakeModuleMin', 'mochaCmdDev', 'run']
 
       options:
         # WARNING: urequire watch works ONLY with `spawn: false` (or nospawn:true in older versions)
         spawn: false
         # atBegin NOT WORKING: watch is not registered & __temp gets deleted.
         # Also occasional bug with grunt-watch causes constant rerun of tasks when mocha has errors
-        #atBegin: true
+        # atBegin: true
 
 
     shell:
-      mocha: command: "mocha #{buildSpecDir}/index --recursive" # --reporter spec"
-      mochaDev: command: "mocha #{buildSpecDir}_combined/index-combined --recursive" # --reporter spec"
+      mochaCmd: command: "node_modules/.bin/mocha #{buildSpecDir}/index --recursive" # --reporter spec"
+      mochaCmdDev: command: "node_modules/.bin/mocha #{buildSpecDir}_combined/index-combined --recursive" # --reporter spec"
       doc: command: "codo #{sourceDir} --title 'uberscore <%= pkg.version %> API documentation' --cautious"
       run: command: "coffee source/examples/runExample.coffee"
       options: {verbose: true, failOnError: true, stdout: true, stderr: true}
+
+    mocha:
+      plainScript:
+        src: [
+          'build/spec/SpecRunner_almondJs_noAMD_plainScript.html'
+          'build/spec/SpecRunner_almondJs_noAMD_plainScript_min.html'
+        ]
+        options: run:true
+
+      AMD:
+        src: [
+          'build/spec/SpecRunner_unoptimized_AMD.html'
+          'build/spec/SpecRunner_almondJs_AMD.html'
+        ]
 
     concat:
       'dev':
@@ -428,6 +463,7 @@ gruntFunction = (grunt) ->
         options: banner: '{"name":"uberscore", "main":"../../../dist/uberscore-dev.js"}'
         src:[]
         dest: 'build/spec_combined/node_modules/uberscore/package.json'
+
       'specCombinedFakeModuleMin':
         options: banner: '{"name":"uberscore", "main":"../../../dist/uberscore-min.js"}'
         src:[]
@@ -440,23 +476,25 @@ gruntFunction = (grunt) ->
   grunt.registerTask cmd, splitTasks "shell:#{cmd}" for cmd of gruntConfig.shell # shortcut to all "shell:cmd"
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
-     "default":   "clean build dev min test testDev testMin run"
-     "all":       "clean build dev min test testDev testMin examples run"
-     "build":     "urequire:UMD"  # concat:UMD done in *urequire `bundle.resources`*
+     "default":   "build dev min test testDev testMin mocha run"
+     "release":   "build urequire:AMD urequire:AMDunderscore dev min test testDev testMin mocha run"
+     "examples":  "urequire:AMD urequire:UMDplainReplaceDep urequire:AMDunderscore urequire:UMDunderscore urequire:nodejsCompileAndCopy"
+     "all":       "build dev min test testDev testMin mocha examples run"
+     "build":     "urequire:UMD"
      "dev":       "urequire:dev concat:dev"
      "min":       "urequire:min concat:min"
-     "examples":  "urequire:UMDreplaceDep urequire:AMDunderscore urequire:UMDunderscore urequire:nodejsCompileAndCopy"
-     "test":      "urequire:spec mocha"
-     "testDev":   "urequire:specCombined concat:specCombinedFakeModule mochaDev"
-     "testMin":   "concat:specCombinedFakeModuleMin mochaDev"
+
+     "test":      "urequire:spec mochaCmd"
+     "testDev":   "urequire:specCombined concat:specCombinedFakeModule mochaCmdDev"
+     "testMin":   "concat:specCombinedFakeModuleMin mochaCmdDev"
 
     # generic shortcuts
      "cl":      "clean"
      "b":       "build"
      "d":       "dev"
      "dm":      "min"
-     "m":       "mocha"
-     "md":      "mochaDev"
+     "m":       "mochaCmd"
+     "md":      "mochaCmdDev"
      "t":       "test"
      "td":      "testDev"
      "tm":      "testMin"
@@ -476,6 +514,8 @@ gruntFunction = (grunt) ->
     'grunt-contrib-clean'
     'grunt-contrib-concat'
     'grunt-contrib-watch'
+    'grunt-mocha'
+    'grunt-bower-requirejs'
   ]
 
   grunt.initConfig gruntConfig

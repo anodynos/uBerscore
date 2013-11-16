@@ -63,7 +63,7 @@ defaultOptions =
   terminateKey: undefined   # @todo: alternative as callback
   defaultKey: "*"           # @todo: alternative as callback
   isReturnLast: false       # @todo: doc it & spec it!
-
+  #read - like Blender read: (obj, prop)->
 getp = (o, path, options = defaultOptions)->
   _.defaults options, defaultOptions if options isnt defaultOptions
 

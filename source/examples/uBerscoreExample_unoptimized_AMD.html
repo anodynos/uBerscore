@@ -16,7 +16,7 @@
     <p/>Check console's output
   </body>
 
-  <script src="../../libs/require.js"></script>
+  <script src="../../bower_components/requirejs/require.js"></script>
 
   <script>
     require.config({
@@ -25,10 +25,9 @@
 
       // all libraries are now relative to the bundle/baseUrl
       paths: {
-        lodash: "../../libs/lodash.min",
-        underscore: "../.././libs/lodash.min", // doesnt work without ther /./ hack !'
-        //lodash: "../../libs/underscore-min", // drop in 'alternative' of lodash :-)
-        backbone: "../../libs/backbone"
+        lodash: "../../bower_components/lodash/dist/lodash.min",
+        underscore: "../.././bower_components/lodash/dist/lodash.min", // doesnt work without ther /./ hack !'
+        //lodash: "../../bower_components/underscore/underscore-min", // drop in 'alternative' of lodash :-)
         // ** uRequire note: **
         // if the following 'rjs.paths.uberscore' exists,
         //  it mandates we are loading the OPTIMIZED version,
@@ -39,9 +38,8 @@
       },
 
       shim: {
-        lodash: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
-//        underscore: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
-        backbone: {deps: ['lodash'], exports: "Backbone"}
+        lodash: { deps: [], exports: "_"} // needed only when 'lodash' is 'underscore'
+        underscore: { deps: [], exports: "_"}, // needed only when 'lodash' is 'underscore'
       }
     });
 

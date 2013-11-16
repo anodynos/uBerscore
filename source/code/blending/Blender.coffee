@@ -50,8 +50,18 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
     ###
     class Blender extends CoffeeUtils
 
+      @subclass: require 'utils/subclass'
+
       #@defaultOptions:
       inherited: false
+
+      # A hint to BlenderBehaviors to attempt and copy
+      # the protope chain of source items over to destination.
+      #
+      # Warning: current (default) implementation of `deepOverwrite`, is:
+      # when __proto__ is not available (i.e IE), the __proto__ copying
+      # is siumlated by replacing dst[prop] with a new `Object.create`d that copies the proto
+      # and then copying properties from the discarded dst[prop]
       copyProto: false
 
       # @todo: allow BlenderBehavior cases, configurable PER BlenderBehavior, with defaults on blender
@@ -165,7 +175,9 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
             dbb["*"] or= lastDBB['*']['*'] # Anything placed at '*':'*' of lastDBB is default
 
         # adjust blenderBehaviors: shortify all type names & expand all paths
-        @blenderBehaviors[bbi] = @adjustBlenderBehavior bb for bb, bbi in @blenderBehaviors
+        for bb, bbi in @blenderBehaviors # when isHash bb
+          @blenderBehaviors[bbi] = @adjustBlenderBehavior bb
+
         @path = []
 
       ###
@@ -409,7 +421,7 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
           # and dst = {} || [] || ??? @todo: proper match of src type
           if _.isUndefined(sources) or _.isEmpty(sources)
             sources = [dst]
-            dst = if _.isArray(dst) then [] else {} # @todo: proper match of src type
+            dst = @createAs dst
 
           dstObject = {'$':dst}
           @dstRoot = dst
@@ -424,25 +436,16 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
       # our real `blend` function
       _blend: (dst, sources...)=>
 
-        # if there are no sources, 1st param becames a source
-        # and dst = {} || [] || ??? @todo: proper match of src type
-        if _.isUndefined(sources) or _.isEmpty(sources)
-          sources = [dst]
-          dst = if _.isArray(dst) then [] else {}
-
         for src in sources
-          props = if _.isArray src
-                    (p for v, p in src)
-                  else
-                    if @inherited then (p for p of src) else (p for own p of src)
+          props = @properties src
 
           for prop in props # props for {} is ['prop1', 'prop2', ...], for [] its [1,2,3,...]
             @path.push prop
 
             @l.debug("""
                 @path = /#{@path.join('/')}
-                '#{type dst[prop]}'    <--  '#{type src[prop]}'\n
-              """, dst[prop], '    <--  ', src[prop]) if @l.deb 50
+                '#{type @read dst, prop}'    <--  '#{type @read src, prop}'\n
+              """, @read(dst, prop), '    <--  ', @read(src,prop)) if @l.deb 50
 
             # go through @blenderBehaviors, until an 'action' match is found.
             visitNextBB = true
@@ -454,8 +457,8 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
 
               nextBBSrcDstSpec = @getNextAction bb, bbi,
                   # last argument is bbOrderValues, eg : `{scr:'[]', dst: '{}', path:['a','property']}`
-                  dst: type(dst[prop], true) # get short type, always handle it as short internally
-                  src: type(src[prop], true)
+                  dst: type(@read(dst,prop), true) # get short type, always handle it as short internally
+                  src: type(@read(src,prop), true)
                   path: @path # just ref the path
 
               if (nextBBSrcDstSpec) is undefined
@@ -488,12 +491,13 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
                 @l.debug("Value assigning:  @path =", @path.join('/'),
                          "\n value =", @l.prettify result) if @l.deb 20
 
-                dst[prop] = result # actually assign, by default all values
+                @write dst, prop, result # actually assign, by default all values
+
 
               else # we have some special ActionResult:
                 @l.debug("ActionResult = ", result) if @l.deb 30
                 if result in [@DELETE, @DELETE_NEXT]
-                  delete dst[prop]
+                  @delete dst, prop
 
                 if result in [@NEXT, @DELETE_NEXT]
                   visitNextBB = true
@@ -501,6 +505,62 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
             @path.pop()
         dst
 
+      # Basic functionality of Blender
+      ###
+        create and return an (empty) object, that resembles as much the obj passed
+        @todo: proper creation with matching type/class of obj
+               Should attempt to use constructor
+      ###
+      createAs: (obj)->
+        if _.isArray(obj)
+          []
+        else
+          if @copyProto
+            Object.create Object.getPrototypeOf(obj)
+          else
+            {}
+
+      ## Read (get) a property from an Object -
+      #   eg `obj.get(prop)` for Backbone model
+      read: (obj, prop)->
+        # It could return:
+        # * a promise, of when property was read, resolved with read value
+        throw "Read without a prop" if _.isUndefined prop #@todo: proper error handling
+        obj[prop] # default read of object property
+
+      # Write (set) a value a property of an Object
+      #   eg `obj.set(prop, val)` for a Backbone model
+      # It could return:
+      # * a promise, of when property was saved, resolved with saved value
+      # * saved value
+      write: (obj, prop, val)=>
+        throw "Write without a prop" if _.isUndefined prop #@todo: proper error handling
+        # console.log @read obj, prop # @todo: must be bound for this work
+        obj[prop] = val # default write to object property
+        val
+
+      # Delete (eg. Backbone `unset`) a property of an Object
+      delete: (obj, prop)->
+        throw "Delete without a prop" if _.isUndefined prop #@todo: proper error handling
+        delete obj[prop]
+
+      # read the properties/keys/attributes of an Object
+      # eg. Backbone `_.keys model.attributes`
+      # it should obey inherited
+      properties: (obj)->
+        if _.isArray obj
+          (p for v, p in obj)
+        else
+          if @inherited
+            (p for p of obj)
+          else
+            (p for own p of obj)
+
+      # copy all values of src to dst - similar tp _.extend
+      copy: (dst, src)->
+        for prop in @properties src
+          @write dst, prop, @read(src, prop)
+        dst
 
       ###
       **Action() result handling**: How to process the decision (result) of an Action() call.
@@ -552,7 +612,7 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
       ###
 
       ### Simply overwrites dst value with src value ###
-      overwrite: (prop, src)-> src[prop]
+      overwrite: (prop, src)-> @read src, prop
 
       ###
         Copy all properties of nested Objects (or Arrays) recursivelly.
@@ -561,19 +621,33 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
         than really endorses keys (not merely accepts them eg. String accepts keys, but aren't really visible)
       ###
       deepOverwrite: (prop, src, dst)->
-        if @copyProto # http://stackoverflow.com/questions/9959727/what-is-the-difference-between-proto-and-prototype-in-java-script
-          dst[prop].__proto__ = src[prop].__proto__
+        if @copyProto
+          if {}.__proto__ is Object.prototype
+            # @read of `dst[prop].__proto__ = src[prop].__proto__`
+            @read(dst, prop).__proto__ = @read(src, prop).__proto__
+          else # __proto__ not supported - simulate it, by discarding dst[prop]
+               # with a new one that has the right proto + copied own props
 
-        @blend dst[prop], src[prop] # @todo: try _blend ?
+            # create a new object (! @todo: DANGEROUS - WHEN ?)
+            copiedObjWithProto = Object.create Object.getPrototypeOf @read src, prop
+            # extend copiedObjWithProto with original's object properties
+            # eg dst[prop] = _.extend copiedObjWithProto, dst[prop]
+            @copy copiedObjWithProto, @read(dst, prop)
+
+            # replace original dst object, with the new that has __proto__ copied
+            @write dst, prop, copiedObjWithProto
+
+        # this reads as `@blend dst[prop], src[prop]`
+        @blend @read(dst, prop), @read(src, prop) # @todo: try _blend for faster ?
 
       ###
       Append source array to destination.
       All non-undefined items are pushed @ dst
       ###
       arrayAppend: (prop, src, dst)->
-        dst[prop].push s for s in src[prop]
-        dst[prop] # return the appended array as the result
-
+        [srcArr, dstArr] = [@read(src, prop), @read(dst, prop)]
+        dstArr.push s for s in srcArr
+        dstArr # return the appended array as the result
 
       ###
        The default behavior is to overwrite all keys of destination

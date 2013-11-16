@@ -5,21 +5,19 @@ prop1 =
     'aProp1.2': "o1.aVal1.2"
 
 object1 =
-    aProp1: {}
     aProp2: "o1.aVal2"
-object1.aProp1.__proto__ = prop1
+object1.aProp1 = Object.create prop1
 
-object2 =
-    aProp2: "o2.aVal2-1"
-object2.__proto__ = object1
+object2 = Object.create object1
+object2.aProp2 = "o2.aVal2-1"
 
-object3 =
+object3 = Object.create object2
+_.extend object3,
     aProp2: "o3.aVal2-2"
     aProp3: [1, '2', 3, {aProp4:"o3.aVal3"}]
-object3.__proto__ = object2
 
-objectWithProtoInheritedProps = {aProp0:"o0.aVal0"}
-objectWithProtoInheritedProps.__proto__ = object3
+objectWithProtoInheritedProps = Object.create object3
+objectWithProtoInheritedProps.aProp0 = "o0.aVal0"
 
 class Class0
   constructor:->
@@ -69,13 +67,16 @@ objectDeepClone2 = _.clone object, true
 
 # shallow inherited
 inheritedShallowCloneParent  =  p2: object.p2
-inheritedShallowClone = p1: 1
-inheritedShallowClone.__proto__ = inheritedShallowCloneParent
+# can't do this in IE : `inheritedShallowClone.__proto__ = inheritedShallowCloneParent`
+inheritedShallowClone =  Object.create inheritedShallowCloneParent
+inheritedShallowClone.p1 = 1
 
 # deep inherited
 inheritedDeepCloneParent = p2: {p2_2: 3}
-inheritedDeepClone = p1: 1
-inheritedDeepClone.__proto__ = inheritedDeepCloneParent
+
+# inheritedDeepClone.__proto__ = inheritedDeepCloneParent
+inheritedDeepClone = Object.create inheritedDeepCloneParent
+inheritedDeepClone.p1 = 1
 
 ### Defaults deep merging: the experiment.
 

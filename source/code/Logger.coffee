@@ -70,7 +70,7 @@ class Logger
 
       args = (Logger.prettify(arg) for arg in args)
 
-      title = "#{if _.isEmpty @debugPath
+      title = "#{if _.isEmpty this?.debugPath
                   'Logger' + Logger.loggerCount + ' '
                  else
                   '[' + @debugPath.join('/') + '] '
