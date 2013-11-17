@@ -430,7 +430,7 @@ gruntFunction = (grunt) ->
       mochaCmd: command: "node_modules/.bin/mocha #{buildSpecDir}/index --recursive" # --reporter spec"
       mochaCmdDev: command: "node_modules/.bin/mocha #{buildSpecDir}_combined/index-combined --recursive" # --reporter spec"
       doc: command: "codo #{sourceDir} --title 'uberscore <%= pkg.version %> API documentation' --cautious"
-      run: command: "coffee source/examples/runExample.coffee"
+      run: command: "node_modules/.bin/coffee source/examples/runExample.coffee"
       options: {verbose: true, failOnError: true, stdout: true, stderr: true}
 
     mocha:

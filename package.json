@@ -41,6 +41,7 @@
     "urequire": "0.6.7",
     "coco": "*",
     "iced-coffee-script": "*",
+    "coffee-script": "*",
     "LiveScript": "*",
     "grunt-urequire": "0.6.x",
     "grunt": "0.4.x",
