@@ -475,10 +475,10 @@ gruntFunction = (grunt) ->
   grunt.registerTask cmd, splitTasks "shell:#{cmd}" for cmd of gruntConfig.shell # shortcut to all "shell:cmd"
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
-     "default":   "build dev min test testDev testMin mocha:AMD run"
-     "release":   "build urequire:AMD urequire:AMDunderscore dev min test testDev testMin mocha run"
-     "examples":  "urequire:AMD urequire:UMDplainReplaceDep urequire:AMDunderscore urequire:UMDunderscore urequire:nodejsCompileAndCopy"
-     "all":       "build dev min test testDev testMin mocha examples run"
+     "default":   "build test dev testDev min testMin run"
+     "release":   "build test dev testDev min testMin mocha urequire:AMD urequire:AMDunderscore run"
+     "examples":  "urequire:AMD urequire:AMDunderscore urequire:UMDplainReplaceDep urequire:UMDunderscore urequire:nodejsCompileAndCopy"
+     "all":       "build test dev testDev min testMin mocha examples run"
      "build":     "urequire:UMD"
      "dev":       "urequire:dev concat:dev"
      "min":       "urequire:min concat:min"
