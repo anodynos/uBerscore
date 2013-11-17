@@ -426,7 +426,6 @@ gruntFunction = (grunt) ->
         # Also occasional bug with grunt-watch causes constant rerun of tasks when mocha has errors
         # atBegin: true
 
-
     shell:
       mochaCmd: command: "node_modules/.bin/mocha #{buildSpecDir}/index --recursive" # --reporter spec"
       mochaCmdDev: command: "node_modules/.bin/mocha #{buildSpecDir}_combined/index-combined --recursive" # --reporter spec"
@@ -440,7 +439,7 @@ gruntFunction = (grunt) ->
           'build/spec/SpecRunner_almondJs_noAMD_plainScript.html'
           'build/spec/SpecRunner_almondJs_noAMD_plainScript_min.html'
         ]
-        options: run:true
+        options: run: true
 
       AMD:
         src: [
@@ -476,7 +475,7 @@ gruntFunction = (grunt) ->
   grunt.registerTask cmd, splitTasks "shell:#{cmd}" for cmd of gruntConfig.shell # shortcut to all "shell:cmd"
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
-     "default":   "build dev min test testDev testMin mocha run"
+     "default":   "build dev min test testDev testMin mocha:AMD run"
      "release":   "build urequire:AMD urequire:AMDunderscore dev min test testDev testMin mocha run"
      "examples":  "urequire:AMD urequire:UMDplainReplaceDep urequire:AMDunderscore urequire:UMDunderscore urequire:nodejsCompileAndCopy"
      "all":       "build dev min test testDev testMin mocha examples run"
@@ -515,7 +514,7 @@ gruntFunction = (grunt) ->
     'grunt-contrib-concat'
     'grunt-contrib-watch'
     'grunt-mocha'
-    'grunt-bower-requirejs'
+    #'grunt-bower-requirejs'
   ]
 
   grunt.initConfig gruntConfig
