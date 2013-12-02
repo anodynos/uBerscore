@@ -1,4 +1,4 @@
-# uBerscore v0.0.14
+# uBerscore v0.0.15
 
 [![Build Status](https://travis-ci.org/anodynos/uBerscore.png)](https://travis-ci.org/anodynos/uBerscore)
 [![Up to date Status](https://david-dm.org/anodynos/uBerscore.png)](https://david-dm.org/anodynos/uBerscore.png)

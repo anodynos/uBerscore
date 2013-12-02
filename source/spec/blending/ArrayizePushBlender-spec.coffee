@@ -1,7 +1,4 @@
-assert = chai.assert
-expect = chai.expect
-
-describe "ArrayizePushBlender:", ->
+define -> describe "ArrayizePushBlender:", ->
 
   describe "arrayizePusher:", ->
     arrayizePusher = new _B.ArrayizePushBlender

@@ -1,28 +1,20 @@
-chai = require 'chai'
-assert = chai.assert
-expect = chai.expect
-
-_ = require 'lodash'
-_B = require 'uberscore'
-l = new _B.Logger 'type-spec'
-
 class AClass
   constructor: (@prop='a property value')->
 
 anInstance = new AClass # {prop: 'a property value'}
 
 oOs = { #@ todo: provide ALL test cases from The Good Parts !
-  'Array':      [['this', 'is', 1, 'array'], new Array(1,2,3)]
+  'Array':      [ ['this', 'is', 1, 'array'], new Array(1,2,3) ]
   'Arguments':  [ do -> return arguments ]
-  'Function':   [((x)->x), new Function("var a = 'a'"), class A, -> ]
-  'String':     ["I am a String!", new String('I am another String')]
-  'Number':     [667, new Number(668.13)]
-  'Date':       [new Date()]
-  'RegExp':     [/./g, new RegExp('/./')]
-  'Boolean':    [true, false, new Boolean(true)]
-  'Null':       [null]
-  'Undefined':  [undefined, `void 0`, do ->]
-  'Object':     [{someProp:'SomeVal'}, anInstance, new Object, new ->] # also works for plain objects {}, BUT NOT for Function and Array
+  'Function':   [ ((x)->x), new Function("var a = 'a'"), class A, -> ]
+  'String':     [ "I am a String!", new String('I am another String') ]
+  'Number':     [ 667, new Number(668.13) ]
+  'Date':       [ new Date() ]
+  'RegExp':     [ /./g, new RegExp('/./') ]
+  'Boolean':    [ true, false, new Boolean(true) ]
+  'Null':       [ null ]
+  'Undefined':  [ undefined, `void 0`, do -> ]
+  'Object':     [ {someProp:'SomeVal'}, anInstance, new Object, new -> ] # also works for plain objects {}, BUT NOT for Function and Array
 }
 describe 'types & its associates:', ->
 

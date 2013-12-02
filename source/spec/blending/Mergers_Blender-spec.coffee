@@ -1,17 +1,3 @@
-l = new _B.Logger '_B.clone-spec', null, true
-expect = chai.expect
-
-{
-  equal, notEqual, ok
-  deepEqual, notDeepEqual
-  exact, notExact
-  iqual, notIqual
-  ixact, notIxact
-  like, notLike
-  likeBA, notLikeBA
-} = require '../helpers'
-
-
 { objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues } = data
 
 describe "Mergers_Blender-spec", ->
@@ -34,7 +20,7 @@ describe "Mergers_Blender-spec", ->
           it "has common references of all nested objects", ->
             sRefs = _B.getRefs expectedPropertyValues, {deep:true, inherited:true}
             cRefs = _B.getRefs shallowClone, {deep:true, inherited:true}
-            expect(_B.isEqualArraySet sRefs, cRefs).to.be.true
+            equalSet sRefs, cRefs
 
           it "has a nested object copied by reference", ->
             equal shallowClone.aProp1, expectedPropertyValues.aProp1
@@ -93,7 +79,7 @@ describe "Mergers_Blender-spec", ->
           it "has common references of all nested objects", ->
             sRefs = _B.getRefs objectWithProtoInheritedProps, {deep:true, inherited:true}
             cRefs = _B.getRefs shallowCloneInheritedCopied, {deep:true, inherited:true}
-            expect(_B.isEqualArraySet sRefs, cRefs).to.be.true
+            equalSet sRefs, cRefs
 
           it "has copied inherited nested object", ->
             equal shallowCloneInheritedCopied.aProp1, objectWithProtoInheritedProps.aProp1
@@ -127,7 +113,7 @@ describe "Mergers_Blender-spec", ->
           it "has ALL common references of all nested objects", ->
             sRefs = _B.getRefs objectWithProtoInheritedProps, {deep:true, inherited:true}
             cRefs = _B.getRefs shallowCloneProtoCopied, {deep:true, inherited:true}
-            expect(_B.isEqualArraySet sRefs, cRefs).to.be.true
+            equalSet sRefs, cRefs
 
           it "has not copied inherited nested object, but can access it through __proto__ inheritance", ->
             equal shallowCloneProtoCopied.aProp1, objectWithProtoInheritedProps.aProp1

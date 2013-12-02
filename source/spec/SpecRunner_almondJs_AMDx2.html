@@ -2,15 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>test: 'UMDplain', `uberscore-dev.js`: 'combined', loader: 'AMD/RequireJS'</title>
+    <title>test: `uberscore-dev.js` & `spec_combined/index-combined.js`: 'combined', loader: 'AMD/RequireJS'</title>
   </head>
 
   <body>
-    <h1> `uberscore-dev.js`</h1>
+    <h1> `uberscore-dev.js` & `spec_combined/index-combined.js`</h1>
     <h2> template: 'combined' (r.js/almondjs + uRequire mini-runtime) </h2>
-
-    <h1> `spec`</h1>
-    <h2> template: 'UMD' </h2>
 
     <h3> Loader: "AMD/RequireJS"</h3>
 
@@ -53,7 +50,7 @@
         //  we load 'uberscore' dependency (and its contained deps) through `rjs.baseUrl`.
         // this is the only change needed!
         uberscore : "../../build/dist/uberscore-dev",
-        spec: "../spec/"
+        spec: "../spec_combined/index-combined"
       },
 
       shim: {
@@ -65,10 +62,8 @@
 
     // initialize mocha
     mocha.setup('bdd');
-
-    // load unit-tests here, always relative to the bundle/baseUrl
-    require(["spec/index" ], function(){
-        mocha.run().globals(['_', '_B', 'uberscore']);
+    require(["spec"], function(spec){
+      mocha.run().globals(['_', '_B', 'uberscore']);
     });
 
   </script>

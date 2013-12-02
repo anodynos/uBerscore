@@ -7,6 +7,11 @@ Why do we need another `isObject` function ? Well its different:
  - it returns true for any hash {}, even if its an *instance* {} NOT created by `Object` creator,
    but by some Function/class constructor (unlike lodash's 'isPlainObject')
 ###
-type = require 'types/type'
+define ['types/type'], (type)-> (o)-> type(o) is 'Object'
 
-module.exports = (o)-> type(o) is 'Object'
+#type = require 'types/type'
+#module.exports = (o)-> type(o) is 'Object'
+
+
+
+

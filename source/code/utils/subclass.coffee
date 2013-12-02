@@ -1,4 +1,3 @@
-_ = require 'lodash'
 ## Borrowed from Backbone v.1.1 'extend' helper - renamed to subclass to differntiate from _.extend
 
 # Helper function to correctly set up the prototype chain, for subclasses.

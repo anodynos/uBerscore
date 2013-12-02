@@ -1,6 +1,3 @@
-assert = chai.assert
-expect = chai.expect
-
 describe 'isDisjoint:', ->
 
   describe 'with primitives:', ->

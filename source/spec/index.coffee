@@ -1,3 +1,7 @@
+# uRequire : combined template must ignore these vars
+_lodash_ = require 'lodash'
+uberscore = require 'uberscore'
+
 # Should be automatically generated (but its not right now!)
 require "blending/Blender-spec"
 require "blending/deepExtend-spec"
@@ -18,6 +22,8 @@ require "objects/mutate-spec"
 require "objects/okv-spec"
 require "objects/setp-spec"
 
+require "objects/isOK-True-False-spec"
+
 require "collections/go-spec"
 require "collections/array/arrayize-spec"
 require "collections/array/isEqualArraySet-spec"
@@ -33,4 +39,4 @@ require "Logger-spec"
 require "spec-data"
 require "uberscore-spec"
 
-
+require 'specHelpers'

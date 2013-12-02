@@ -1,10 +1,4 @@
-_B = require 'uberscore'
-l = new _B.Logger 'spec/helpers'
-chai = require 'chai'
-expect = chai.expect
-
 # Mimic & extend http://api.qunitjs.com/category/assert/
-
 #A STRICT comparison assertion, like qunits strictEqual.
 
 equal = (a, b)-> expect(a).to.equal(b)
@@ -12,6 +6,7 @@ notEqual = (a, b)-> expect(a).to.not.equal(b)
 
 #A boolean assertion, equivalent to CommonJS’s assert.ok() and JUnit’s assertTrue(). Passes if the first argument is truthy.
 ok = (a)-> expect(a).to.be.ok
+notOk = (a)-> expect(a).to.be.not.ok
 
 tru = (a)-> expect(a).to.be.true
 fals = (a)-> expect(a).to.be.false
@@ -25,17 +20,32 @@ are = (name, asEqual=true)->
 
     if asEqual
       if !isEq
-        l.warn "Discrepancy, expected true from _B.#{name} \n at path: ", path.join('.'),
-          '\n left Object = ', _B.getp(a, path), '\n right Object =', _B.getp(b, path)
-    else
-      if isEq
-        l.warn "Discrepancy, expected false from _B.#{name},",
-          '\n left Object = ', _B.getp(a, path), '\n right Object =', _B.getp(b, path)
-
-    if asEqual
+        l.warn "Discrepancy, expected `true` from _B.#{name} \n at path: ", path.join('.'),
+               ' \n left value = ', _B.getp(a, path), '\n right value =', _B.getp(b, path),
+               ' \n left Object = \n', a, '\n right Object = \n', b
       expect(isEq).to.be.true
     else
+      if isEq
+        l.warn "Discrepancy, expected `false` from _B.#{name}, but its `true`."
       expect(isEq).to.be.false
+
+createEqualSet = (asEqual)->
+  (result, expected)->
+    isEq = _B.isEqualArraySet result, expected
+
+    if asEqual
+      if !isEq
+        l.warn '\n _B.isEqualArraySet expected `true`',
+               '\n result \\ expected \n', _.difference(result, expected),
+               '\n expected \\ result \n', _.difference(expected, result)
+      expect(isEq).to.be.true
+    else
+      if isEq
+        l.warn '\n _B.isEqualArraySet expected `false`, got `true`',
+      expect(isEq).to.be.false
+
+equalSet = createEqualSet true
+notEqualSet = createEqualSet false
 
 #A deep recursive comparison assertion, working on primitive types, arrays, objects, regular expressions, dates and functions.
 deepEqual = are 'isEqual'
@@ -57,15 +67,18 @@ likeBA = (a,b)-> like(b,a) # reverse a,b
 notLikeBA = (a,b)-> notLike(b,a) # reverse a,b
 
 module.exports = {
-  equal, notEqual #strictEqual
-  tru, fals
-  ok              #truthy
+  equal, notEqual # strictEqual, ===
+  tru, fals       # true / false
+  ok, notOk       # truthy / falsey
 
-  deepEqual, notDeepEqual
+  deepEqual, notDeepEqual # _B.isEquals
+
+  # using _B.is[XXX] for XXX in[Equals, Exact, Iqual, Ixact]
   exact, notExact
   iqual, notIqual
   ixact, notIxact
+  like, notLike       # A is Like B
+  likeBA, notLikeBA   # B is Like A
 
-  like, notLike
-  likeBA, notLikeBA
+  equalSet, notEqualSet
 }

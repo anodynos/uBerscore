@@ -1,6 +1,3 @@
-assert = chai.assert
-expect = chai.expect
-
 describe 'objects/setp:', ->
   o =
     '$':

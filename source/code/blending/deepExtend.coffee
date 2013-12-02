@@ -1,34 +1,38 @@
+#/**
+#   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
+#   * Copyright (C) 2012 Kurt Milam - http://xioup.com | Source: https://gist.github.com/1868955
+#   *
+#   * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#   *
+#   * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#   *
+#   * You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
+#   **/
+
+# Coffeescript adaptation & changes/extra features by Agelos.Pikoulas@gmail.com
+# with Changes/extra features
+# - extra: allow lodash'es 'shadowed' variables
+# - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
+# - null _deletes_ object key, as well as array item
+# - copying Function over Object should replace it first
+# todo DEPRACATE it, once Blender is in place!
+
+# THis file is a wild testbed for uRequire!
 
 loggerPath = './../'  # uRequire : testing with 'weird' & untrusted dependencies
 
 define ['require', 'exports', 'module', loggerPath + 'Logger'],
   (require, exports, module, Logger, dummy_param, another_dummy_param)-> # uRequire : testing uRequire require, exports, module trio
 
+    _lodash_ = require 'lodash'            # uRequire : combined template must ignore these vars
+    uberscore = require 'uberscore'        # >>>
+
     isHash = require './../types/./isHash' # uRequire : use non-normalized fileRelative to demonstrate replaceDep recognises it
     isHash2 = require 'types/./isHash'     # uRequire : use non-normalized bundleRelative to demonstrate it not added again & replaceDep recognises it
 
     l = new Logger 'uberscore/Blender'
 
-    # Coffeescript adaptation & changes/extra features by Agelos.Pikoulas@gmail.com
-    # Original by Kurt Milam - follows below
 
-    # Changes/extra features
-    # - extra: allow lodash'es 'shadowed' variables
-    # - change: ${} instead of #{} in parentRE, cause it conflicts with Coffeescript!
-    # - null _deletes_ object key, as well as array item
-    # - copying Function over Object should replace it first
-    # todo DEPRACATE it, once Blender is in place!
-
-    #/**
-    #   * Based conceptually on the _.extend() function in underscore.js ( see http://documentcloud.github.com/underscore/#extend for more details )
-    #   * Copyright (C) 2012 Kurt Milam - http://xioup.com | Source: https://gist.github.com/1868955
-    #   *
-    #   * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-    #   *
-    #   * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-    #   *
-    #   * You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
-    #   **/
     shadowed = [
       'constructor'
       'hasOwnProperty'

@@ -1,8 +1,3 @@
-assert = chai.assert
-expect = chai.expect
-
-l = new _B.Logger 'DeepDefaultsBlender-spec', null, true
-
 { objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues
 
   project, team, bundle

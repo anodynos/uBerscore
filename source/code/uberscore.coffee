@@ -57,6 +57,10 @@ class uberscore
     isIxact: require "objects/isIxact"
     isLike: require "objects/isLike"
 
+    isTrue: require "objects/isTrue"
+    isFalse: require "objects/isFalse"
+    isOk: (val)-> !!val
+
     # Collections
     go: require './collections/go'
     isEqualArraySet: require "collections/array/isEqualArraySet"

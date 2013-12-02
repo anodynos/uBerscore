@@ -1,0 +1,1 @@
+define -> (val)-> _.isEqual val, true

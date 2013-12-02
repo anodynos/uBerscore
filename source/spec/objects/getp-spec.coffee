@@ -1,8 +1,4 @@
-assert = chai.assert
-expect = chai.expect
-
 describe 'objects/getp ', ->
-
   o =
     '$':
       bundle:

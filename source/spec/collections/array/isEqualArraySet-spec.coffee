@@ -1,5 +1,3 @@
-assert = chai.assert
-expect = chai.expect
 # clone to check mutability
 { obj, arrInt, arrInt2, arrStr } = _.clone data, true
 

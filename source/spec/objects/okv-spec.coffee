@@ -1,7 +1,3 @@
-assert = chai.assert
-expect = chai.expect
-# clone to check mutability
-
 describe 'okv :', ->
   weirdKeyName = ' $#%!@&'
 

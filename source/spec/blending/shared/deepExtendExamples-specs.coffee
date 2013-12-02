@@ -1,10 +1,5 @@
-assert = chai.assert
-expect = chai.expect
-
 # clone to check mutability
-{ project, global, bundle
-  obj, arrInt, arrInt2, arrStr
-} = _.clone data, true
+{ project, global, bundle, obj, arrInt, arrInt2, arrStr } = _.clone data, true
 
 module.exports = (deepExtendMergeBlend)->
 

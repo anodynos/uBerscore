@@ -1,11 +1,3 @@
-chai = require "chai"
-assert = chai.assert
-expect = chai.expect
-
-_ = require 'lodash'
-_B = require 'uberscore'
-l = new _B.Logger 'spec/utils/CalcCachedProperties-spec'
-
 describe "_B.CalcCachedProperties:", ->
 
   class CalcCachedProperties2 extends _B.CalcCachedProperties

@@ -1,8 +1,4 @@
-expect = chai.expect
-
-l = new _B.Logger '_B.clone-spec', null, true
-
-describe "_B.clone:", ->
+define -> describe "_B.clone:", ->
 
   checkShallow = (o1, o2)->
     expect(o1, o2).not.same

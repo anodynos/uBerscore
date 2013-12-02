@@ -4,12 +4,9 @@
 /source/
 /build/AMDunderscore
 /build/spec
+/build/spec_combined
 /build/nodejsCompileAndCopy
 /build/UMDplainReplaceDep
-/build/spec_combined
 /build/UMDunderscore
-/Gruntfile.coffee
 /.npmignore
 /.gitignore
-/.travis.yml
-

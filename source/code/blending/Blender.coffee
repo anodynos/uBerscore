@@ -563,49 +563,6 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
         dst
 
       ###
-      **Action() result handling**: How to process the decision (result) of an Action() call.
-
-      An Action call returns either a _real value_ OR a special `ActionResult` singleton.
-
-       - If its a "value",
-        - its assigned to `dst[prop]`, by default. But this can change.
-        - The property is considered as processed/finished.
-
-       - If its an `ActionResult` its processed as follows:
-
-      ###
-
-      ###
-      SKIP variable assignement resulted from Action call .
-      Handling of this property is considered finished.
-      ###
-      @SKIP: new ActionResult "SKIP"
-      SKIP: Blender.SKIP # copied to prototype (i.e all instances have it)
-      ###
-      Go to NEXT BlenderBehavior in line, this one did (or didnt) do its work.
-      The next BB in line must now take Action.
-
-      - If its used alone, it also SKIPs assignment, cause NEXT is not a value!
-
-      - If you also want to assign, use the as return [@NEXT, value]
-        It assigns `value` to `dst[prop]` and then goes to the NEXT BlenderBehavior in line
-      ###
-      @NEXT: new ActionResult "NEXT"
-      NEXT: Blender.NEXT
-
-      ###
-        DELETE the `dst[prop]`. Can be done in Action, but why not doit by contract ?
-      ###
-      @DELETE: new ActionResult "DELETE"
-      DELETE: Blender.DELETE
-
-      ###
-        DELETE_NEXT - Like @DELETE, but also skip to next BlenderBehavior in line.
-      ###
-      @DELETE_NEXT: new ActionResult "DELETE_NEXT"
-      DELETE_NEXT: Blender.DELETE_NEXT
-
-      ###
       Actions: Predefined/built in actions.
 
       You can define you own Acxtions when you create a Blender instance.
@@ -625,8 +582,9 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
           if {}.__proto__ is Object.prototype
             # @read of `dst[prop].__proto__ = src[prop].__proto__`
             @read(dst, prop).__proto__ = @read(src, prop).__proto__
-          else # __proto__ not supported - simulate it, by discarding dst[prop]
-               # with a new one that has the right proto + copied own props
+          else
+            # __proto__ not supported - simulate it, by discarding dst[prop]
+            # with a new one that has the right proto + copied own props
 
             # create a new object (! @todo: DANGEROUS - WHEN ?)
             copiedObjWithProto = Object.create Object.getPrototypeOf @read src, prop
@@ -690,6 +648,49 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
           '{}': 'deepOverwrite'
           '[]': 'deepOverwrite'
           '->': 'deepOverwrite'
+
+      ###
+      **Action() result handling**: How to process the decision (result) of an Action() call.
+
+      An Action call returns either a _real value_ OR a special `ActionResult` singleton.
+
+       - If its a "value",
+        - its assigned to `dst[prop]`, by default. But this can change.
+        - The property is considered as processed/finished.
+
+       - If its an `ActionResult` its processed as follows:
+
+      ###
+
+      ###
+      SKIP variable assignement resulted from Action call .
+      Handling of this property is considered finished.
+      ###
+      @SKIP: new ActionResult "SKIP"
+      SKIP: Blender.SKIP # copied to prototype (i.e all instances have it)
+      ###
+      Go to NEXT BlenderBehavior in line, this one did (or didnt) do its work.
+      The next BB in line must now take Action.
+
+      - If its used alone, it also SKIPs assignment, cause NEXT is not a value!
+
+      - If you also want to assign, use the as return [@NEXT, value]
+        It assigns `value` to `dst[prop]` and then goes to the NEXT BlenderBehavior in line
+      ###
+      @NEXT: new ActionResult "NEXT"
+      NEXT: Blender.NEXT
+
+      ###
+        DELETE the `dst[prop]`. Can be done in Action, but why not doit by contract ?
+      ###
+      @DELETE: new ActionResult "DELETE"
+      DELETE: Blender.DELETE
+
+      ###
+        DELETE_NEXT - Like @DELETE, but also skip to next BlenderBehavior in line.
+      ###
+      @DELETE_NEXT: new ActionResult "DELETE_NEXT"
+      DELETE_NEXT: Blender.DELETE_NEXT
 
     ###
     @todo: (3 5 4) Make XxxBlender constructors return a reference to `.blend` function instead of a blender

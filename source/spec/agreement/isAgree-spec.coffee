@@ -1,10 +1,7 @@
-chai = require 'chai'
-assert = chai.assert
-expect = chai.expect
-
-_ = require 'lodash'
-_B = require 'uberscore' #
-data = require '../spec-data'
+#
+#_ = require 'lodash'
+#_B = require 'uberscore' #
+#data = require '../spec-data'
 
 describe 'isAgree ', ->
   it "a String with another String", ->

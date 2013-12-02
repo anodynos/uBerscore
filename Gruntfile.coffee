@@ -1,38 +1,38 @@
-# requires grunt 0.4.x
+# devDependencies: { grunt: '0.4.1', urequire: '0.6.8' }
+_ = require 'lodash'
+
 sourceDir     = "source/code"
 buildDir      = "build/UMD"
 distDir       = "build/dist"
 sourceSpecDir = "source/spec"
 buildSpecDir  = "build/spec"
 
+# OS directory separator
+S = if process.platform is 'win32' then '\\' else '/'
 
 gruntFunction = (grunt) ->
-  _ = grunt.util._
   pkg = grunt.file.readJSON('package.json')
+
   banner = """
-      /*
+     /**
       * #{ pkg.name } - version #{ pkg.version }
       * Compiled on #{ grunt.template.today("yyyy-mm-dd h:MM:ss") }
       * #{ pkg.repository.url }
       * Copyright(c) #{ grunt.template.today("yyyy") } #{ pkg.author.name } (#{ pkg.author.email } )
       * Licensed #{ pkg.licenses[0].type } #{ pkg.licenses[0].url }
       */\n"""
-  bannerMin = """
-    /* #{ pkg.name } #{ pkg.version } (#{ grunt.template.today("yyyy-mm-dd") }), #{ pkg.repository.url }
-       #{ pkg.author.email }, Lisense: #{ pkg.licenses[0].type } */\n"""
 
   gruntConfig =
-    meta: {banner, bannerMin}
     options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
 
     ### NOTE: uRequire config is used as a testbed & example, thus so many comments :-) ###
 
     # The `'urequire:XXX'` tasks in summary do some or all of those
-    #  * derive from 'someTask' (and/or '_defaults') with some differences
+    #  * derive (inherit) from 'someTask' (and/or '_defaults')
     #  * have a `path` as a source
     #  * filter `filez` within the `path`
     #  * save everything at `dstPath`
-    #  * converts all modules to UMD/AMD or a single `uberscore-min.js` with `combined` template
+    #  * converts all modules to UMD/AMD or `uberscore-min.js`
     #  * copies all other (non-module) files at `dstPath`
     #  * export a global `window._B` with a `noConflict()`
     #  * uglifies combined file with some `uglify2` settings
@@ -44,112 +44,106 @@ gruntFunction = (grunt) ->
     #     * replace some deps in arrays, `require`s etc
     #     * remove some code and a dependency from a specific file.
     urequire:
-      # @note any urequire task starting with '_' is ignored as grunt target
+      # @note any task starting with '_' is ignored as grunt target
       # and only used for `derive`-ing.
       # These are the defaults, when a task has no 'derive' at all.
       # Use `derive:[]` to skip deriving it in tasks with no 'derive'.
       _defaults:
         bundle:
           path: "#{sourceDir}"
-
           # include all but exclude some filez
           filez: [/./, '!**/draft/*.*', '!uRequireConfig*']
-
           # 2 ways to say "I want all non-`resource` matched filez to
           # be copied to build.dstPath"
           copy: [/./, '**/*.*']
-
           dependencies:
-
-            # 'util' will not be added to deps array, will be available only
+            # 'util' wont be added to AMD deps, will be available only
             # on nodejs execution. Same as 'node!myDep', but allows module
             # to run on nodejs without conversion. Not really need,
             # `node` defaults to all known 'nodejs' core packages
             node: 'util'
-
-            # export to bundle (i.e inject some dependencies to all modules)
+            # export to bundle (i.e inject some deps to all modules)
             exports: bundle:
               # simple syntax: depsVars infered from dep/variable bindings
               # of bundle or other known sources
-              ['lodash', 'agreement/isAgree']
+              #['lodash', 'agreement/isAgree']
               # precise syntax: deps & their corresponding vars
-              #  {'lodash': ['_'], 'agreement/isAgree': ['isAgree', 'isAgree2']}
+              'lodash': ['_'],
+              'agreement/isAgree': ['isAgree', 'isAgree2']
 
-          # define some Resource Converters
+          # define some Resource Converters, common to all tasks
           resources: [
-
             # example: declare an RC to perform some 'concat/inject' job.
             [
               # Name this RC - note: '+' sets `isBeforeTemplate` flag:
-              # this RC runs AFTER our Module's code is parsed and deps extracted/adjusted
-              # right BEFORE running the template. Hence it  enables you do manipulate
-              # the body & dependencies (it runs on Modules only).
-              # Note: The `m.converted` IS NOT considered at this stage,
-              # we are dealing with AST code & Module dependencies only.
+              # this RC runs AFTER our Module is parsed and deps extracted
+              # right BEFORE running the template.
               '~+inject:VERSION'
-
-              # note: '~' in name means `isMatchSrcFilename:true`, so its matching
+              # '~' name flag `isMatchSrcFilename:true` so its matching
               # `uberscore.coffee`, instead of dstFilename `uberscore.js`
               ['uberscore.coffee']
-
               # Our `convert` callback, receives a Module instance
               (m)->
                 # inject 'var VERSION=xxx' before the module's body code
-                # m.afterBody also exists
                 # inject any text (no need to be parseable code)
                 m.beforeBody = "var VERSION='#{pkg.version}';"
-                # no convFilename needed
-            ]
+                # m.afterBody also exists
 
-            # example: perform some 'concat' job, AFTER the template conversion is done.
-            [ # '!' means 'isAfterTemplate: true'
-              '!banner:uberscore.js',
-              # some description
-              'concat/add banner to uberscore.js'
-              # note we are looking to change the dstFilename `uberscore.js` (not `uberscore.coffee`).
-              # We could have used ~ to match srcFilename
-              ['uberscore.js']
-              # r.converted holds our converted UMD code,
-              # since this RC runs AFTER the template conversion
-              (r)->"#{banner}\n#{r.converted}"
               # no convFilename needed
             ]
-
-
           ]
 
+          # Only template 'combined' requires a `bundle.main`,
+          # pointing to the 'main' module of the bundle (that loads
+          #  all other modules and kicks off the bundle).
+          # If 'bundle.main' is missing, its assumed `bundle.name`,
+          #  (which in turn is grunt's @target).
+          #
+          # If no main module is found named after `bundle.main`
+          # or `bundle.name` or 'index' or 'main',
+          # a compilation error occurs on the combined template.
+          #
+          # Its better to be precise anyway.
+          # `bundle.main` also used to concat `build.template.banner`
+          # to your main module, so we declare it on _default.
+          main: 'uberscore'
+
         build:
+          # not setting any particular template,
+          # just some settings for the code generation
+          template:
+            # contents of banner are added as-is before `bundle.main`
+            banner: banner
+
           # the following can be truethy/falsy or array of filez specs
-          useStrict: true # default is false
-          bare: false       # default is false
           globalWindow: false # default is true
-          runtimeInfo: ['!**/*', 'Logger.js'] # default is true, allow it only ont these filez
-
-          debugLevel: 0 # 0 is default, 100 the max
-
-          # false is default, auto enabled if debugLevel >= 50
+          # runtimeInfo defaults to true - we disable on all but one
+          runtimeInfo: ['!**/*', 'Logger.js']
+          # debugLevel of the build process, default is 0, max is 100
+          debugLevel: 0
+          # verbose default is `false`, auto enabled if debugLevel >= 50
           verbose: false
 
       # The `'urequire:UMD'` task:
-      #  * derives all from `'_defaults'` with the following differences:
+      #  * derives all from `'_defaults'` with the following diffs:
       #  * converts each module in `path` to UMD
       #  * everything saved at `dstPath`
       #  * adds a banner (after UMD template conversion)
       UMD:
         # `build` and `bundle` hashes are not needed
         # keys are safelly recognised, even if they're not in them.
-        #'build':
 
-        # 'derive' is also not needed - by default it deep uDerives all '_defaults'.
-        # To avoid use `derive:[]`.
+        # 'derive' is not needed - by default it derives '_defaults'
+        #   * to avoid '_defaults' use `derive:[]`
+        #   * to inherit *only* from 'X', use derive: ['X']
         #'derive': ['_defaults']
 
-        # template is not needed - 'UMD' is default
         template: 'UMDplain'
         # all files converted files are written here
         dstPath: "#{buildDir}"
 
-      # beautiful AMD code, using github.com/mishoo/UglifyJS2 optimization
+      # Example: beautiful AMD code,
+      # using github.com/mishoo/UglifyJS2 optimization
       AMD:
         template: 'AMD'
         dstPath: "build/AMD"
@@ -161,24 +155,22 @@ gruntFunction = (grunt) ->
       # a 'combined' build, - works with or without AMD loaders
       # on Web & nodejs as a plain `<script>` or `require('dep')`
       dev:
-        template: 'combined'
+        template:
+          name: 'combined'
+          # template.debugLevel (0-30) writes comments
+          # while adding the sections of modules.
+          # With ridiculous high values 100+ it adds `console.log`s!
+          # Experimental and alpha!
+          debugLevel: 20 # just comment sections
 
-        # template: 'combined' requires a 'main' module.
-        # if 'main' is missing, then main is assumed to be `bundleName`,
-        # which in turn is assumed to be grunt's @target ('dev' in this case).
-        # Having 'dev' as the bundle.name/main, but no 'dev' module (or 'index' or 'main')
-        # will cause a compilation error. Its better to be precise anyway,
-        # in case this config is used outside grunt :-)
-        main: 'uberscore'
-
-        # the name of the combined file instead of a directory is needed for 'combined'
+        # the name of the combined file instead of a directory
+        # is needed for 'combined' template. Otherwise a `.js` is added
         dstPath: './build/dist/uberscore-dev.js'
 
-
       # The `'urequire:min'` task :
-      #  * derives all from 'dev' (& '_defaults') with the following differences:
+      #  * derives all from 'dev' (& '_defaults') with the following diffs:
       #  * filters some more `filez`
-      #  * converts to a single `uberscore-min.js` with `combined` template (r.js/almond)
+      #  * converts to a single `uberscore-min.js` with `combined` template
       #  * uglifies the combined file with some `uglify2` settings
       #  * injects different deps in each module
       #  * manipulates each module:
@@ -192,7 +184,6 @@ gruntFunction = (grunt) ->
 
         ## 'override' this property
         dstPath: './build/dist/uberscore-min.js'
-
         # Lets optimize / minify the result
         # Doesn't have to be a String. `true` selects 'uglify2' with sane defaults.
         # It can also be 'uglify'.
@@ -200,15 +191,17 @@ gruntFunction = (grunt) ->
         # the r.js way (https://github.com/jrburke/r.js/blob/master/build/example.build.js)
         # eg optimize: {uglify2: output: beautify: true}
         optimize: 'uglify2'
-
         # leave this file out (`filez` inherits its parent's `filez`, adding this spec)
         filez: ['!blending/deepExtend.coffee']
 
         resources: [
+          # An RC with the `isBeforeTemplate` '+' flag, which runs ONLY on Modules.
+          # It enables you do manipulate the module's body & dependencies.
+          # Note: The `m.converted` or the result from `convert()`
+          # ARE NOT considered in `isBeforeTemplate` RCs,
+          # we are dealing with AST code & Module dependencies only.
           [
-            # An RC with the `isBeforeTemplate` '+' flag, runs ONLY on Modules
             '+remove:debug/deb & deepExtend'
-
             # All filez considered
             [/./]
 
@@ -225,45 +218,108 @@ gruntFunction = (grunt) ->
               # Remove `deepExtend` key & dependency from this build
               # Since this RC runs on all Modules, limit to this one for efficiency
               if m.dstFilename is 'uberscore.js'
-
                 # remove property/key `deepExtend: ...` from 'uberscore.js'
                 m.replaceCode {type: 'Property', key: {type: 'Identifier', name: 'deepExtend'}}
-
                 # actually remove dependency from all (resolved) arrays (NOT THE AST CODE).
                 m.replaceDep 'blending/deepExtend'
-
                 # With `isBeforeTemplate` rcs you can also :
                 #   m.injectDeps {'deps/dep1': ['depVar1', 'depVar2'], ....}
                 #   m.replaceDep 'types/type', 'types/myType'
           ]
         ]
 
-      # uRequire-ing the specs: we also have two builds as 'UMD' & # as 'combined'
+      # uRequire-ing the specs
+      # We also have two builds as 'UMD' & as 'combined'
       spec:
-
         # disable derive-ing from '_defaults'
         derive: []
+        debugLevel: 0
         path: "#{sourceSpecDir}"
-        copy: [/./]
+        copy: [/./] # copy html's, requirejs.config.json et.all
         dstPath: "#{buildSpecDir}"
+        commonCode: # we only need this once on each module
+          "var expect = chai.expect; // injected @ `spec: bundle: commonCode`."
 
         # declarativelly inject these dependencies on all modules
+        # @note: it gets really interesting on the `specCombined`:
+        #   the deps are NOT injected in each module
+        #   but their vars are available through the closure
         dependencies: exports: bundle:
           chai: 'chai'
-          lodash: '_'
-          'uberscore': '_B'
+          lodash: ['_']
+          uberscore: ['_B']
+          specHelpers: 'specHelpers'
           'spec-data': 'data'
+
+        resources:[
+          # `import`ing another module's `exports`
+          #
+          # `specHelpers` exports an object with
+          # `equal`, `notEqual`,`ok`, `notOk` etc,
+          # whose keys we want to import as
+          # plain `var`s on each module of this bundle.
+          #
+          # We define 'specHelpers-imports', as a
+          # fragment of code *header* that does that.
+          #
+          # We then use `module.mergedCode` (instead of
+          # `Bundle.commonCode` or Module.beforeBody),
+          # cause when the specs are 'combined' we want to
+          # have these statements merged, and included
+          # **only once** to save space & speed.
+          #
+          # Also, each module is injected an `var l`,
+          # unique to each module, holding a _B.Logger
+          # instance with the module's name.
+          [ '+injectSpecCommons'
+            ['**/*.js']
+            (m)->
+
+              # Each module, will get injected its own _B.Logger instance
+              m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"
+
+              # injecting `mergedCode`
+              # All modules will get need this same code,
+              # injected on each module on UMD, AMD etc templates,
+              # merged in one section for `combined` template.
+
+              # should not add `imports` on the `export`ing module
+              if (m.dstFilename isnt 'specHelpers.js')
+                m.mergedCode =
+                  # looking for the module "specHelpers-imports",
+                  # which is of course loaded on our bundle
+                  # (every module belongs to the bundle)
+                  # and converted from coffee to js.
+                  if specHelpersImports = (
+                    _.find m.bundle.modules, (mod)->
+                      mod.path is 'specHelpers-imports'
+                  )
+                    specHelpersImports.factoryBody
+                  else
+                    throw new Error "specHelpers-imports not found"
+
+              # return nothing on `isBeforeTemplate` RCs
+              null
+          ]
+        ]
+
 
       # deep inherits all of 'spec' BUT none of '_defaults':-)
       specCombined:
         derive: ['spec']
         dstPath: "#{buildSpecDir}_combined/index-combined.js"
-        template: 'combined'
+        template:
+          name: 'combined'
+          debugLevel: 20 # just comment sections
+          # `combinedFile` not needed, it defaults to `dstPath`
+          # combinedFile: "#{buildSpecDir}_combined/index-combined.js"
 
-        # 'main' not needed: if `bundle.main` is undefined it defaults to `bundle.bundleName`
-        # or 'index' or 'main' (whichever found 1st as a module on bundleRoot)
+        # Template combined requires `main`,
+        # but its not needed here, its infered:
+        # if `bundle.main` is undefined it defaults to `bundle.name`
+        # or 'index' or 'main' (whichever found 1st as a module)
         # with the price of a warning! In spec's case, THERE IS a module
-        # 'index.coffee' which is picked (with the price of a warning).
+        # 'index.js' which is picked.
         #main: 'index'
 
       ### Examples showing off uRequire ###
@@ -289,44 +345,37 @@ gruntFunction = (grunt) ->
         #  and then used as input to rjs.optimize which picks only dependent ones.
         #  http://github.com/anodynos/uRequire/issues/28
         template: 'combined'
-
         # export the module on `window._L`, # with a `noConflict()` baked in
         dependencies: exports: root: 'Logger':'_L'
-
         # minify it with uglify2
         optimize: true
-
         dstPath: 'build/Logger-min.js'
 
       # EXAMPLE: replace a bundle dependency with another, perhaps a mock
       UMDplainReplaceDep:
         # 'UMDplain' template - no dependency on uRequire's NodeRequirer on nodejs
         template: "UMDplain"
-
         # save to this destination path
         dstPath: "build/UMDplainReplaceDep"
-
         resources: [
-
           # first, create our hypothetical mock out of an existing module
           [ # a title with default flags
             "rename to 'types/isHashMock.js'"
-
             # a self descriptive RC.filez :-)
             ['types/isHash.js']
-
             # undefined `convert()` function - we only need to change the filename
             undefined
 
-            # convFilame is a String: the `dstFilename` will change to that, and all modules
-            # in bundle will noe know this resource/module by its new name (AND NOT the old)
+            # convFilame is a String: the `dstFilename` will change to that,
+            # and all modules in bundle will now know this resource/module
+            # by its new name (AND NOT the old)
             'types/isHashMock.js'
           ]
 
           # lets replace our dep
-          [ # `isBeforeTemplate` flag '+', running on Modules only, just before Template is applied
+          [ # `isBeforeTemplate` flag '+', running on Modules only,
+            # just before Template is applied
             "+replace dependency 'types/isHash'"
-
             # run all on all matching `bundle.filez` (in all modules due to `isBeforeTemplate`)
             [/./]
 
@@ -339,11 +388,9 @@ gruntFunction = (grunt) ->
       AMDunderscore:
         template: 'AMD'
         dstPath: "build/AMDunderscore"
-
         # defaults have a ['lodash',..]` - it will complain about 'lodash's
         # var binding, so use the '{dep: 'varName'} format
         dependencies: exports: bundle: 'lodash': '_'
-
         resources: [
           # although we inject 'lodash' in each module, change it
           # in modules  that still specifically may require it
@@ -364,43 +411,39 @@ gruntFunction = (grunt) ->
         derive: ['AMDunderscore', '_defaults']
         template: 'UMDplain'
         dstPath: "build/UMDunderscore"
+        optimize: true
 
       # EXAMPLE: marking as Resources, changing behaviors
       nodejsCompileAndCopy:
         template: 'nodejs'
+        # the items in filez are concated AFTER the items
+        # of inherited configs (i.e _defaults in this case)
         filez: ['uRequireConfig*.*']
         dstPath: "build/nodejsCompileAndCopy"
-
         # the default is to enclose in IFI, even for nodejs template
         # here we change default behavior
         bare: true
-
         # disable adding __isAMD, __isWeb & __isNode variables
         # if your code doesnt depend on them
         runtimeInfo: false
-
         # marking resources examples
         resources: [
-
-          # EXAMPLE: compile a .coffee to .js, but dont treat it as a Module
-          # marking a .coffee as 'TextResource' ('#' flag) is enough to compile as .js,
-          # but exclude it from becoming a Module (i.e no UMD/AMD template is applied)
+          # EXAMPLE: compile a .coffee to .js, but dont treat as Module
+          # marking a .coffee as 'TextResource' ('#' flag) compiles as .js,
+          # but excludes from bing a Module (i.e no UMD/AMD template is applied)
           [ "#~markAsTextResource", ["uRequireConfig.coffee"] ]
 
           # read file content, alter it & save under different name
           [
             # Mark as a FileResource - its content is not read on refresh
             "@markAsFileResource"
-
             # matching `filez` for this RC is just one file
             ["uRequireConfig_UMDBuild.json"]
-
             # `convert()` function
             (r)->
-
-              # calling read() on the resource read its content, using @srcFilename within `bundle.path`
+              # calling read() on the resource read its content,
+              # using @srcFilename within `bundle.path`
               content = '\n' + r.read()
-
               # save() under a different name (relative to bundle.path) & changed content
               r.save 'changedBundleFileName.json', content
           ]
@@ -427,43 +470,30 @@ gruntFunction = (grunt) ->
         # atBegin: true
 
     shell:
-      mochaCmd: command: "node_modules/.bin/mocha #{buildSpecDir}/index --recursive" # --reporter spec"
-      mochaCmdDev: command: "node_modules/.bin/mocha #{buildSpecDir}_combined/index-combined --recursive" # --reporter spec"
-      doc: command: "codo #{sourceDir} --title 'uberscore <%= pkg.version %> API documentation' --cautious"
-      run: command: "node_modules/.bin/coffee source/examples/runExample.coffee"
+      mochaCmd: command: "node_modules#{S}.bin#{S}mocha #{buildSpecDir}/index --recursive " #--reporter spec"
+      mochaCmdDev: command: "node_modules#{S}.bin#{S}mocha #{buildSpecDir}_combined/index-combined --recursive " #--reporter spec"
+      #doc: command: "node_modules#{S}.bin#{S}codo #{sourceDir} --title 'uberscore <%= pkg.version %> API documentation' --cautious"
+      run: command: "node_modules#{S}.bin#{S}coffee source/examples/runExample.coffee"
       options: {verbose: true, failOnError: true, stdout: true, stderr: true}
 
     mocha:
       plainScript:
         src: [
           'build/spec/SpecRunner_almondJs_noAMD_plainScript.html'
-          'build/spec/SpecRunner_almondJs_noAMD_plainScript_min.html'
-        ]
+          'build/spec/SpecRunner_almondJs_noAMD_plainScript_min.html']
         options: run: true
-
       AMD:
         src: [
           'build/spec/SpecRunner_unoptimized_AMD.html'
-          'build/spec/SpecRunner_almondJs_AMD.html'
-        ]
+          'build/spec/SpecRunner_almondJs_AMD.html']
 
     concat:
-      'dev':
-        options: banner: "<%= meta.banner %>"
-        src: ['<%= options.distDir %>/uberscore-dev.js']
-        dest: '<%= options.distDir %>/uberscore-dev.js'
-
-      'min':
-        options: banner: "<%= meta.bannerMin %>"
-        src: ['<%= options.distDir %>/uberscore-min.js']
-        dest: '<%= options.distDir %>/uberscore-min.js'
-
-      'specCombinedFakeModule':
+      specCombinedFakeModule:
         options: banner: '{"name":"uberscore", "main":"../../../dist/uberscore-dev.js"}'
         src:[]
         dest: 'build/spec_combined/node_modules/uberscore/package.json'
 
-      'specCombinedFakeModuleMin':
+      specCombinedFakeModuleMin:
         options: banner: '{"name":"uberscore", "main":"../../../dist/uberscore-min.js"}'
         src:[]
         dest: 'build/spec_combined/node_modules/uberscore/package.json'
@@ -476,18 +506,18 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
      "default":   "build test dev testDev min testMin run"
-     "release":   "build test dev testDev min testMin mocha urequire:AMD urequire:AMDunderscore run"
+     "release":   "clean build test dev testDev min testMin mocha urequire:AMD urequire:AMDunderscore run"
      "examples":  "urequire:AMD urequire:AMDunderscore urequire:UMDplainReplaceDep urequire:UMDunderscore urequire:nodejsCompileAndCopy"
-     "all":       "build test dev testDev min testMin mocha examples run"
+     "all":       "clean build test dev testDev min testMin mocha examples run"
      "build":     "urequire:UMD"
-     "dev":       "urequire:dev concat:dev"
-     "min":       "urequire:min concat:min"
+     "dev":       "urequire:dev"
+     "min":       "urequire:min"
 
      "test":      "urequire:spec mochaCmd"
      "testDev":   "urequire:specCombined concat:specCombinedFakeModule mochaCmdDev"
      "testMin":   "concat:specCombinedFakeModuleMin mochaCmdDev"
 
-    # generic shortcuts
+     # generic shortcuts
      "cl":      "clean"
      "b":       "build"
      "d":       "dev"

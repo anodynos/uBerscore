@@ -1,6 +1,3 @@
-assert = chai.assert
-expect = chai.expect
-
 O1 = o1 = p1:1
 o2 = p2:2
 o3 = p3:3

@@ -1,11 +1,3 @@
-chai = require 'chai'
-assert = chai.assert
-expect = chai.expect
-
-_ = require 'lodash'
-_B = require 'uberscore' #
-data = require '../spec-data'
-
 compiledFiles = /.*\.(coffee|iced|coco)$/i
 jsFiles = /.*\.(js|javascript)$/i
 

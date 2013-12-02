@@ -1,6 +1,3 @@
-assert = chai.assert
-expect = chai.expect
-
 # @todo: use data + more examples
 
 describe 'mutate :', ->

@@ -1,7 +1,3 @@
-chai = require 'chai'
-assert = chai.assert
-expect = chai.expect
-
 describe "Logger debug():", ->
 
   describe "simple cases, no maxDebugLevel or pathLevels", ->

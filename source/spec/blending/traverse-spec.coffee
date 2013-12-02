@@ -1,6 +1,3 @@
-assert = chai.assert
-expect = chai.expect
-
 # @todo: spec properly - this is lame
 describe 'traverse:', ->
   o =

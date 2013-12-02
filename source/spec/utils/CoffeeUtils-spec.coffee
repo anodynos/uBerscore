@@ -1,9 +1,6 @@
-chai = require 'chai'
-assert = chai.assert
-expect = chai.expect
-
-_ = require 'lodash'
-_B = require 'uberscore'
+#
+#_ = require 'lodash'
+#_B = require 'uberscore'
 
 describe "Get classes of inherited classes", ->
   class OtherClass extends _B.CoffeeUtils

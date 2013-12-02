@@ -1,7 +1,4 @@
-assert = chai.assert
-expect = chai.expect
-
-describe 'Blender & DeepCloneBlender:', ->
+define -> describe 'Blender & DeepCloneBlender:', ->
 
   describe 'Internals: blender.adjustBlenderBehavior:', ->
   

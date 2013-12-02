@@ -1,5 +1,3 @@
-assert = chai.assert
-expect = chai.expect
 
 { objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues
 
