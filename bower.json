@@ -16,5 +16,11 @@
   ],
   "dependencies": {
     "lodash": "*"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "requirejs": "*",
+    "underscore": "*"
   }
 }

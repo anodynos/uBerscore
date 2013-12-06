@@ -176,7 +176,7 @@ class Logger
   debug: @::deb #alias
 
   @prettify:
-    if (__isNode? and __isNode) or not __isNode?
+    if (__isNode? and __isNode) #or not __isNode?
       do (inspect = (require 'util').inspect)-> # 'util' node-only execution via urequire config `bundle.dependencies.node`. ALternative is `require(node!util)`
 
         nodeVerLE_092 = do -> #check if nodejs version is <=0.9.2

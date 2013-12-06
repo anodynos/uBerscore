@@ -1,11 +1,12 @@
 
 # Push all items of `src[prop]` array to the `dst[prop]` array (when these are not in dst[prop] already).
 # If either src[prop] or dst[prop] aren't arrays, they are `arrayize`'d first.
-# @options unique : are unique array items enforced onto the array ?
-#                   false: all items are added.
-#                   true: all === items are not pushed.
-#                   Function (a,b){} : items where unique(a, b) is truthy are not pushed @todo: NOT IMPLEMETED
+# @options unique : only unique array items enforced onto the array
+#   false: all items are added.
+#   true: all === items are not pushed.
+#   Function (a,b){} : items where unique(a, b) is truthy are not pushed @todo: NOT IMPLEMETED
 
+# @todo: rename to ArrayizeBlender, adding `concat` and similar array actions
 define ['require', 'exports', 'module', 'collections/array/arrayize'],
   (require, exports, module, arrayize)->
     class ArrayizePushBlender extends (require './DeepCloneBlender')
@@ -32,6 +33,6 @@ define ['require', 'exports', 'module', 'collections/array/arrayize'],
             else
               srcArray                                      # add 'em all
 
-          dstArray.push v for v in itemsToPush
+          dstArray.push v for v in itemsToPush # @todo: should concat be used? Its a waste of an []
           dstArray
           #_B.Blender.SKIP # no need to assign, we mutated dst[prop] #todo: needed or not ?

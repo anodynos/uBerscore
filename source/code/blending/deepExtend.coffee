@@ -17,21 +17,28 @@
 # - copying Function over Object should replace it first
 # todo DEPRACATE it, once Blender is in place!
 
-# THis file is a wild testbed for uRequire!
+# *** This file is a wild testbed for uRequire! ***
+# Its removed from min build
 
 loggerPath = './../'  # uRequire : testing with 'weird' & untrusted dependencies
 
 define ['require', 'exports', 'module', loggerPath + 'Logger'],
   (require, exports, module, Logger, dummy_param, another_dummy_param)-> # uRequire : testing uRequire require, exports, module trio
 
-    _lodash_ = require 'lodash'            # uRequire : combined template must ignore these vars
-    uberscore = require 'uberscore'        # >>>
+    ### START uRequire bed testing ###
+
+    _lodash_ = require 'lodash'            # uRequire : combined template must ignore this var, and use '_'  declared in exports.bundle
+
+    uberscore = require 'uberscore'        # Just for testing - two cases with this:
+                                           # a) OK: uberscore.coffee is declared as nodejs module, having `exports, module` as deps
+                                           # b) Error: `Module name "uberscore" has not been loaded yet for context: _`, if uberscore.coffee is defined as AMD, without `exports, module` deps.
 
     isHash = require './../types/./isHash' # uRequire : use non-normalized fileRelative to demonstrate replaceDep recognises it
     isHash2 = require 'types/./isHash'     # uRequire : use non-normalized bundleRelative to demonstrate it not added again & replaceDep recognises it
+    ### END uRequire bed testing ###
+
 
     l = new Logger 'uberscore/Blender'
-
 
     shadowed = [
       'constructor'

@@ -1,32 +1,20 @@
-# devDependencies: { grunt: '0.4.1', urequire: '0.6.8' }
+# devDependencies: { grunt: '0.4.1', urequire: '>=0.6.8' }
 _ = require 'lodash'
 
 sourceDir     = "source/code"
-buildDir      = "build/UMD"
-distDir       = "build/dist"
+buildDir      = "build"
 sourceSpecDir = "source/spec"
 buildSpecDir  = "build/spec"
 
-# OS directory separator
-S = if process.platform is 'win32' then '\\' else '/'
+S = if process.platform is 'win32' then '\\' else '/' # OS directory separator
+nodeBin       = "node_modules#{S}.bin#{S}"            # run from local node_modules,
 
 gruntFunction = (grunt) ->
   pkg = grunt.file.readJSON('package.json')
 
-  banner = """
-     /**
-      * #{ pkg.name } - version #{ pkg.version }
-      * Compiled on #{ grunt.template.today("yyyy-mm-dd h:MM:ss") }
-      * #{ pkg.repository.url }
-      * Copyright(c) #{ grunt.template.today("yyyy") } #{ pkg.author.name } (#{ pkg.author.email } )
-      * Licensed #{ pkg.licenses[0].type } #{ pkg.licenses[0].url }
-      */\n"""
-
   gruntConfig =
-    options: {sourceDir, buildDir, sourceSpecDir, buildSpecDir, distDir}
 
     ### NOTE: uRequire config is used as a testbed & example, thus so many comments :-) ###
-
     # The `'urequire:XXX'` tasks in summary do some or all of those
     #  * derive (inherit) from 'someTask' (and/or '_defaults')
     #  * have a `path` as a source
@@ -52,24 +40,26 @@ gruntFunction = (grunt) ->
         bundle:
           path: "#{sourceDir}"
           # include all but exclude some filez
-          filez: [/./, '!**/draft/*.*', '!uRequireConfig*']
+          filez: [/./, '!**/draft/*', '!uRequireConfig*']
           # 2 ways to say "I want all non-`resource` matched filez to
           # be copied to build.dstPath"
-          copy: [/./, '**/*.*']
+          copy: [/./, '**/*']
           dependencies:
             # 'util' wont be added to AMD deps, will be available only
             # on nodejs execution. Same as 'node!myDep', but allows module
             # to run on nodejs without conversion. Not really need,
             # `node` defaults to all known 'nodejs' core packages
-            node: 'util'
+            node: ['util'] #, 'when/node/function']
             # export to bundle (i.e inject some deps to all modules)
             exports: bundle:
               # simple syntax: depsVars infered from dep/variable bindings
               # of bundle or other known sources
               #['lodash', 'agreement/isAgree']
-              # precise syntax: deps & their corresponding vars
-              'lodash': ['_'],
-              'agreement/isAgree': ['isAgree', 'isAgree2']
+              # precise syntax: deps & their corresponding var(s)
+              lodash: ['_']
+              'agreement/isAgree': ['isAgree'] # with [] or not, the same result
+
+            #locals: 'when'
 
           # define some Resource Converters, common to all tasks
           resources: [
@@ -113,16 +103,37 @@ gruntFunction = (grunt) ->
           # just some settings for the code generation
           template:
             # contents of banner are added as-is before `bundle.main`
-            banner: banner
+            banner: """
+             /**
+              * #{ pkg.name } - version #{ pkg.version }
+              * Compiled on #{ grunt.template.today("yyyy-mm-dd h:MM:ss") }
+              * #{ pkg.repository.url }
+              * Copyright(c) #{ grunt.template.today("yyyy") } #{ pkg.author.name } (#{ pkg.author.email } )
+              * Licensed #{ pkg.licenses[0].type } #{ pkg.licenses[0].url }
+              */\n"""
+            debugLevel: 0
 
           # the following can be truethy/falsy or array of filez specs
           globalWindow: false # default is true
           # runtimeInfo defaults to true - we disable on all but one
-          runtimeInfo: ['!**/*', 'Logger.js']
+          runtimeInfo: ['Logger']
           # debugLevel of the build process, default is 0, max is 100
           debugLevel: 0
           # verbose default is `false`, auto enabled if debugLevel >= 50
           verbose: false
+
+          # inject 'use strict;' only on this module (on all templates)
+          # just for the sake of the example
+          # if `true` was used, it would inject on all modules
+          # but only once on 'combined' template
+          # If this was in a child config, we clean it with '!**/*' or a [null]
+          useStrict: ['!**/*', 'uberscore']
+
+          # Used only on AMD modules, if you need to use
+          # exports to solve [circular dependencies problems](http://requirejs.org/docs/api.html#circular)          #
+          # Can be left as the default (true)
+          # but lets be 'lean' and use only where needed
+          injectExportsModule: ['uberscore']
 
       # The `'urequire:UMD'` task:
       #  * derives all from `'_defaults'` with the following diffs:
@@ -140,13 +151,13 @@ gruntFunction = (grunt) ->
 
         template: 'UMDplain'
         # all files converted files are written here
-        dstPath: "#{buildDir}"
+        dstPath: "#{buildDir}/UMD"
 
       # Example: beautiful AMD code,
       # using github.com/mishoo/UglifyJS2 optimization
       AMD:
         template: 'AMD'
-        dstPath: "build/AMD"
+        dstPath: "#{buildDir}/AMD"
         optimize: uglify2:
           output: beautify: true
           compress: false
@@ -161,11 +172,11 @@ gruntFunction = (grunt) ->
           # while adding the sections of modules.
           # With ridiculous high values 100+ it adds `console.log`s!
           # Experimental and alpha!
-          debugLevel: 20 # just comment sections
+          #debugLevel: 20 # just comment sections
 
         # the name of the combined file instead of a directory
         # is needed for 'combined' template. Otherwise a `.js` is added
-        dstPath: './build/dist/uberscore-dev.js'
+        dstPath: "#{buildDir}/dist/uberscore-dev.js"
 
       # The `'urequire:min'` task :
       #  * derives all from 'dev' (& '_defaults') with the following diffs:
@@ -183,7 +194,7 @@ gruntFunction = (grunt) ->
         derive: ['dev', '_defaults']
 
         ## 'override' this property
-        dstPath: './build/dist/uberscore-min.js'
+        dstPath: "#{buildDir}/dist/uberscore-min.js"
         # Lets optimize / minify the result
         # Doesn't have to be a String. `true` selects 'uglify2' with sane defaults.
         # It can also be 'uglify'.
@@ -310,7 +321,7 @@ gruntFunction = (grunt) ->
         dstPath: "#{buildSpecDir}_combined/index-combined.js"
         template:
           name: 'combined'
-          debugLevel: 20 # just comment sections
+          #debugLevel: 20 # just comment sections
           # `combinedFile` not needed, it defaults to `dstPath`
           # combinedFile: "#{buildSpecDir}_combined/index-combined.js"
 
@@ -329,11 +340,11 @@ gruntFunction = (grunt) ->
       #  `$ urequire config source/code/uRequireConfig.coffee -o ./build/UMDFileConfigBuild -t UMD`
       fileConfig:
         # note: not deriving at all from '_defaults', unless its specified.
-        derive: ['source/code/uRequireConfig.coffee']
+        derive: ["#{sourceDir}/code/uRequireConfig.coffee"]
 
         # overriding some of its parent (config file) options
         template: 'UMD'
-        dstPath: 'build/UMDFileConfigBuild'
+        dstPath: "#{buildDir}/UMDFileConfigBuild"
 
       # EXAMPLE: building only a sub-tree of the whole bundle.
       Logger:
@@ -349,14 +360,14 @@ gruntFunction = (grunt) ->
         dependencies: exports: root: 'Logger':'_L'
         # minify it with uglify2
         optimize: true
-        dstPath: 'build/Logger-min.js'
+        dstPath: "#{buildDir}/Logger-min.js"
 
       # EXAMPLE: replace a bundle dependency with another, perhaps a mock
       UMDplainReplaceDep:
         # 'UMDplain' template - no dependency on uRequire's NodeRequirer on nodejs
         template: "UMDplain"
         # save to this destination path
-        dstPath: "build/UMDplainReplaceDep"
+        dstPath: "#{buildDir}/UMDplainReplaceDep"
         resources: [
           # first, create our hypothetical mock out of an existing module
           [ # a title with default flags
@@ -387,7 +398,7 @@ gruntFunction = (grunt) ->
       # EXAMPLE: replace a global dependency, whether existing in module code
       AMDunderscore:
         template: 'AMD'
-        dstPath: "build/AMDunderscore"
+        dstPath: "#{buildDir}/AMDunderscore"
         # defaults have a ['lodash',..]` - it will complain about 'lodash's
         # var binding, so use the '{dep: 'varName'} format
         dependencies: exports: bundle: 'lodash': '_'
@@ -410,7 +421,7 @@ gruntFunction = (grunt) ->
       UMDunderscore:
         derive: ['AMDunderscore', '_defaults']
         template: 'UMDplain'
-        dstPath: "build/UMDunderscore"
+        dstPath: "#{buildDir}/UMDunderscore"
         optimize: true
 
       # EXAMPLE: marking as Resources, changing behaviors
@@ -418,8 +429,8 @@ gruntFunction = (grunt) ->
         template: 'nodejs'
         # the items in filez are concated AFTER the items
         # of inherited configs (i.e _defaults in this case)
-        filez: ['uRequireConfig*.*']
-        dstPath: "build/nodejsCompileAndCopy"
+        filez: ['uRequireConfig*']
+        dstPath: "#{buildDir}/nodejsCompileAndCopy"
         # the default is to enclose in IFI, even for nodejs template
         # here we change default behavior
         bare: true
@@ -428,7 +439,9 @@ gruntFunction = (grunt) ->
         runtimeInfo: false
         # marking resources examples
         resources: [
-          # EXAMPLE: compile a .coffee to .js, but dont treat as Module
+          # EXAMPLE
+
+          # compile a .coffee to .js, but dont treat as Module
           # marking a .coffee as 'TextResource' ('#' flag) compiles as .js,
           # but excludes from bing a Module (i.e no UMD/AMD template is applied)
           [ "#~markAsTextResource", ["uRequireConfig.coffee"] ]
@@ -451,15 +464,15 @@ gruntFunction = (grunt) ->
 
     watch:
       UMD:
-        files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*"]  # note: new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
+        files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]  # note: new subdirs dont work - https://github.com/gruntjs/grunt-contrib-watch/issues/70
         tasks: ['urequire:UMD' , 'urequire:spec', 'mocha']
 
       dev:
-        files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*"]
+        files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
         tasks: ['urequire:dev', 'urequire:specCombined', 'concat:specCombinedFakeModule', 'mochaCmdDev']
 
       min:
-        files: ["#{sourceDir}/**/*.*", "#{sourceSpecDir}/**/*.*"]
+        files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
         tasks: ['urequire:min', 'urequire:specCombined', 'concat:specCombinedFakeModuleMin', 'mochaCmdDev', 'run']
 
       options:
@@ -470,65 +483,67 @@ gruntFunction = (grunt) ->
         # atBegin: true
 
     shell:
-      mochaCmd: command: "node_modules#{S}.bin#{S}mocha #{buildSpecDir}/index --recursive " #--reporter spec"
-      mochaCmdDev: command: "node_modules#{S}.bin#{S}mocha #{buildSpecDir}_combined/index-combined --recursive " #--reporter spec"
-      #doc: command: "node_modules#{S}.bin#{S}codo #{sourceDir} --title 'uberscore <%= pkg.version %> API documentation' --cautious"
-      run: command: "node_modules#{S}.bin#{S}coffee source/examples/runExample.coffee"
+      mochaCmd: command: "#{nodeBin}mocha #{buildSpecDir}/index --recursive " #--reporter spec"
+      mochaCmdDev: command: "#{nodeBin}mocha #{buildSpecDir}_combined/index-combined --recursive " #--reporter spec"
+      #doc: command: "#{nodeBin}codo #{sourceDir} --title 'uberscore <%= pkg.version %> API documentation' --cautious"
+      run: command: "#{nodeBin}coffee source/examples/runExample.coffee"
       options: {verbose: true, failOnError: true, stdout: true, stderr: true}
 
     mocha:
       plainScript:
         src: [
-          'build/spec/SpecRunner_almondJs_noAMD_plainScript.html'
-          'build/spec/SpecRunner_almondJs_noAMD_plainScript_min.html']
+          "#{buildSpecDir}/SpecRunner_almondJs_noAMD_plainScript.html"
+          "#{buildSpecDir}/SpecRunner_almondJs_noAMD_plainScript_min.html"]
         options: run: true
       AMD:
         src: [
-          'build/spec/SpecRunner_unoptimized_AMD.html'
-          'build/spec/SpecRunner_almondJs_AMD.html']
+          "#{buildSpecDir}/SpecRunner_unoptimized_AMD.html"
+          "#{buildSpecDir}/SpecRunner_almondJs_AMD.html"]
 
     concat:
       specCombinedFakeModule:
         options: banner: '{"name":"uberscore", "main":"../../../dist/uberscore-dev.js"}'
         src:[]
-        dest: 'build/spec_combined/node_modules/uberscore/package.json'
+        dest: "#{buildSpecDir}_combined/node_modules/uberscore/package.json"
 
       specCombinedFakeModuleMin:
         options: banner: '{"name":"uberscore", "main":"../../../dist/uberscore-min.js"}'
         src:[]
-        dest: 'build/spec_combined/node_modules/uberscore/package.json'
+        dest: "#{buildSpecDir}_combined/node_modules/uberscore/package.json"
 
-    clean: files: ["build/**/*.*"]
+    clean: files: ["#{buildDir}"]
 
   ### shortcuts generation ###
-  splitTasks = (tasks)-> if !_.isString tasks then tasks else (_.filter tasks.split(' '), (v)-> v)
-  grunt.registerTask cmd, splitTasks "shell:#{cmd}" for cmd of gruntConfig.shell # shortcut to all "shell:cmd"
+  splitTasks = (tasks)-> if !_.isString tasks then tasks else (_.filter tasks.split(/\s/), (v)-> v)
+
+  for task in ['shell', 'urequire'] # shortcut to all "shell:cmd, urequire:UMD" etc
+    for cmd of gruntConfig[task]
+      grunt.registerTask cmd, splitTasks "#{task}:#{cmd}"
+
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
-     "default":   "build test dev testDev min testMin run"
-     "release":   "clean build test dev testDev min testMin mocha urequire:AMD urequire:AMDunderscore run"
-     "examples":  "urequire:AMD urequire:AMDunderscore urequire:UMDplainReplaceDep urequire:UMDunderscore urequire:nodejsCompileAndCopy"
-     "all":       "clean build test dev testDev min testMin mocha examples run"
-     "build":     "urequire:UMD"
-     "dev":       "urequire:dev"
-     "min":       "urequire:min"
+     default:   "build test dev testDev min testMin run"
+     release:   "clean build test dev testDev min testMin mocha urequire:AMD urequire:AMDunderscore run"
+     examples:  "urequire:AMD urequire:AMDunderscore urequire:UMDplainReplaceDep urequire:UMDunderscore urequire:nodejsCompileAndCopy"
+     all:       "clean  build test dev testDev min testMin mocha examples run"
+     build:     "urequire:UMD"
 
-     "test":      "urequire:spec mochaCmd"
-     "testDev":   "urequire:specCombined concat:specCombinedFakeModule mochaCmdDev"
-     "testMin":   "concat:specCombinedFakeModuleMin mochaCmdDev"
+     test:      "urequire:spec mochaCmd"
+     testDev:   "urequire:specCombined concat:specCombinedFakeModule mochaCmdDev"
+     testMin:   "concat:specCombinedFakeModuleMin mochaCmdDev"
 
      # generic shortcuts
-     "cl":      "clean"
-     "b":       "build"
-     "d":       "dev"
-     "dm":      "min"
-     "m":       "mochaCmd"
-     "md":      "mochaCmdDev"
-     "t":       "test"
-     "td":      "testDev"
-     "tm":      "testMin"
-     "wu":      "clean watch:UMD"
-     "wd":      "clean watch:dev"
+     cl:      "clean"
+     b:       "build"
+     d:       "dev"
+     dm:      "min"
+     m:       "mochaCmd"
+     md:      "mochaCmdDev"
+     t:       "test"
+     td:      "testDev"
+     tm:      "testMin"
+     wu:      "clean watch:UMD"
+     wd:      "clean watch:dev"
 
      # IDE shortcuts
      "alt-c": "cp"
