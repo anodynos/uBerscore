@@ -3,6 +3,7 @@
   "version": "0.0.15",
   "main": "build/dist/uberscore-dev.js",
   "ignore": [
+    "source",
     "Gruntfile.coffee",
     "node_modules",
     "bower_components",
@@ -12,7 +13,10 @@
     "build/nodejsCompileAndCopy",
     "build/spec_combined",
     "build/spec",
-    "build/UMDunderscore"
+    "build/UMDunderscore",
+    ".gitignore",
+    ".npmignore",
+    "travis.yml"
   ],
   "dependencies": {
     "lodash": "*"
