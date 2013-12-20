@@ -93,10 +93,10 @@ getp = (o, path, options = defaultOptions)->
         o = returnWithTerminator
         break
 
-    if o[p] isnt undefined
-      o = o[p]
+    if (op = o[p]) isnt undefined # read only once
+      o = op
     else
-      if options.stopKey and o[options.stopKey] isnt undefined
+      if options.stopKey and (o[options.stopKey] isnt undefined)
         o = o[options.stopKey]
         break
       else

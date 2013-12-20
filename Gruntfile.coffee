@@ -135,6 +135,8 @@ gruntFunction = (grunt) ->
           # but lets be 'lean' and use only where needed
           injectExportsModule: ['uberscore']
 
+          clean: true #['**/*']
+
       # The `'urequire:UMD'` task:
       #  * derives all from `'_defaults'` with the following diffs:
       #  * converts each module in `path` to UMD
@@ -189,8 +191,8 @@ gruntFunction = (grunt) ->
       #     * replaces some deps in arrays, `require`s etc
       #     * removes some code and a dependency from a specific file.
       min:
-        # derive, just for the example
-        # we need to specify also '_defaults', in this order.
+        # derive, from dev
+        # we need to specify '_defaults', in this order.
         derive: ['dev', '_defaults']
 
         ## 'override' this property
@@ -232,19 +234,21 @@ gruntFunction = (grunt) ->
                 # remove property/key `deepExtend: ...` from 'uberscore.js'
                 m.replaceCode {type: 'Property', key: {type: 'Identifier', name: 'deepExtend'}}
                 # actually remove dependency from all (resolved) arrays (NOT THE AST CODE).
-                m.replaceDep 'blending/deepExtend'
+                m.replaceDep 'blending/deepExtend'#, null, relative: 'bundle'
                 # With `isBeforeTemplate` rcs you can also :
                 #   m.injectDeps {'deps/dep1': ['depVar1', 'depVar2'], ....}
                 #   m.replaceDep 'types/type', 'types/myType'
           ]
         ]
 
+        # we can (cautiously) provide some rjs defaults https://github.com/jrburke/r.js/blob/master/build/example.build.js
+        rjs: preserveLicenseComments: false
+
       # uRequire-ing the specs
       # We also have two builds as 'UMD' & as 'combined'
       spec:
         # disable derive-ing from '_defaults'
         derive: []
-        debugLevel: 0
         path: "#{sourceSpecDir}"
         copy: [/./] # copy html's, requirejs.config.json et.all
         dstPath: "#{buildSpecDir}"
@@ -368,8 +372,10 @@ gruntFunction = (grunt) ->
         template: "UMDplain"
         # save to this destination path
         dstPath: "#{buildDir}/UMDplainReplaceDep"
+        dependencies: #replace 'types/isHash' with `types/isHashMock` in all modules
+          replace: 'types/isHashMock': 'types/isHash'
         resources: [
-          # first, create our hypothetical mock out of an existing module
+          # lets create our hypothetical mock out of an existing module
           [ # a title with default flags
             "rename to 'types/isHashMock.js'"
             # a self descriptive RC.filez :-)
@@ -381,17 +387,6 @@ gruntFunction = (grunt) ->
             # and all modules in bundle will now know this resource/module
             # by its new name (AND NOT the old)
             'types/isHashMock.js'
-          ]
-
-          # lets replace our dep
-          [ # `isBeforeTemplate` flag '+', running on Modules only,
-            # just before Template is applied
-            "+replace dependency 'types/isHash'"
-            # run all on all matching `bundle.filez` (in all modules due to `isBeforeTemplate`)
-            [/./]
-
-            # call `m.replaceDep` in each module, passing old & new dep in bundleRelative format
-            (m)-> m.replaceDep 'types/isHash', 'types/isHashMock'
           ]
         ]
 
@@ -523,9 +518,9 @@ gruntFunction = (grunt) ->
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      # generic shortcuts
      default:   "build test dev testDev min testMin run"
-     release:   "clean build test dev testDev min testMin mocha urequire:AMD urequire:AMDunderscore run"
+     release:   "build test dev testDev min testMin mocha urequire:AMD urequire:AMDunderscore run"
      examples:  "urequire:AMD urequire:AMDunderscore urequire:UMDplainReplaceDep urequire:UMDunderscore urequire:nodejsCompileAndCopy"
-     all:       "clean  build test dev testDev min testMin mocha examples run"
+     all:       "build test dev testDev min testMin mocha examples run"
      build:     "urequire:UMD"
 
      test:      "urequire:spec mochaCmd"
@@ -542,8 +537,8 @@ gruntFunction = (grunt) ->
      t:       "test"
      td:      "testDev"
      tm:      "testMin"
-     wu:      "clean watch:UMD"
-     wd:      "clean watch:dev"
+     wu:      "watch:UMD"
+     wd:      "watch:dev"
 
      # IDE shortcuts
      "alt-c": "cp"
@@ -559,7 +554,6 @@ gruntFunction = (grunt) ->
     'grunt-contrib-concat'
     'grunt-contrib-watch'
     'grunt-mocha'
-    #'grunt-bower-requirejs'
   ]
 
   grunt.initConfig gruntConfig

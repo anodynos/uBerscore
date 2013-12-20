@@ -60,8 +60,8 @@ define ->
       isIxact: require "objects/isIxact"
       isLike: require "objects/isLike"
 
-      isTrue: require "objects/isTrue"
-      isFalse: require "objects/isFalse"
+      isTrue: require "types/isTrue"
+      isFalse: require "types/isFalse"
       isOk: (val)-> !!val
 
       # Collections

@@ -1,6 +1,8 @@
 define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
   (type, getp, isHash, CoffeeUtils)->
 
+    isHash = require 'types/isHash'
+
     class ActionResult
       constructor: (@name)->
 
@@ -488,11 +490,10 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
                   result = result[1]
                   visitNextBB = true
 
-                @l.debug("Value assigning:  @path =", @path.join('/'),
+                @l.debug("Result handling: @path =", @path.join('/'),
                          "\n value =", @l.prettify result) if @l.deb 20
 
-                @write dst, prop, result # actually assign, by default all values
-
+                @resultHandler dst, prop, result
 
               else # we have some special ActionResult:
                 @l.debug("ActionResult = ", result) if @l.deb 30
@@ -561,6 +562,8 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
         for prop in @properties src
           @write dst, prop, @read(src, prop)
         dst
+
+      resultHandler: @::write
 
       ###
       Actions: Predefined/built in actions.

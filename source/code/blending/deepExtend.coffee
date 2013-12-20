@@ -34,9 +34,10 @@ define ['require', 'exports', 'module', loggerPath + 'Logger'],
                                            # b) Error: `Module name "uberscore" has not been loaded yet for context: _`, if uberscore.coffee is defined as AMD, without `exports, module` deps.
 
     isHash = require './../types/./isHash' # uRequire : use non-normalized fileRelative to demonstrate replaceDep recognises it
-    isHash2 = require 'types/./isHash'     # uRequire : use non-normalized bundleRelative to demonstrate it not added again & replaceDep recognises it
-    ### END uRequire bed testing ###
+    isHash2 = require 'types/isHash'       # uRequire : use bundleRelative to demonstrate it not added again & replaceDep recognises it
+    isHash3 = require 'types/./isHash'     # uRequire : use non-normalized bundleRelative     >>    >>
 
+    ### END uRequire bed testing ###
 
     l = new Logger 'uberscore/Blender'
 
