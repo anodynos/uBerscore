@@ -9,7 +9,7 @@ buildSpecDir  = "build/spec"
 S = if process.platform is 'win32' then '\\' else '/' # OS directory separator
 nodeBin       = "node_modules#{S}.bin#{S}"            # run from local node_modules,
 
-gruntFunction = (grunt) ->
+module.exports = gruntFunction = (grunt) ->
   pkg = grunt.file.readJSON('package.json')
 
   gruntConfig =
@@ -506,7 +506,7 @@ gruntFunction = (grunt) ->
         src:[]
         dest: "#{buildSpecDir}_combined/node_modules/uberscore/package.json"
 
-    clean: files: ["#{buildDir}"]
+    clean: files: [buildDir]
 
   ### shortcuts generation ###
   splitTasks = (tasks)-> if !_.isString tasks then tasks else (_.filter tasks.split(/\s/), (v)-> v)
@@ -560,6 +560,6 @@ gruntFunction = (grunt) ->
 
   null
 
-module.exports = gruntFunction
+
 
 

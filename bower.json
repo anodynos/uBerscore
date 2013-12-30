@@ -1,6 +1,6 @@
 {
   "name": "uberscore",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "build/dist/uberscore-dev.js",
   "ignore": [
     "source",
