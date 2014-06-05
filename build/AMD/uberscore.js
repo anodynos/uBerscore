@@ -1,8 +1,8 @@
 /**
  * uberscore - version 0.0.16
- * Compiled on 2013-12-30 5:23:13
+ * Compiled on 2014-06-05 5:54:35
  * git://github.com/anodynos/uBerscore
- * Copyright(c) 2013 Agelos Pikoulas (agelos.pikoulas@gmail.com )
+ * Copyright(c) 2014 Agelos Pikoulas (agelos.pikoulas@gmail.com )
  * Licensed MIT http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -11,7 +11,8 @@
         var __umodule__ = function(require, exports, module, _, isAgree) {
             "use strict";
             var VERSION = "0.0.16";
-            var Uberscore;
+            var Uberscore, a;
+            a = 1;
             Uberscore = function() {
                 var key, val, _ref;
                 function Uberscore() {}
@@ -72,12 +73,12 @@
             }();
             return new Uberscore();
         }.call(this, require, exports, module, _, isAgree);
-        var __old___B = window._B, __old__uberscore = window.uberscore;
-        window._B = __umodule__;
-        window.uberscore = __umodule__;
+        var __old___b0 = window["_B"], __old__uberscore1 = window["uberscore"];
+        window["_B"] = __umodule__;
+        window["uberscore"] = __umodule__;
         __umodule__.noConflict = function() {
-            window._B = __old___B;
-            window.uberscore = __old__uberscore;
+            window["_B"] = __old___b0;
+            window["uberscore"] = __old__uberscore1;
             return __umodule__;
         };
         return __umodule__;

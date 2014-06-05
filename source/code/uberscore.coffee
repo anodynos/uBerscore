@@ -5,9 +5,6 @@ urequire:  # uRequire Module Configuration
 ### The main class doesnt get exported - onle a sinle instance with all methods ###
 define ->
 
-  #wnf = require 'when/node/function'
-#  wnf2 = require './when/node/function'
-
   class Uberscore
     # @todo: instantation of a B object (ala jQuery object) - see B.coffee
     # some libs are required as bundleRelative others as fileRelative,

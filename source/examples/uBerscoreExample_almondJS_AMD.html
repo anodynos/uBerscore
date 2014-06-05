@@ -33,7 +33,7 @@
         // else
         //  we load 'uberscore' dependency (and its contained deps) through `rjs.baseUrl`.
         // this is the only change needed!
-        uberscore: "../../build/dist/uberscore-dev"
+        uberscore: "../../build/uberscore-dev"
       },
 
       shim: {
@@ -46,6 +46,7 @@
     uberscore = 'Old global `uberscore`';
 
     console.log("LOADING uberscore via requireJs....");
+
     require(['uberscore'], function(ub){
       console.log("...LOADED uberscore via requireJs!");
       var o = {a: 5, c: 3, b: -2},
