@@ -12,13 +12,12 @@
         return child;
     };
     define([ "require", "../Blender", "lodash", "../../agreement/isAgree", "../../Logger" ], function(require, Blender, _, isAgree) {
-        var DeepExtendBlender, l, _ref;
+        var DeepExtendBlender, l;
         l = new (require("../../Logger"))("uberscore/DeepExtendBlender");
         return DeepExtendBlender = function(_super) {
             __extends(DeepExtendBlender, _super);
             function DeepExtendBlender() {
-                _ref = DeepExtendBlender.__super__.constructor.apply(this, arguments);
-                return _ref;
+                return DeepExtendBlender.__super__.constructor.apply(this, arguments);
             }
             DeepExtendBlender.behavior = {
                 order: [ "src", "dst" ],
@@ -37,10 +36,10 @@
                 },
                 "{}": {
                     "{}": function(prop, src, dst) {
-                        var deepBlended, key, val, _ref1;
-                        _ref1 = deepBlended = this.getAction("deepOverwrite")(prop, src, dst);
-                        for (key in _ref1) {
-                            val = _ref1[key];
+                        var deepBlended, key, val, _ref;
+                        _ref = deepBlended = this.getAction("deepOverwrite")(prop, src, dst);
+                        for (key in _ref) {
+                            val = _ref[key];
                             if (val === null || val === void 0) {
                                 delete deepBlended[key];
                             }

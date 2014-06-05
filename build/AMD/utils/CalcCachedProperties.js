@@ -70,7 +70,7 @@
                 this.defineCalcProperties();
             }
             CalcCachedProperties.prototype.defineCalcProperties = function(isOverwrite) {
-                var cPropFn, cPropName, _ref, _this = this;
+                var cPropFn, cPropName, _ref;
                 Object.defineProperty(this, cacheKey, {
                     value: {},
                     enumerable: false,
@@ -82,30 +82,32 @@
                     cPropFn = _ref[cPropName];
                     this[cacheKey][cPropName] = cUndefined;
                     if (!this.constructor.prototype.hasOwnProperty(cPropName) || isOverwrite) {
-                        (function(cPropName, cPropFn) {
-                            if (l.deb(99)) {
-                                l.debug("...defining calculated property " + _this.constructor.name + "." + cPropName);
-                            }
-                            return Object.defineProperty(_this.constructor.prototype, cPropName, {
-                                enumerable: true,
-                                configurable: true,
-                                get: function() {
-                                    if (l.deb(99)) {
-                                        l.debug("...requesting calculated property " + this.constructor.name + "." + cPropName);
-                                    }
-                                    if (this[cacheKey][cPropName] === cUndefined) {
-                                        if (l.deb(95)) {
-                                            l.debug("...refreshing calculated property " + this.constructor.name + "." + cPropName);
-                                        }
-                                        this[cacheKey][cPropName] = cPropFn.call(this);
-                                    }
-                                    return this[cacheKey][cPropName];
-                                },
-                                set: function(v) {
-                                    return this[cacheKey][cPropName] = v;
+                        (function(_this) {
+                            return function(cPropName, cPropFn) {
+                                if (l.deb(99)) {
+                                    l.debug("...defining calculated property " + _this.constructor.name + "." + cPropName);
                                 }
-                            });
-                        })(cPropName, cPropFn);
+                                return Object.defineProperty(_this.constructor.prototype, cPropName, {
+                                    enumerable: true,
+                                    configurable: true,
+                                    get: function() {
+                                        if (l.deb(99)) {
+                                            l.debug("...requesting calculated property " + this.constructor.name + "." + cPropName);
+                                        }
+                                        if (this[cacheKey][cPropName] === cUndefined) {
+                                            if (l.deb(95)) {
+                                                l.debug("...refreshing calculated property " + this.constructor.name + "." + cPropName);
+                                            }
+                                            this[cacheKey][cPropName] = cPropFn.call(this);
+                                        }
+                                        return this[cacheKey][cPropName];
+                                    },
+                                    set: function(v) {
+                                        return this[cacheKey][cPropName] = v;
+                                    }
+                                });
+                            };
+                        })(this)(cPropName, cPropFn);
                     }
                 }
                 return null;

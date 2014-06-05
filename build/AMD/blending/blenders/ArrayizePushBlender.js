@@ -17,12 +17,11 @@
         return -1;
     };
     define([ "require", "exports", "module", "../../collections/array/arrayize", "lodash", "../../agreement/isAgree", "./DeepCloneBlender" ], function(require, exports, module, arrayize, _, isAgree) {
-        var ArrayizePushBlender, _ref;
+        var ArrayizePushBlender;
         return ArrayizePushBlender = function(_super) {
             __extends(ArrayizePushBlender, _super);
             function ArrayizePushBlender() {
-                _ref = ArrayizePushBlender.__super__.constructor.apply(this, arguments);
-                return _ref;
+                return ArrayizePushBlender.__super__.constructor.apply(this, arguments);
             }
             ArrayizePushBlender.behavior = {
                 order: [ "src" ],

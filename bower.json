@@ -1,7 +1,7 @@
 {
   "name": "uberscore",
-  "version": "0.0.16",
-  "main": "build/dist/uberscore-dev.js",
+  "version": "0.0.17alpha",
+  "main": ["build/uberscore-dev.js", "build/uberscore-min.js"],
   "ignore": [
     "source",
     "Gruntfile.coffee",

@@ -1,8 +1,8 @@
 fs = require 'fs'
 for uberscorePath in [
   'build/UMD/uberscore'
-  'build/dist/uberscore-dev'
-  'build/dist/uberscore-min'
+  'build/uberscore'
+  'build/uberscore-min'
   'build/UMDplainReplaceDep/uberscore'
   'build/UMDunderscore/uberscore'
   'build/nodejsCompileAndCopy/uberscore'
