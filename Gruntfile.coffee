@@ -2,8 +2,8 @@
 startsWith = (string, substring) -> string.lastIndexOf(substring, 0) is 0
 S = if process.platform is 'win32' then '\\' else '/'
 nodeBin       = "node_modules#{S}.bin#{S}"
-
 _ = require 'lodash'
+
 sourceDir     = "source/code"
 buildDir      = "build"
 sourceSpecDir = "source/spec"
@@ -24,8 +24,7 @@ module.exports = gruntFunction = (grunt) ->
             'agreement/isAgree': ['isAgree']
 
           resources: [
-            [ '~+inject:VERSION', ['uberscore.coffee']
-              (m)-> m.beforeBody = "var VERSION='#{pkg.version}';" ]
+            [ '~+inject:VERSION', ['uberscore.coffee'], (m)-> m.beforeBody = "var VERSION='#{pkg.version}';" ]
           ]
           main: 'uberscore'
 
@@ -107,11 +106,8 @@ module.exports = gruntFunction = (grunt) ->
               m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"
               if (m.dstFilename isnt 'specHelpers.js')
                 m.mergedCode =
-                  if specHelpersImports = (
-                    _.find m.bundle.modules, (mod)->
-                      mod.path is 'specHelpers-imports'
-                  )
-                    specHelpersImports.factoryBody
+                  if shi = (_.find m.bundle.modules, (mod)-> mod.path is 'specHelpers-imports')
+                    shi.factoryBody
                   else
                     throw new Error "specHelpers-imports not found"
           ]
@@ -123,19 +119,16 @@ module.exports = gruntFunction = (grunt) ->
         template: name: 'combined'
 
     watch:
+      options: spawn: false
       UMD:
         files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
         tasks: ['urequire:UMD' , 'urequire:spec', 'mocha:UMD']
-
       dev:
         files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
         tasks: ['urequire:dev', 'urequire:specCombined', 'concat:specCombinedFakeModule', 'mochaCmdDev']
-
       min:
         files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
         tasks: ['urequire:min', 'urequire:specCombined', 'concat:specCombinedFakeModuleMin', 'mochaCmdDev', 'run']
-
-      options: spawn: false
 
     shell:
       mochaCmd: command: "#{nodeBin}mocha #{buildSpecDir}/index --recursive " #--reporter spec"
@@ -175,32 +168,11 @@ module.exports = gruntFunction = (grunt) ->
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      default:   "build test dev testDev min testMin run"
      release:   "build test dev testDev min testMin mocha urequire:AMD run"
-     examples:  "urequire:AMD"
-     all:       "build test dev testDev min testMin mocha examples run"
      build:     "urequire:UMD"
 
      test:      "urequire:spec mochaCmd"
      testDev:   "urequire:specCombined concat:specCombinedFakeModule mochaCmdDev"
      testMin:   "concat:specCombinedFakeModuleMin mochaCmdDev"
-
-     # generic shortcuts
-     cl:      "clean"
-     b:       "build"
-     d:       "dev"
-     dm:      "min"
-     m:       "mochaCmd"
-     md:      "mochaCmdDev"
-     t:       "test"
-     td:      "testDev"
-     tm:      "testMin"
-     wu:      "watch:UMD"
-     wd:      "watch:dev"
-
-     # IDE shortcuts
-     "alt-c": "cp"
-     "alt-b": "b"
-     "alt-d": "d"
-     "alt-t": "t"
   }
 
   grunt.loadNpmTasks task for task of pkg.devDependencies when startsWith(task, 'grunt-')
