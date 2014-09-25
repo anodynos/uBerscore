@@ -38,7 +38,6 @@ browserify todos:
   </body>
 
   <!--We load our 'dependencies' first, exposing globals (eg '_')-->
-
   <script src="../../bower_components/lodash/dist/lodash.min.js"></script>
   <!--<script src="../../bower_components/underscore/underscore-min.js"></script>-->
 
@@ -65,12 +64,11 @@ browserify todos:
   <script>
     // once unit-tests are loaded, hit mocha.run()
     if (!window.PHANTOMJS) {
-      mocha.run().globals([//'_',
-                           //'_B',
-                           'Firebug',         // needed for chrome
-                           'XMLHttpRequest',  // needed for chrome
-                           'console'          // needed for chrome
-      ]);
+      if (window.mochaPhantomJS) {
+        mochaPhantomJS.run();
+      } else {
+        mocha.run().globals(['Firebug', 'XMLHttpRequest', 'console']);
+      }
     }
   </script>
 </html>

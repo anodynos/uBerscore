@@ -25,11 +25,6 @@ define ->
       # Blender - blending Objects
       Blender: require './blending/Blender'
 
-      DeepCloneBlender: require './blending/blenders/DeepCloneBlender'
-      DeepExtendBlender: require './blending/blenders/DeepExtendBlender'
-      DeepDefaultsBlender: require './blending/blenders/DeepDefaultsBlender'
-      ArrayizePushBlender: require './blending/blenders/ArrayizePushBlender'
-
       traverse: require './blending/traverse'
       clone: require './blending/clone'
 
@@ -85,5 +80,8 @@ define ->
       CalcCachedProperties: require 'utils/CalcCachedProperties'
       subclass: require 'utils/subclass'
     }
+
+    # testing https://github.com/anodynos/uRequire/issues/34
+    Uberscore::[key] = val for key, val of require './blending/blenders' # index.js added by urequire >= 6.19
 
   new Uberscore #return

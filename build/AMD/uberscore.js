@@ -1,20 +1,20 @@
 /**
- * uberscore - version 0.0.16
- * Compiled on 2014-06-05 5:54:35
+ * uberscore - version 0.0.17
+ * Compiled on 2014-09-29 10:15:06
  * git://github.com/anodynos/uBerscore
  * Copyright(c) 2014 Agelos Pikoulas (agelos.pikoulas@gmail.com )
  * Licensed MIT http://www.opensource.org/licenses/mit-license.php
  */
 
 (function() {
-    define([ "require", "exports", "module", "lodash", "./agreement/isAgree", "./blending/Blender", "./blending/blenders/DeepCloneBlender", "./blending/blenders/DeepExtendBlender", "./blending/blenders/DeepDefaultsBlender", "./blending/blenders/ArrayizePushBlender", "./blending/traverse", "./blending/clone", "./blending/deepExtend", "./objects/okv", "./objects/mutate", "./objects/setp", "./objects/getp", "./objects/isDisjoint", "./objects/isRefDisjoint", "./objects/getRefs", "./objects/getInheritedPropertyNames", "./objects/isEqual", "./objects/isIqual", "./objects/isExact", "./objects/isIxact", "./objects/isLike", "./types/isTrue", "./types/isFalse", "./collections/go", "./collections/array/isEqualArraySet", "./collections/array/arrayize", "./agreement/inAgreements", "./types/type", "./types/isPlain", "./types/isHash", "./Logger", "./certain", "./utils/CoffeeUtils", "./utils/CalcCachedProperties", "./utils/subclass" ], function(require, exports, module, _, isAgree) {
+    var __isAMD = !!(typeof define === "function" && define.amd), __isNode = typeof exports === "object", __isWeb = !__isNode;
+    define([ "require", "exports", "module", "lodash", "./agreement/isAgree", "./blending/blenders/index", "./blending/Blender", "./blending/traverse", "./blending/clone", "./blending/deepExtend", "./objects/okv", "./objects/mutate", "./objects/setp", "./objects/getp", "./objects/isDisjoint", "./objects/isRefDisjoint", "./objects/getRefs", "./objects/getInheritedPropertyNames", "./objects/isEqual", "./objects/isIqual", "./objects/isExact", "./objects/isIxact", "./objects/isLike", "./types/isTrue", "./types/isFalse", "./collections/go", "./collections/array/isEqualArraySet", "./collections/array/arrayize", "./agreement/inAgreements", "./types/type", "./types/isPlain", "./types/isHash", "./Logger", "./certain", "./utils/CoffeeUtils", "./utils/CalcCachedProperties", "./utils/subclass" ], function(require, exports, module, _, isAgree) {
         var __umodule__ = function(require, exports, module, _, isAgree) {
             "use strict";
-            var VERSION = "0.0.16";
-            var Uberscore, a;
-            a = 1;
+            var VERSION = "0.0.17";
+            var Uberscore;
             Uberscore = function() {
-                var key, val, _ref;
+                var key, val, _ref, _ref1;
                 function Uberscore() {}
                 Uberscore.prototype.VERSION = typeof VERSION === "undefined" || VERSION === null ? "{NO_VERSION}" : VERSION;
                 Uberscore.prototype["_"] = _;
@@ -26,10 +26,6 @@
                 };
                 _ref = {
                     Blender: require("./blending/Blender"),
-                    DeepCloneBlender: require("./blending/blenders/DeepCloneBlender"),
-                    DeepExtendBlender: require("./blending/blenders/DeepExtendBlender"),
-                    DeepDefaultsBlender: require("./blending/blenders/DeepDefaultsBlender"),
-                    ArrayizePushBlender: require("./blending/blenders/ArrayizePushBlender"),
                     traverse: require("./blending/traverse"),
                     clone: require("./blending/clone"),
                     deepExtend: require("./blending/deepExtend"),
@@ -69,18 +65,25 @@
                     val = _ref[key];
                     Uberscore.prototype[key] = val;
                 }
+                _ref1 = require("./blending/blenders/index");
+                for (key in _ref1) {
+                    val = _ref1[key];
+                    Uberscore.prototype[key] = val;
+                }
                 return Uberscore;
             }();
             return new Uberscore();
         }.call(this, require, exports, module, _, isAgree);
         var __old___b0 = window["_B"], __old__uberscore1 = window["uberscore"];
-        window["_B"] = __umodule__;
-        window["uberscore"] = __umodule__;
-        __umodule__.noConflict = function() {
-            window["_B"] = __old___b0;
-            window["uberscore"] = __old__uberscore1;
-            return __umodule__;
-        };
+        if (!__isAMD) {
+            window["_B"] = __umodule__;
+            window["uberscore"] = __umodule__;
+            __umodule__.noConflict = function() {
+                window["_B"] = __old___b0;
+                window["uberscore"] = __old__uberscore1;
+                return __umodule__;
+            };
+        }
         return __umodule__;
     });
 }).call(this);

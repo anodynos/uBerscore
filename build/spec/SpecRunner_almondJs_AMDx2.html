@@ -62,8 +62,14 @@
 
     // initialize mocha
     mocha.setup('bdd');
+
+    // load unit-tests here, always relative to the bundle/baseUrl
     require(["spec"], function(spec){
-      mocha.run().globals(['_', '_B', 'uberscore']);
+      if (window.mochaPhantomJS) {
+        mochaPhantomJS.run();
+      } else {
+        mocha.run().globals(['_', '_B', 'uberscore']);
+      }
     });
 
   </script>

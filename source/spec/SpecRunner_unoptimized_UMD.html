@@ -76,7 +76,11 @@
 
     // load unit-tests here, always relative to the bundle/baseUrl
     require(["spec/index" ], function(){
+      if (window.mochaPhantomJS) {
+        mochaPhantomJS.run();
+      } else {
         mocha.run().globals(['_', '_B', 'uberscore']);
+      }
     });
 
   </script>

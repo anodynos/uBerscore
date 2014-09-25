@@ -10,7 +10,7 @@ sourceSpecDir = "source/spec"
 buildSpecDir  = "build/spec"
 
 module.exports = gruntFunction = (grunt) ->
-  pkg = grunt.file.readJSON('package.json')
+  pkg = grunt.file.readJSON 'package.json'
 
   gruntConfig =
     urequire:
@@ -19,14 +19,14 @@ module.exports = gruntFunction = (grunt) ->
           path: "#{sourceDir}"
           filez: [/./, '!**/draft/*', '!uRequireConfig*']
           copy: [/./, '**/*']
+          main: 'uberscore'
+          resources: [
+            # 'injectVERSION' # use with urequire 0.7.0, with 'node_modules/urequire-rc-injectVERSION'
+            [ '~+inject:VERSION', ['uberscore.coffee'], (m)-> m.beforeBody = "var VERSION='#{pkg.version}';" ] #urequire 0.6.x
+          ]
           dependencies: exports: bundle:
             lodash: ['_']
             'agreement/isAgree': ['isAgree']
-
-          resources: [
-            [ '~+inject:VERSION', ['uberscore.coffee'], (m)-> m.beforeBody = "var VERSION='#{pkg.version}';" ]
-          ]
-          main: 'uberscore'
 
         build:
           template:
@@ -44,6 +44,7 @@ module.exports = gruntFunction = (grunt) ->
           runtimeInfo: ['Logger']
           useStrict: ['!**/*', 'uberscore']
           injectExportsModule: ['uberscore']
+          exportsRoot: ['script', 'node']
           clean: true
 
       UMD:
@@ -78,7 +79,7 @@ module.exports = gruntFunction = (grunt) ->
               for c in ['if (l.deb()){}', 'if (this.l.deb()){}', 'l.debug()', 'this.l.debug()']
                 m.replaceCode c
 
-              if m.dstFilename is 'uberscore.js'
+              if m.path is 'uberscore'
                 m.replaceCode {type: 'Property', key: {type: 'Identifier', name: 'deepExtend'}}
                 m.replaceDep 'blending/deepExtend'
           ]
@@ -104,7 +105,7 @@ module.exports = gruntFunction = (grunt) ->
           [ '+injectSpecCommons', ['**/*.js']
             (m)->
               m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"
-              if (m.dstFilename isnt 'specHelpers.js')
+              if (m.path isnt 'specHelpers')
                 m.mergedCode =
                   if shi = (_.find m.bundle.modules, (mod)-> mod.path is 'specHelpers-imports')
                     shi.factoryBody
@@ -167,7 +168,7 @@ module.exports = gruntFunction = (grunt) ->
 
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
      default:   "build test dev testDev min testMin run"
-     release:   "build test dev testDev min testMin mocha urequire:AMD run"
+     release:   "clean build test dev testDev min testMin mocha urequire:AMD run"
      build:     "urequire:UMD"
 
      test:      "urequire:spec mochaCmd"

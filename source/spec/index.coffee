@@ -37,6 +37,5 @@ require "utils/CalcCachedProperties-spec"
 require "Logger-spec"
 
 require "spec-data"
-require "uberscore-spec"
 
-require 'specHelpers'
+require "uberscore-spec"

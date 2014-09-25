@@ -77,7 +77,3 @@ define ['../Blender'], (Blender)->
             dst[prop]
         else
           src[prop] # simply overwrite
-
-
-module.exports = DeepExtendBlender
-
