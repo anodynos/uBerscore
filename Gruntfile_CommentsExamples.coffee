@@ -136,6 +136,10 @@ module.exports = gruntFunction = (grunt) ->
           # but lets be 'lean' and use only where needed
           injectExportsModule: ['uberscore']
 
+          # export to root (as defined in config or in the exported module),
+          # only when running as <script> or on nodejs (BUT not on AMD)
+          exportsRoot: ['script', 'node']
+
           clean: true #['**/*']
 
       # The `'urequire:UMD'` task:

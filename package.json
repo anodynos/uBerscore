@@ -25,9 +25,9 @@
     "url": "git://github.com/anodynos/uBerscore/issues",
     "email": "agelos.pikoulas@gmail.com"
   },
-  "main": "./build/uberscore.js",
+  "main": "./build/uberscore-dev.js",
   "scripts": {
-    "test": "grunt"
+    "test": "grunt clean release"
   },
   "engines": {
     "node": ">=0.8"
