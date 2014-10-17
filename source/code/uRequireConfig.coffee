@@ -29,5 +29,5 @@ module.exports =
     template: 'combined'
     debugLevel: 100
     verbose: true
-#    watch: true
+    watch: 800
 #    continue: true

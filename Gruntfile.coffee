@@ -18,12 +18,9 @@ module.exports = gruntFunction = (grunt) ->
         bundle:
           path: "#{sourceDir}"
           filez: [/./, '!**/draft/*', '!uRequireConfig*']
-          copy: [/./, '**/*']
+          copy: [/./]
           main: 'uberscore'
-          resources: [
-            # 'injectVERSION' # use with urequire 0.7.0, with 'node_modules/urequire-rc-injectVERSION'
-            [ '~+inject:VERSION', ['uberscore.coffee'], (m)-> m.beforeBody = "var VERSION='#{pkg.version}';" ] #urequire 0.6.x
-          ]
+          resources: [ 'inject-version' ]
           dependencies: exports: bundle:
             lodash: ['_']
             'agreement/isAgree': ['isAgree']
@@ -46,6 +43,8 @@ module.exports = gruntFunction = (grunt) ->
           injectExportsModule: ['uberscore']
           exportsRoot: ['script', 'node']
           clean: true
+#          verbose: true
+#          debugLevel: 0
 
       UMD:
         template: 'UMDplain'
@@ -92,7 +91,6 @@ module.exports = gruntFunction = (grunt) ->
         path: "#{sourceSpecDir}"
         copy: [/./]
         dstPath: "#{buildSpecDir}"
-        commonCode: "var expect = chai.expect; // injected @ `spec: bundle: commonCode`."
 
         dependencies: exports: bundle:
           chai: 'chai'
@@ -102,17 +100,16 @@ module.exports = gruntFunction = (grunt) ->
           'spec-data': 'data'
 
         resources: [
-          [ '+injectSpecCommons', ['**/*.js']
-            (m)->
-              m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"
-              if (m.path isnt 'specHelpers')
-                m.mergedCode =
-                  if shi = (_.find m.bundle.modules, (mod)-> mod.path is 'specHelpers-imports')
-                    shi.factoryBody
-                  else
-                    throw new Error "specHelpers-imports not found"
-          ]
-        ]
+          [ '+inject-_B.logger', ['**/*.js'], (m)-> m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"]
+
+          ['import',
+            specHelpers: [
+               'equal', 'notEqual', 'ok', 'notOk', 'tru', 'fals' , 'deepEqual', 'notDeepEqual',
+               'exact', 'notExact', 'iqual', 'notIqual', 'ixact', 'notIxact', 'like', 'notLike',
+               'likeBA', 'notLikeBA', 'equalSet', 'notEqualSet' ]
+            chai: ['expect'] ] ]
+#        verbose: true
+#        debugLevel: 40
 
       specCombined:
         derive: ['spec']
@@ -133,7 +130,7 @@ module.exports = gruntFunction = (grunt) ->
 
     shell:
       mochaCmd: command: "#{nodeBin}mocha #{buildSpecDir}/index --recursive " #--reporter spec"
-      mochaCmdDev: command: "#{nodeBin}mocha #{buildSpecDir}_combined/index-combined --recursive " #--reporter spec"
+      mochaCmdDev: command: "#{nodeBin}mocha #{buildSpecDir}_combined/index-combined --recursive --reporter min"
       run: command: "#{nodeBin}coffee source/examples/runExample.coffee"
       options: {verbose: true, failOnError: true, stdout: true, stderr: true}
 
