@@ -17,25 +17,27 @@
         return -1;
     };
     define([ "require", "exports", "module", "../../collections/array/arrayize", "lodash", "../../agreement/isAgree", "./DeepCloneBlender" ], function(require, exports, module, arrayize, _, isAgree) {
-        var ArrayizePushBlender;
-        return ArrayizePushBlender = function(_super) {
-            __extends(ArrayizePushBlender, _super);
-            function ArrayizePushBlender() {
-                return ArrayizePushBlender.__super__.constructor.apply(this, arguments);
+        var ArrayizeBlender;
+        return ArrayizeBlender = function(_super) {
+            __extends(ArrayizeBlender, _super);
+            function ArrayizeBlender() {
+                return ArrayizeBlender.__super__.constructor.apply(this, arguments);
             }
-            ArrayizePushBlender.behavior = {
+            ArrayizeBlender.prototype.addMethod = "push";
+            ArrayizeBlender.prototype.unique = false;
+            ArrayizeBlender.prototype.reverse = false;
+            ArrayizeBlender.behavior = {
                 order: [ "src" ],
-                unique: false,
-                "*": "pushToArray",
-                pushToArray: function(prop, src, dst) {
-                    var dstArray, itemsToPush, srcArray, v, _i, _len;
+                "*": "addToArray",
+                addToArray: function(prop, src, dst) {
+                    var dstArray, itemsToAdd, srcArray, v, _i, _len;
                     dstArray = this.write(dst, prop, arrayize(this.read(dst, prop)));
                     srcArray = arrayize(this.read(src, prop));
                     if (_.isEqual(srcArray[0], [ null ])) {
                         dstArray = this.write(dst, prop, []);
                         srcArray = srcArray.slice(1);
                     }
-                    itemsToPush = this.unique ? function() {
+                    itemsToAdd = this.unique ? function() {
                         var _i, _len, _results;
                         _results = [];
                         for (_i = 0, _len = srcArray.length; _i < _len; _i++) {
@@ -45,15 +47,18 @@
                             }
                         }
                         return _results;
-                    }() : srcArray;
-                    for (_i = 0, _len = itemsToPush.length; _i < _len; _i++) {
-                        v = itemsToPush[_i];
-                        dstArray.push(v);
+                    }() : _.clone(srcArray);
+                    if (this.reverse) {
+                        itemsToAdd.reverse();
+                    }
+                    for (_i = 0, _len = itemsToAdd.length; _i < _len; _i++) {
+                        v = itemsToAdd[_i];
+                        dstArray[this.addMethod](v);
                     }
                     return dstArray;
                 }
             };
-            return ArrayizePushBlender;
+            return ArrayizeBlender;
         }(require("./DeepCloneBlender"));
     });
 }).call(this);

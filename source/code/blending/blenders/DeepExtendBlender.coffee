@@ -28,7 +28,7 @@ define ['../Blender'], (Blender)->
     @behavior:
       order: ['src', 'dst']
 
-      String:'*':'overwriteOrReplace'
+      String: '*': 'overwriteOrReplace'
 
       '[]':
         '[]': (prop, src, dst)-> # Filter null / undefined. (note `type.areEqual('[]', 'Array') is true`)

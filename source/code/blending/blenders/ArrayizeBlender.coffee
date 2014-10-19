@@ -9,30 +9,36 @@
 # @todo: rename to ArrayizeBlender, adding `concat` and similar array actions
 define ['require', 'exports', 'module', 'collections/array/arrayize'],
   (require, exports, module, arrayize)->
-    class ArrayizePushBlender extends (require './DeepCloneBlender')
+    class ArrayizeBlender extends (require './DeepCloneBlender')
+
+      addMethod: 'push'
+      unique: false
+      reverse: false
 
       @behavior:
         order: ['src']
-        unique: false
 
-        '*': 'pushToArray'   #todo: (derive a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise ?)
+        '*': 'addToArray'   #todo: (derive a custom uRequire_ArrayPusher that deals only with `String` & `Array<String>`, throwing error otherwise ?)
 
-        pushToArray: (prop, src, dst)->
+        addToArray: (prop, src, dst)->
           ## arrayize dst[prop]
-          # read as `dst[prop] = arrayize dst[prop]`
-          dstArray = @write dst, prop, arrayize @read dst, prop
+          dstArray = @write dst, prop, arrayize @read dst, prop #. `dst[prop] = arrayize dst[prop]`
           srcArray = arrayize @read src, prop
 
           if _.isEqual srcArray[0], [null] # `[null]` is a signpost for 'reset array'.
             dstArray = @write dst, prop, []
             srcArray = srcArray[1..]       # The remaining items of the array are the 'real' items to push.
 
-          itemsToPush =
-            if @unique                                    # @todo: does unique belong to blender or blenderBehavior ?
+
+          itemsToAdd =
+            if @unique                                     # @todo: does unique belong to blender or blenderBehavior ?
               (v for v in srcArray when v not in dstArray) # @todo: unique can be a fn: isEqual/isIqual/etc or any other equal fn.
             else
-              srcArray                                      # add 'em all
+              _.clone srcArray                             # add 'em all
 
-          dstArray.push v for v in itemsToPush # @todo: should concat be used? Its a waste of an []
+          itemsToAdd.reverse() if @reverse
+
+          dstArray[@addMethod] v for v in itemsToAdd # @todo: should concat be used? Its a waste of an []
           dstArray
-          #_B.Blender.SKIP # no need to assign, we mutated dst[prop] #todo: needed or not ?
+          # _B.Blender.SKIP # no need to assign, we mutated dst[prop] #todo: needed or not ?
+

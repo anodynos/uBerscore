@@ -21,9 +21,10 @@ module.exports = gruntFunction = (grunt) ->
           copy: [/./]
           main: 'uberscore'
           resources: [ 'inject-version' ]
-          dependencies: exports: bundle:
-            lodash: ['_']
-            'agreement/isAgree': ['isAgree']
+          dependencies:
+            exports: bundle: # deprecated to simple "imports:"- but still works!
+              lodash: ['_']
+              'agreement/isAgree': ['isAgree']
 
         build:
           template:
@@ -92,7 +93,7 @@ module.exports = gruntFunction = (grunt) ->
         copy: [/./]
         dstPath: "#{buildSpecDir}"
 
-        dependencies: exports: bundle:
+        dependencies: imports:
           chai: 'chai'
           lodash: ['_']
           uberscore: ['_B']

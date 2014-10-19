@@ -1,6 +1,6 @@
 /**
- * uberscore - version 0.0.16-03
- * Compiled on 2014-10-17 4:24:34
+ * uberscore - version 0.0.17
+ * Compiled on 2014-10-19 6:57:35
  * git://github.com/anodynos/uBerscore
  * Copyright(c) 2014 Agelos Pikoulas (agelos.pikoulas@gmail.com )
  * Licensed MIT http://www.opensource.org/licenses/mit-license.php
@@ -11,7 +11,7 @@
     define([ "require", "exports", "module", "lodash", "./agreement/isAgree", "./blending/blenders/index", "./blending/Blender", "./blending/traverse", "./blending/clone", "./blending/deepExtend", "./objects/okv", "./objects/mutate", "./objects/setp", "./objects/getp", "./objects/isDisjoint", "./objects/isRefDisjoint", "./objects/getRefs", "./objects/getInheritedPropertyNames", "./objects/isEqual", "./objects/isIqual", "./objects/isExact", "./objects/isIxact", "./objects/isLike", "./types/isTrue", "./types/isFalse", "./collections/go", "./collections/array/isEqualArraySet", "./collections/array/arrayize", "./agreement/inAgreements", "./types/type", "./types/isPlain", "./types/isHash", "./Logger", "./certain", "./utils/CoffeeUtils", "./utils/CalcCachedProperties", "./utils/subclass" ], function(require, exports, module, _, isAgree) {
         var __umodule__ = function(require, exports, module, _, isAgree) {
             "use strict";
-            var VERSION = "0.0.16-03";
+            var VERSION = "0.0.17";
             var Uberscore;
             Uberscore = function() {
                 var key, val, _ref, _ref1;
