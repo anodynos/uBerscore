@@ -15,6 +15,7 @@
   @param val Anything The value to set
   
   @param options {Object}
+
    @option create {Truthy} if truthy, it creates {} for missing paths.
      If there is a non `_.isObject` while expanding the path,
      it doens't create a new {} and it doesnt set the value.

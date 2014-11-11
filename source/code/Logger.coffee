@@ -17,23 +17,23 @@ getp = require './objects/getp'
 
       # debugging with debugLevels
 
-      l.debug 'Some debug message'                    # prints `[title/foo/bar] DEBUG: (!1) Some debug message` in debugish blue
+      l.deb 'Some debug message'                    # prints `[title/foo/bar] DEBUG: (!1) Some debug message` in debugish blue
                                                       # since no level is passed for this debug() call, its considered as a `1`.
 
       # if 1st argument is Number, it questions the debugLevel whether its allowed to be printed.
 
-      l.debug 15, 'Not printing debug message'        # prints nothing, cause debugLevel is larger than this instance
+      l.deb 15, 'Not printing debug message'        # prints nothing, cause debugLevel is larger than this instance
 
       # leaving instance debugLevel undefined allows debug path levels to come into play
 
       _B.Logger.addDebugPathLevel 'some/logging', 20  # all logger instances without their own debugLevel, get it from this path
 
       l = new _B.Logger 'some/logging/long/path'      # dynamically gets from the closest debugPathLevel (20 in this case) @ each debug()
-      l.debug 15, 'Printing debug message'            # prints it, cause the closest debugPathLevel found is 20
+      l.deb 15, 'Printing debug message'            # prints it, cause the closest debugPathLevel found is 20
 
       # supress ALL debugLevels
       _B.Logger.maxDebugLevel = 12
-      l.debug 15, 'Not printing debug message'        # Doesn't prints it, cause there's a global limit of maxDebugLevel = 12
+      l.deb 15, 'Not printing debug message'        # Doesn't prints it, cause there's a global limit of maxDebugLevel = 12
 
       # using _B.Logger.addDebugPathLevel to define a *minimum* debugLevel
       _B.Logger.addDebugPathLevel '/', 10  # all logger instances without their own debugLevel, get a 10 as minimum
@@ -42,7 +42,7 @@ getp = require './objects/getp'
       if l.deb 23
         l.deb "Some" + ("complicated stuff" + i for i in [1..100000])
 
-      # `l.deb` is actually an alias of `l.debug`.
+      # `l.deb` is actually an alias of `l.deb`.
 
       l.deb 45              # When passed only a Number, it sets its passed level
       doStuff()             # as the last check, effective on the next l.deb() call without a level.
@@ -56,14 +56,14 @@ getp = require './objects/getp'
     * New lines in front of 1st arg are respected & printed before title
 ###
 
-class Logger
+module.exports = class Logger
   constructor: (debugPath=[], @debugLevel)->
     @setDebugPath debugPath
     Logger.loggerCount = (Logger.loggerCount or 0) + 1
 
   getALog = (baseMsg, color, cons)->
     (args...)->
-      # count & trim new lines in fornt of first arg - add them on the whole print
+      # count & trim new lines in front of first arg - add them on the whole print
       if _.isString args[0]
         newLines = countNewLines args[0]
         args[0] = args[0][newLines..]
@@ -79,7 +79,7 @@ class Logger
       args.unshift title
       args.unshift "#{color}" if not (__isWeb? and __isWeb)
       args.unshift ("\n" for i in [1..newLines] by 1).join('')
-      args.push '\u001b[0m' if not (__isWeb? and __isWeb) #reset color
+      args.push ANSI_RESET if not (__isWeb? and __isWeb) #reset color
       cons.apply console, args #console context needed for chrome http://stackoverflow.com/questions/8159233/typeerror-illegal-invocation-on-console-log-apply
 
       # return printable args
@@ -206,14 +206,32 @@ class Logger
       (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation. http://docstore.mik.ua/orelly/webprog/jscript/ch03_12.htm
   prettify: Logger.prettify # available on each instance
 
-  err:  getALog "ERROR", '\u001b[31m', console.error #red
-  er:  getALog "ERRor", '\u001b[31m', console.log    #red
-  warn: getALog "WARNING", '\u001b[33m', console.log #yellow
-  verbose: getALog "", '\u001b[36m', console.log     #purple
-  ver: @::verbose                                    # alias
-  ok: getALog "", '\u001b[32m', console.log          #green
-  log: getALog "", '\u001b[0m', console.log          #white
+  err:  getALog "ERROR", ANSI_RED, console.error 
+  er:  getALog "ERRor", ANSI_RED_BOLD, console.log
+  warn: getALog "WARNING", ANSI_YELLOW_BOLD, console.log # yellow
+  verbose: getALog "", ANSI_CYAN_BOLD, console.log       # purple
+  ver: @::verbose                                   # alias
+  ok: getALog "", ANSI_GREEN_BOLD, console.log           # green
+  log: getALog "", ANSI_RESET, console.log          # white
 
+  ANSI_RESET = "\u001B[0m"
+  ANSI_BLACK = "\u001B[30m"
+  ANSI_RED = "\u001B[31m"
+  ANSI_GREEN = "\u001B[32m"
+  ANSI_YELLOW = "\u001B[33m"
+  ANSI_BLUE = "\u001B[34m"
+  ANSI_PURPLE = "\u001B[35m"
+  ANSI_CYAN = "\u001B[36m"
+  ANSI_WHITE = "\u001B[37m"
+
+  ANSI_BLACK_BOLD = "\u001B[30;1m"
+  ANSI_RED_BOLD = "\u001B[31;1m"
+  ANSI_GREEN_BOLD = "\u001B[32;1m"
+  ANSI_YELLOW_BOLD = "\u001B[33;1m"
+  ANSI_BLUE_BOLD = "\u001B[34;1m"
+  ANSI_PURPLE_BOLD = "\u001B[35;1m"
+  ANSI_CYAN_BOLD = "\u001B[36;1m"
+  ANSI_WHITE_BOLD = "\u001B[37;1m"
 
   # create a `default` instance and add static class methods for 'log', 'warn' etc,
   # bound with this default instance
@@ -223,5 +241,3 @@ class Logger
       Logger[key] = _.bind val, Logger.logger
     else
       Logger[key] = val
-
-module.exports = Logger

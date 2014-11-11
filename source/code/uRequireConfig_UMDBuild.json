@@ -1,9 +1,0 @@
-{
-  "derive": "source/code/uRequireConfig.coffee",
-  "build": {
-    "debugLevel": 0,
-    "verbose": true,
-    "template": "UMD",
-    "outputPath": "./build/UMD"
-  }
-}

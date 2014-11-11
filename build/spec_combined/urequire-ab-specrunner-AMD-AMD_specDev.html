@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="utf-8" /><title>libBundle `AMD`, specBundle: `specDev`</title></head><body><h3>urequire-ab-specrunner:libBundle `AMD`, specBundle: `specDev`</h3><div id="mocha"></div></body><link rel="stylesheet" href="../../bower_components/mocha/mocha.css" /><script src="../../bower_components/mocha/mocha.js"></script><script src="../../bower_components/chai/chai.js"></script><script>window._B = 'Old global `_B`' ; //test `noConflict()`</script><script>mocha.setup('bdd');</script><script src="../../bower_components/requirejs/require.js"></script><script>require.config({
+  "baseUrl": "../AMD",
+  "paths": {
+    "lodash": [
+      "../../bower_components/lodash/dist/lodash.compat"
+    ],
+    "chai": [
+      "../../bower_components/chai/chai"
+    ],
+    "uberscore": "uberscore",
+    "libToSpecPath": "../spec_combined"
+  },
+  "shim": {}
+});</script><!--Run mocha in AMD or plain script, taking care of phantomjs--><script>require([ 'libToSpecPath/index-combined' ], function() {
+
+  if (window.mochaPhantomJS) {
+    mochaPhantomJS.run().globals(['_', '_lodash_', '_lodash_dummy_var', '_B', '_uB', 'uberscore', 'chai']);
+  } else {
+    mocha.run().globals(['_', '_lodash_', '_lodash_dummy_var', '_B', '_uB', 'uberscore', 'chai']);
+  }
+});</script></html>

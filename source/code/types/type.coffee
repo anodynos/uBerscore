@@ -44,22 +44,4 @@ type.TYPES = {
   'Undefined': ['U', "void", "?"]
 }
 
-
 module.exports = type
-
-#inline tests
-#oOs = {
-#  'Array': ['this', 'is', 1, 'array']
-#  #'Arguments':# todo: test this
-#  'Function': (x)->x
-#  'String': "I am a String!"
-#  'Number': 667
-#  'Date': new Date()
-#  'RegExp': /./g
-#  'Boolean': true
-#  'Null': null
-#  'Undefined': undefined
-#  'Object': {a:1, b:2}
-#  'Arguments': arguments
-#}
-

@@ -41,14 +41,14 @@ define ['utils/CoffeeUtils'], (CoffeeUtils)->
         @[cacheKey][cPropName] = cUndefined
         if not @constructor::hasOwnProperty(cPropName) or isOverwrite
           do (cPropName, cPropFn)=>
-            l.debug "...defining calculated property #{@constructor.name}.#{cPropName}" if l.deb(99)
+            l.deb "...defining calculated property #{@constructor.name}.#{cPropName}" if l.deb(99)
             Object.defineProperty @constructor::, cPropName, # @todo: allow instance properties to be added dynamically
               enumerable: true
               configurable: true # @todo: check if its not same class and redefine ?
               get:->
-                l.debug "...requesting calculated property #{@constructor.name}.#{cPropName}" if l.deb(99)
+                l.deb "...requesting calculated property #{@constructor.name}.#{cPropName}" if l.deb(99)
                 if @[cacheKey][cPropName] is cUndefined
-                  l.debug "...refreshing calculated property #{@constructor.name}.#{cPropName}" if l.deb(95)# and cPropName isnt 'dstFilenames'
+                  l.deb "...refreshing calculated property #{@constructor.name}.#{cPropName}" if l.deb(95)# and cPropName isnt 'dstFilenames'
                   @[cacheKey][cPropName] = cPropFn.call @
                 @[cacheKey][cPropName]
 
@@ -66,12 +66,12 @@ define ['utils/CoffeeUtils'], (CoffeeUtils)->
           propKeys = _.keys @allCalcProperties if not propKeys # `propKeys or=` can't be assigned with ||= because it has not been declared before
           for p in propKeys when ca(p)
             if @[cacheKey][p] isnt cUndefined
-              l.debug "...delete (via fn) value of property #{@constructor.name}.#{p}" if l.deb 100
+              l.deb "...delete (via fn) value of property #{@constructor.name}.#{p}" if l.deb 100
               @[cacheKey][p] = cUndefined
               cleaned.push p
         else # should be string-able
           if @[cacheKey][ca] isnt cUndefined
-            l.debug "...delete value of property #{@constructor.name}.#{ca}" if l.deb 100
+            l.deb "...delete value of property #{@constructor.name}.#{ca}" if l.deb 100
             @[cacheKey][ca] = cUndefined
             cleaned.push ca
       cleaned

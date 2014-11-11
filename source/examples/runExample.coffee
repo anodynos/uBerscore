@@ -24,7 +24,7 @@ for uberscorePath in [
         (if ubs.isLodash() then l.ok else l.warn) 'ubs.isLodash() is:', ubs.isLodash()
         value = ubs.go(
           ((new ubs.DeepDefaultsBlender).blend {a:1, b:5},  {a:2, b:15, c:{d:4, e:5}})
-          iter: (v, k)-> l.debug k, ':', v
+          iter: (v, k)-> l.deb k, ':', v
         )
         (if ubs.isHash(new ->) then l.verbose else l.err).call l,
           "ubs.isHash(new ->) is:", ubs.isHash(new ->)

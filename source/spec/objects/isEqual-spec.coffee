@@ -1,4 +1,3 @@
-
 { objectWithProtoInheritedProps, Class3, c3, expectedPropertyValues
 
   object
@@ -7,6 +6,7 @@
   inheritedShallowClone
   inheritedDeepClone
 } = data
+
 
 oClone = _.clone objectWithProtoInheritedProps
 c3Clone = _.clone c3
@@ -21,16 +21,17 @@ describe 'isEqual:', ->
         args1 = (-> arguments)(1, 2, 3)
         args2 = (-> arguments)(1, 2, 3)
         args3 = (-> arguments)(1, 2)
+
         expect(_B.isEqual args1, args2).to.be.true
 
-        if !window.PHANTOMJS #todo: why is this failing in PhantomJS ?
+        if not (window.PHANTOMJS or window.mochaPhantomJS) #todo: why is this failing in PhantomJS ?
           expect(_B.isEqual args1, args3).to.be.false
 
         #_B test, not lodash
         if _B.isLodash() # false is underscore.isEqual (-> arguments)(1, 2, 3), {'0':1, '1':2, '2':3}
           expect(_B.isEqual args1, {'0':1, '1':2, '2':3}).to.be.true
 
-        if !window.PHANTOMJS #todo: why is this failing in PhantomJS ?
+        if not (window.PHANTOMJS or window.mochaPhantomJS) #todo: why is this failing in PhantomJS ?
           expect(_B.isEqual args1, [1, 2, 3]).to.be.false
 
     it "should return `false` when comparing values with circular references to unlike values", ->
@@ -361,13 +362,13 @@ describe 'isEqual:', ->
 
         expect(_B.isEqual hash, arr).to.be.false
         expect(_B.isEqual instance, arr).to.be.false
-        if !window.PHANTOMJS
+        if not (window.PHANTOMJS or window.mochaPhantomJS) #todo: why is this failing in PhantomJS ?
           expect(_B.isEqual args, arr).to.be.false
         expect(_B.isEqual hash, func).to.be.false
 
         expect(_B.isEqual hash, arr, onlyProps:true).to.be.true
         expect(_B.isEqual instance, arr, onlyProps:true).to.be.true
-        if !window.PHANTOMJS
+        if not (window.PHANTOMJS or window.mochaPhantomJS) #todo: why is this failing in PhantomJS ?
           expect(_B.isEqual args, arr, onlyProps:true).to.be.true
         expect(_B.isEqual hash, func, onlyProps:true).to.be.true
         expect(_B.isEqual instance, func, onlyProps:true).to.be.true

@@ -13,4 +13,3 @@ clone = (obj, options)->
       (new DeepCloneBlender [], options).blend obj
 
 module.exports = clone
-

@@ -12,14 +12,14 @@ describe "Logger debug():", ->
       describe "test debug() :", ->
 
         it "default debug() level is also 1:", ->
-          expect(l.debug "something").to.be.not.undefined
+          expect(l.deb "something").to.be.not.undefined
 
         it "does debug() for level 0 or 1:", ->
-          expect(l.debug 0, "something").to.be.not.undefined
-          expect(l.debug 1, "something").to.be.not.undefined
+          expect(l.deb 0, "something").to.be.not.undefined
+          expect(l.deb 1, "something").to.be.not.undefined
 
         it "not debug() for level > 1:", ->
-          expect(l.debug 2, "something").to.be.undefined
+          expect(l.deb 2, "something").to.be.undefined
 
       describe "test deb(level) on default debugLevel :", ->
 
@@ -38,14 +38,14 @@ describe "Logger debug():", ->
       l = new _B.Logger 'title', 0
 
       it "not debug() for default level = 1 :", ->
-        expect(l.debug "something").to.be.undefined
+        expect(l.deb "something").to.be.undefined
 
       it "does debug() for explicit level = 0 :", ->
-        expect(l.debug 0, "something").to.be.not.undefined
+        expect(l.deb 0, "something").to.be.not.undefined
 
       it "not debug() for default level >= 1 :", ->
-        expect(l.debug 1, "something").to.be.undefined
-        expect(l.debug 2, "something").to.be.undefined
+        expect(l.deb 1, "something").to.be.undefined
+        expect(l.deb 2, "something").to.be.undefined
 
     describe "test deb(level) on user set debugLevel = 30:", ->
       l = new _B.Logger 'title', 30

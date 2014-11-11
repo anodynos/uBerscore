@@ -5,8 +5,7 @@
 #                If its null or undefined, empty array is returned (to prevent loops)
 #  @param item <anything> item to place in a (new) array, if its not already.
 
-isAgree = require './../../agreement/isAgree' # not needed, if we have it as a uRequire 'dependencies: exports: bundle'
-                                              # leave it to demonstrate varName inference
+isAgree = require 'agreement/isAgree'
  
 arrayize = (item)-> # fltr is a VERY BAD idea!
   if _.isArray item

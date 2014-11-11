@@ -9,6 +9,7 @@
     "bower_components",
     "source/spec/*.*",
     "source/examples/*.*",
+    "draft/*",
     "build/UMDplainReplaceDep",
     "build/nodejsCompileAndCopy",
     "build/spec_combined",

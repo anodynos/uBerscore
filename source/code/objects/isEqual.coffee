@@ -59,11 +59,11 @@ isEqual = (a, b, callback, ctx, options=isEqual.defaults)->
     callback = undefined # lodash doesnt like non-function callbacks!
     options.callback = undefined
 
-  l.debug 'options = ', options if l.deb 20
+  l.deb 'options = ', options if l.deb 20
 
   # Lets eliminate some rudimentary cases
   if a is b
-    l.debug 'return true - a is b' if l.deb 40
+    l.deb 'return true - a is b' if l.deb 40
     return true
 
   return a.isEqual b if _.isFunction a?.isEqual
@@ -71,7 +71,7 @@ isEqual = (a, b, callback, ctx, options=isEqual.defaults)->
 
   # if we aren't using any _B options, then _.isEqual is enough
   if (_.isEqual isEqual.defaults, (_.pick options, _.keys isEqual.defaults))
-    l.debug "return _.isEqual a, b - no _B.isEqual options" if l.deb 40
+    l.deb "return _.isEqual a, b - no _B.isEqual options" if l.deb 40
     return  _.isEqual a, b, callback, ctx # @todo: needed ? callback was handled before
 
   # check equality of value types, if we dont just care about
@@ -80,7 +80,7 @@ isEqual = (a, b, callback, ctx, options=isEqual.defaults)->
   if not (options.onlyProps and _.isObject(b) and (_.isObject(a) or options.like))
 
     if type(a) isnt type(b) # types returns the real type, eg type(new Number) is 'Number'
-      l.debug 'return false - type(a) isnt type(b) and not options.onlyProps' if l.deb 40
+      l.deb 'return false - type(a) isnt type(b) and not options.onlyProps' if l.deb 40
       return false
 
     isValueType = (x)-> isPlain(x) or _.isFunction(x) # (function is considered a value)
@@ -110,16 +110,16 @@ isEqual = (a, b, callback, ctx, options=isEqual.defaults)->
 
     if options.exact
       if a[prop] isnt b[prop] # `exact` equality required for nested props
-        l.debug 'return false - exact ref not same' if l.deb 40
+        l.deb 'return false - exact ref not same' if l.deb 40
         return false
 
     if not isEqual a[prop], b[prop], callback, ctx, options # 2nd chance: use isEqual instead as last resort!
-      l.debug 'return false - not isEqual nested for prop =', prop, 'values = ', a[prop], b[prop] if l.deb 40
+      l.deb 'return false - not isEqual nested for prop =', prop, 'values = ', a[prop], b[prop] if l.deb 40
       return false
 
     options.path.pop() if _.isArray options.path
 
-  l.debug 'return true - all properties considered true' if l.deb 40
+  l.deb 'return true - all properties considered true' if l.deb 40
   return true
 
 isEqual.defaults =

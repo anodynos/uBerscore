@@ -1,177 +1,89 @@
-# for uRequire comments & examples see Gruntfile_CommentsExamples.coffee
-startsWith = (string, substring) -> string.lastIndexOf(substring, 0) is 0
-S = if process.platform is 'win32' then '\\' else '/'
-nodeBin       = "node_modules#{S}.bin#{S}"
 _ = require 'lodash'
-
-sourceDir     = "source/code"
-buildDir      = "build"
-sourceSpecDir = "source/spec"
-buildSpecDir  = "build/spec"
-
-module.exports = gruntFunction = (grunt) ->
-  pkg = grunt.file.readJSON 'package.json'
-
+module.exports = (grunt)->
   gruntConfig =
     urequire:
-      _defaults:
-        bundle:
-          path: "#{sourceDir}"
-          filez: [/./, '!**/draft/*', '!uRequireConfig*']
-          copy: [/./]
-          main: 'uberscore'
-          resources: [ 'inject-version' ]
-          dependencies: exports: bundle:
-            lodash: ['_']
-            'agreement/isAgree': ['isAgree']
+      _all:
+        dependencies: imports: lodash: ['_']
+        template: banner: true
+        debugLevel: 0
 
-        build:
-          template:
-            banner: """
-             /**
-              * #{ pkg.name } - version #{ pkg.version }
-              * Compiled on #{ grunt.template.today("yyyy-mm-dd h:MM:ss") }
-              * #{ pkg.repository.url }
-              * Copyright(c) #{ grunt.template.today("yyyy") } #{ pkg.author.name } (#{ pkg.author.email } )
-              * Licensed #{ pkg.licenses[0].type } #{ pkg.licenses[0].url }
-              */\n"""
-            debugLevel: 0
+      _defaults: # for lib
+        main: 'uberscore'
+        path: 'source/code'
+        resources: [ 'inject-version' ]
+        dependencies: paths: bower: true
+        runtimeInfo: ['Logger']        
 
-          globalWindow: false
-          runtimeInfo: ['Logger']
-          useStrict: ['!**/*', 'uberscore']
-          injectExportsModule: ['uberscore']
-          exportsRoot: ['script', 'node']
-          clean: true
-#          verbose: true
-#          debugLevel: 0
-
-      UMD:
+      UMD: 
         template: 'UMDplain'
-        dstPath: "#{buildDir}/UMD"
+        dstPath: 'build/UMD'
 
       AMD:
         template: 'AMD'
-        dstPath: "#{buildDir}/AMD"
-        optimize: uglify2:
-          output: beautify: true
-          compress: false
-          mangle: false
+        dstPath: 'build/AMD'
 
       dev:
+        dstPath: 'build/uberscore-dev.js'
         template:
           name: 'combined'
           moduleName: 'uberscore'
 
-        dstPath: "#{buildDir}/uberscore-dev.js"
-
       min:
         derive: ['dev', '_defaults']
-        dstPath: "#{buildDir}/uberscore-min.js"
-        optimize: 'uglify2'
-        filez: ['!blending/deepExtend.coffee']
-
+        dstPath: 'build/uberscore-min.js'
+        optimize: true # 'uglify2'
+        rjs: preserveLicenseComments: false
         resources: [
-          [
-            '+remove:debug/deb & deepExtend', [/./]
-            (m)->
-              for c in ['if (l.deb()){}', 'if (this.l.deb()){}', 'l.debug()', 'this.l.debug()']
-                m.replaceCode c
-
-              if m.path is 'uberscore'
-                m.replaceCode {type: 'Property', key: {type: 'Identifier', name: 'deepExtend'}}
-                m.replaceDep 'blending/deepExtend'
-          ]
+          [ '+remove:debug', [/./]
+            (m)-> m.replaceCode c for c in ['l.deb()', 'this.l.deb()',
+                                            'if (l.deb()){}', 'if (this.l.deb()){}']]
         ]
 
-        rjs: preserveLicenseComments: false
-
       spec:
-        derive: []
-        path: "#{sourceSpecDir}"
-        copy: [/./]
-        dstPath: "#{buildSpecDir}"
-
-        dependencies: exports: bundle:
+        derive: [] # from none
+        path: 'source/spec'
+        dstPath: 'build/spec'
+        dependencies: imports:
           chai: 'chai'
-          lodash: ['_']
           uberscore: ['_B']
-          specHelpers: 'specHelpers'
           'spec-data': 'data'
-
+          specHelpers: 'spH'
+        globalWindow: ['objects/isEqual-spec']
         resources: [
-          [ '+inject-_B.logger', ['**/*.js'], (m)-> m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"]
-
-          ['import',
+          ['import-keys',
             specHelpers: [
-               'equal', 'notEqual', 'ok', 'notOk', 'tru', 'fals' , 'deepEqual', 'notDeepEqual',
-               'exact', 'notExact', 'iqual', 'notIqual', 'ixact', 'notIxact', 'like', 'notLike',
-               'likeBA', 'notLikeBA', 'equalSet', 'notEqualSet' ]
-            chai: ['expect'] ] ]
-#        verbose: true
-#        debugLevel: 40
+              'equal', 'notEqual', 'ok', 'notOk', 'tru', 'fals' , 'deepEqual', 'notDeepEqual', 'exact', 'notExact',
+              'iqual', 'notIqual', 'ixact', 'notIxact', 'like', 'notLike', 'likeBA', 'notLikeBA', 'equalSet', 'notEqualSet' ]
+            chai: ['expect'] ]
 
-      specCombined:
+          [ '+inject-_B.logger', ['**/*.js'],
+            (m)-> m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"]
+        ]
+        afterBuild: require('urequire-ab-specrunner').options
+          injectCode: testNoConflict = "window._B = 'Old global `_B`' ; //test `noConflict()`"
+
+      specDev:
         derive: ['spec']
-        dstPath: "#{buildSpecDir}_combined/index-combined.js"
+        dstPath: 'build/spec_combined/index-combined.js'
         template: name: 'combined'
 
-    watch:
-      options: spawn: false
-      UMD:
-        files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
-        tasks: ['urequire:UMD' , 'urequire:spec', 'mocha:UMD']
-      dev:
-        files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
-        tasks: ['urequire:dev', 'urequire:specCombined', 'concat:specCombinedFakeModule', 'mochaCmdDev']
-      min:
-        files: ["#{sourceDir}/**/*", "#{sourceSpecDir}/**/*"]
-        tasks: ['urequire:min', 'urequire:specCombined', 'concat:specCombinedFakeModuleMin', 'mochaCmdDev', 'run']
+      specWatch:
+        derive: ['spec']
+        watch: true
+        afterBuild: [[null], require('urequire-ab-specrunner').options
+          injectCode: testNoConflict
+          mochaOptions: '-R dot'
+        ]
 
-    shell:
-      mochaCmd: command: "#{nodeBin}mocha #{buildSpecDir}/index --recursive " #--reporter spec"
-      mochaCmdDev: command: "#{nodeBin}mocha #{buildSpecDir}_combined/index-combined --recursive --reporter min"
-      run: command: "#{nodeBin}coffee source/examples/runExample.coffee"
-      options: {verbose: true, failOnError: true, stdout: true, stderr: true}
+    clean: files: ['build']
 
-    mocha:
-      plainScript:
-        src: [
-          "#{buildSpecDir}/SpecRunner_almondJs_noAMD_plainScript.html"
-          "#{buildSpecDir}/SpecRunner_almondJs_noAMD_plainScript_min.html"]
-        options: run: true
-
-      UMD: src: ["#{buildSpecDir}/SpecRunner_unoptimized_UMD.html"]
-      almondAMD: src: ["#{buildSpecDir}/SpecRunner_almondJs_AMD.html"]
-
-    concat:
-      specCombinedFakeModule:
-        options: banner: '{"name":"uberscore", "main":"../../../uberscore-dev.js"}'
-        src:[]
-        dest: "#{buildSpecDir}_combined/node_modules/uberscore/package.json"
-
-      specCombinedFakeModuleMin:
-        options: banner: '{"name":"uberscore", "main":"../../../uberscore-min.js"}'
-        src:[]
-        dest: "#{buildSpecDir}_combined/node_modules/uberscore/package.json"
-
-    clean: files: [buildDir]
-
-  ### shortcuts generation ###
-  splitTasks = (tasks)-> if !_.isString tasks then tasks else (_.filter tasks.split(/\s/), (v)-> v)
-  for task in ['shell', 'urequire']
-    for cmd of gruntConfig[task]
-      grunt.registerTask cmd, splitTasks "#{task}:#{cmd}"
-
+  _ = require 'lodash'
+  splitTasks = (tasks)-> if _.isArray tasks then tasks else _.filter tasks.split /\s/
+  grunt.registerTask shortCut, "urequire:#{shortCut}" for shortCut of gruntConfig.urequire
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
-     default:   "build test dev testDev min testMin run"
-     release:   "clean build test dev testDev min testMin mocha urequire:AMD run"
-     build:     "urequire:UMD"
-
-     test:      "urequire:spec mochaCmd"
-     testDev:   "urequire:specCombined concat:specCombinedFakeModule mochaCmdDev"
-     testMin:   "concat:specCombinedFakeModuleMin mochaCmdDev"
+    default: 'UMD spec' # always in pairs of `lib spec`
+    release: 'AMD spec UMD spec dev specDev min specDev'
+    all: 'clean UMD spec AMD spec dev specDev min specDev UMD specDev AMD specDev dev spec min spec' # once each builds once, its rapid! So test 'em all with all!
   }
-
-  grunt.loadNpmTasks task for task of pkg.devDependencies when startsWith(task, 'grunt-')
+  grunt.loadNpmTasks task for task of grunt.file.readJSON('package.json').devDependencies when task.lastIndexOf('grunt-', 0) is 0
   grunt.initConfig gruntConfig

@@ -2,7 +2,7 @@ Blender = require './Blender'
 
 ###
 A wrapper to a traverseBlender, that simply traverses all nested objects, performing no assignements and not exposing dst at all.
-A new Blender instance is created for each invocation.
+A new Blender instance is created for each invocation. @todo: avoid this ?
 
 @param data {Object|Array} Our nested object or Array in which we visit each item recursivelly (depth first)
                            Deeper current branch recursion stops if false is returned from callback
@@ -37,7 +37,7 @@ traverse = (data, callback)->
           recurse = callback.call(this, prop, src, blender) # we dont expose dst - not needed
         if recurse isnt false
           @blend dummy, @read(src,prop)  # recurse - no real dst needed
-        @SKIP                      # no assignment to dst[prop] ever!
+        @SKIP                            # no assignment to dst[prop] ever!
 
     }], debugLevel:0
   traverseBlender.blend dummy, data

@@ -163,7 +163,7 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
 
         # check if we have options: 1st param is blenderBehavior [], 2nd is options {}
         if _.isArray @blenderBehaviors[0]
-          @l.debug("We might have options:", @blenderBehaviors) if @l.deb 20
+          @l.deb("We might have options:", @blenderBehaviors) if @l.deb 20
           _.extend @, @blenderBehaviors[1] if isHash @blenderBehaviors[1] # user/param @options override all others
           @blenderBehaviors = @blenderBehaviors[0]
 
@@ -312,7 +312,7 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
              (currentBBSrcDstSpec instanceof ActionResult)
                 break # skip all other bbOrder, if it was terminal or found.
 
-          @l.debug("At bbOrder='#{bbOrder}'",
+          @l.deb("At bbOrder='#{bbOrder}'",
                 (if bbOrder is 'path'
                   " @path=#{@l.prettify @path}"
                 else
@@ -339,7 +339,7 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
               # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
               nextBBSrcDstSpec = currentBBSrcDstSpec[bbOrderValues[bbOrder]] or currentBBSrcDstSpec['*']
 
-            @l.debug(
+            @l.deb(
               if nextBBSrcDstSpec is undefined
                 "Found NO nextBBSrcDstSpec - NEXT BlenderBehavior"
               else
@@ -444,7 +444,7 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
           for prop in props # props for {} is ['prop1', 'prop2', ...], for [] its [1,2,3,...]
             @path.push prop
 
-            @l.debug("""
+            @l.deb("""
                 @path = /#{@path.join('/')}
                 '#{type @read dst, prop}'    <--  '#{type @read src, prop}'\n
               """, @read(dst, prop), '    <--  ', @read(src,prop)) if @l.deb 50
@@ -452,7 +452,7 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
             # go through @blenderBehaviors, until an 'action' match is found.
             visitNextBB = true
             for bb, bbi in @blenderBehaviors when visitNextBB
-              @l.debug("Currently at @blenderBehaviors[#{bbi}] =\n", bb) if @l.deb 60
+              @l.deb("Currently at @blenderBehaviors[#{bbi}] =\n", bb) if @l.deb 60
 
               @currentBlenderBehaviorIndex = bbi # @todo: why do we need these ?
               @currentBlenderBehavior = @blenderBehaviors[bbi]
@@ -490,13 +490,13 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
                   result = result[1]
                   visitNextBB = true
 
-                @l.debug("Result handling: @path =", @path.join('/'),
+                @l.deb("Result handling: @path =", @path.join('/'),
                          "\n value =", @l.prettify result) if @l.deb 20
 
                 @resultHandler dst, prop, result
 
               else # we have some special ActionResult:
-                @l.debug("ActionResult = ", result) if @l.deb 30
+                @l.deb("ActionResult = ", result) if @l.deb 30
                 if result in [@DELETE, @DELETE_NEXT]
                   @delete dst, prop
 

@@ -5,10 +5,12 @@ var go = require('./../collections/go');
 
   @param oa Object or Array
   @param Function mutator (v,k) is given the old val & key and returns a new value.
-  @param Filter as in `_B.isAgree`, otherwise this key/value its not mutated. Note: isAgree allows "undefined" as a truthy filter
+  @param Filter as in `_B.isAgree`, otherwise this key/value its not mutated.
+         Note: isAgree allows "undefined" as a truthy filter
 
   @todo: (2 2 2) mutateKey() ?
 */
+var isAgree = require('agreement/isAgree');
 
 var mutate = function(oa, mutator, fltr) {
   if (_.isFunction(mutator)) {

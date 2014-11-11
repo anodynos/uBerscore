@@ -43,9 +43,6 @@
       }
     });
 
-    // lets create two globals, that will be hijacked by uberscore when loaded
-    _B = 'Old global `_B`';
-    uberscore = 'Old global `uberscore`';
 
     console.log("LOADING uberscore via requireJs....");
     require(['uberscore'], function(ub){
@@ -56,29 +53,6 @@
       console.log("ub local dependency variable");
       ub.go(o, {iter: consoleKV});
 
-      // globals _B & uberscore
-      console.log("uberscore global");
-      uberscore.go(o, {iter: consoleKV});
-
-      console.log("_B global, sorted by value");
-      _B.go(o, {iter: consoleKV, sort: function(v){return v} });
-
-      console.log("_B global, sorted by key");
-      _B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
-
-      console.log(_B.okv({}, 'weird &$%$% keys*&&Q', 'are cool! '));
-
-      console.log("Checking noConflict(), reclaim globals _B & uberscore.");
-      console.log("Current values:");
-      console.log(_B);
-      console.log(uberscore);
-      var local_B = _B.noConflict();
-      console.log("noConflict() was called - new values:");
-      console.log("Old global `_B` is '" + _B + "'");
-      console.log("Old global `uberscore` is '" + uberscore + "'");
-
-      console.log("local_B still works, sorted by key");
-      local_B.go(o, {iter: consoleKV, sort: function(v, k){return k} });
     });
   </script>
 </html>

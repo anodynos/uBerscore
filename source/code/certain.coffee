@@ -28,8 +28,8 @@ certain = (o, defaultKey, defaultVal, isStrict=false)->
   (key)->
     val = (o[key] ? o[defaultKey]) ? defaultVal # return either o[key] asked, or o[defaultKey] or defaultVal (in case o[defaultKey] changed)
     if isStrict and _.isUndefined val
-      throw """
-        Error: _B.certain: defaultKey is undefined.
+      throw new Error """
+        _B.certain: defaultKey is undefined.
           defaultVal is also undefined.
           key='#{key}' (o[#{key}] is obviously undefined too)
           defaultKey='#{defaultKey}'
@@ -39,9 +39,3 @@ certain = (o, defaultKey, defaultVal, isStrict=false)->
     val
 
 module.exports = certain
-# @todo: test specs!!!
-#l = console.log
-#o = {a:1,b:2,c:3}
-#cO = certain o, null, undefined
-##l o
-#l cO 'd'
