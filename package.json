@@ -45,6 +45,7 @@
     "grunt-contrib-clean": "0.4.x",
     "urequire": ">=0.7.0-beta8",
     "urequire-rc-inject-version": "^0.1.2",
-    "urequire-rc-import-keys": "^0.1.1"
+    "urequire-rc-import-keys": "^0.1.1",
+    "urequire-ab-specrunner": "*"
   }
 }
