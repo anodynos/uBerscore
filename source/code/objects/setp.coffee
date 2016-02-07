@@ -2,7 +2,7 @@
 #todo rename to set
 ###
   Sets a *value* to an *object*, to a given path that's either:
-  - a texctual description
+  - a textual description
   - an Array<String> of path names
   
   There are some twists while walking the path - see @options

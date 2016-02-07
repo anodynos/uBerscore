@@ -15,7 +15,7 @@ define ->
        )
 
     Uberscore::[key] = val for key, val of { #add to :: from {}, easier to urequire `replaceCode` in an RC :-)
-      # Blender 
+      # Blender
       Blender: require 'blending/Blender'
       traverse: require 'blending/traverse'
       clone: require 'blending/clone'
@@ -66,4 +66,4 @@ define ->
 
     Uberscore::[key] = val for key, val of require 'blending/blenders'#/index.js
 
-  new Uberscore 
+  new Uberscore

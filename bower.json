@@ -1,6 +1,6 @@
 {
   "name": "uberscore",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "main": ["build/uberscore-dev.js", "build/uberscore-min.js"],
   "ignore": [
     "source",
@@ -20,11 +20,11 @@
     "travis.yml"
   ],
   "dependencies": {
-    "lodash": "*"
+    "lodash": "2.x"
   },
   "devDependencies": {
-    "chai": "*",
-    "mocha": "*",
+    "chai": "^1.9.2",
+    "mocha": "1.x.x",
     "requirejs": "*",
     "underscore": "*"
   }

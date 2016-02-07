@@ -1,6 +1,4 @@
 define ->
-  _lodash_dummy_var = require 'lodash'
-
   if _B.deepExtend # removed in 'uberscore-min.js'
     describe 'deepExtend :', ->
       require('./shared/deepExtendExamples-specs') _B.deepExtend

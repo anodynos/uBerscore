@@ -1,4 +1,4 @@
-## Borrowed from Backbone v.1.1 'extend' helper - renamed to subclass to differntiate from _.extend
+## Borrowed from Backbone v.1.1 'extend' helper - renamed to subclass to differentiate from _.extend
 
 # Helper function to correctly set up the prototype chain, for subclasses.
 # Similar to `goog.inherits`, but uses a hash of prototype properties and

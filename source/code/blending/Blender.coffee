@@ -159,13 +159,13 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
               * DONT overwrite `blend` or `_blend` (or `overwrite`, `deepOverwrite` etc)!
       ###
       constructor: (@blenderBehaviors...)->
-        @l = new (require './../Logger') 'uberscore/Blender', @debugLevel
 
         # check if we have options: 1st param is blenderBehavior [], 2nd is options {}
         if _.isArray @blenderBehaviors[0]
-          @l.deb("We might have options:", @blenderBehaviors) if @l.deb 20
           _.extend @, @blenderBehaviors[1] if isHash @blenderBehaviors[1] # user/param @options override all others
           @blenderBehaviors = @blenderBehaviors[0]
+
+        @l = new (require './../Logger') 'uberscore/Blender', @debugLevel
 
         for aClass in @getClasses() by -1 when aClass.behavior
           @blenderBehaviors.push aClass.behavior
@@ -328,13 +328,16 @@ define ['types/type', 'objects/getp', 'types/isHash', 'utils/CoffeeUtils'],
 
           else # nextBBSrcDstSpec is used mainly for debuging
             if bbOrder is 'path'
+              @l.deb  '@isExactPath', @isExactPath, 'path=', @path, '@path[1..]=',@path[1..]
               nextBBSrcDstSpec =
-                getp currentBBSrcDstSpec, @path[1..], {
+                  getp currentBBSrcDstSpec, @path[1..], {
                                terminateKey: if @isExactPath then undefined else @pathTerminator} #default is '|'
+              @l.deb 80, "bbOrder is 'path', nextBBSrcDstSpec=\n", nextBBSrcDstSpec
 
-              if _.isObject nextBBSrcDstSpec
-                nextBBSrcDstSpec = nextBBSrcDstSpec['|']
-
+              if isHash nextBBSrcDstSpec
+#                if nextBBSrcDstSpec[@pathTerminator]
+                  nextBBSrcDstSpec = nextBBSrcDstSpec[@pathTerminator]
+                  @l.deb 80, "found an {} as nextBBSrcDstSpec, reading pathTerminator `#{@pathTerminator}`, nextBBSrcDstSpec=\n", nextBBSrcDstSpec
             else
               # eg `bb = bb['[]']` to give us the bb descr for '[]', if any. Otherwise use default '*'
               nextBBSrcDstSpec = currentBBSrcDstSpec[bbOrderValues[bbOrder]] or currentBBSrcDstSpec['*']

@@ -1,9 +1,11 @@
-_ = require 'lodash'
 module.exports = (grunt)->
   gruntConfig =
     urequire:
       _all:
-        dependencies: imports: lodash: ['_']
+        dependencies:
+          imports: lodash: ['_']
+          paths: bower: true
+          shim: true
         template: banner: true
         debugLevel: 0
 
@@ -11,7 +13,6 @@ module.exports = (grunt)->
         main: 'uberscore'
         path: 'source/code'
         resources: [ 'inject-version' ]
-        dependencies: paths: bower: true
         runtimeInfo: ['Logger']        
 
       UMD: 
@@ -51,38 +52,38 @@ module.exports = (grunt)->
         globalWindow: ['objects/isEqual-spec']
         resources: [
           ['import-keys',
-            specHelpers: [
-              'equal', 'notEqual', 'ok', 'notOk', 'tru', 'fals' , 'deepEqual', 'notDeepEqual', 'exact', 'notExact',
-              'iqual', 'notIqual', 'ixact', 'notIxact', 'like', 'notLike', 'likeBA', 'notLikeBA', 'equalSet', 'notEqualSet' ]
-            chai: ['expect'] ]
+            specHelpers: """
+              equal, notEqual, ok, notOk, tru, fals, deepEqual, notDeepEqual, exact, notExact, iqual,
+              notIqual, ixact, notIxact, like, notLike, likeBA, notLikeBA, equalSet, notEqualSet"""
+            chai: 'expect' ]
 
           [ '+inject-_B.logger', ['**/*.js'],
             (m)-> m.beforeBody = "var l = new _B.Logger('#{m.dstFilename}');"]
         ]
         afterBuild: require('urequire-ab-specrunner').options
-          injectCode: testNoConflict = "window._B = 'Old global `_B`' ; //test `noConflict()`"
+          injectCode: testNoConflict = "window._B = 'Old global `_B`'; //test `noConflict()`"
 
       specDev:
         derive: ['spec']
-        dstPath: 'build/spec_combined/index-combined.js'
+        dstPath: 'build/spec_combied/index-combined.js'
         template: name: 'combined'
 
       specWatch:
         derive: ['spec']
-        watch: true
         afterBuild: [[null], require('urequire-ab-specrunner').options
           injectCode: testNoConflict
           mochaOptions: '-R dot'
+          watch: 1439
         ]
 
     clean: files: ['build']
 
-  _ = require 'lodash'
-  splitTasks = (tasks)-> if _.isArray tasks then tasks else _.filter tasks.split /\s/
+  splitTasks = (tasks)-> if (tasks instanceof Array) then tasks else tasks.split(/\s/).filter((f)->!!f)
   grunt.registerTask shortCut, "urequire:#{shortCut}" for shortCut of gruntConfig.urequire
   grunt.registerTask shortCut, splitTasks tasks for shortCut, tasks of {
-    default: 'UMD spec' # always in pairs of `lib spec`
-    release: 'AMD spec UMD spec dev specDev min specDev'
+    default: 'clean UMD spec' # always in pairs of `lib spec`
+    release: 'clean AMD spec UMD spec dev specDev min specDev'
+    develop: 'clean dev specWatch'
     all: 'clean UMD spec AMD spec dev specDev min specDev UMD specDev AMD specDev dev spec min spec' # once each builds once, its rapid! So test 'em all with all!
   }
   grunt.loadNpmTasks task for task of grunt.file.readJSON('package.json').devDependencies when task.lastIndexOf('grunt-', 0) is 0
