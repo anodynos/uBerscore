@@ -344,7 +344,7 @@ describe 'isEqual:', ->
         b.prop = 1
         expect(_B.isEqual a, b, onlyProps:true).to.be.true
 
-      it 'works on property containers hashes, instances, ?Arguments?, Functions & Arrays etc:', ->
+      describe "works on different type of property containers like", ->
         hash = {'0':1, '1':2, '2':3}
         arr = [1, 2, 3]
         args = do (a=1, b=2, c=3)-> arguments
@@ -358,20 +358,30 @@ describe 'isEqual:', ->
             @['0'] = 1
             @['1'] = 2
             @['2'] = 3
+
         instance = new A
 
-        expect(_B.isEqual hash, arr).to.be.false
-        expect(_B.isEqual instance, arr).to.be.false
-        if not (window.PHANTOMJS or window.mochaPhantomJS) #todo: why is this failing in PhantomJS ?
-          expect(_B.isEqual args, arr).to.be.false
-        expect(_B.isEqual hash, func).to.be.false
+#        it 'hashe against  instances, ?Arguments?, Functions & Arrays etc:', ->
+        it 'hash against array', ->
+          fals _B.isEqual hash, arr
+          tru _B.isEqual hash, arr, onlyProps:true
 
-        expect(_B.isEqual hash, arr, onlyProps:true).to.be.true
-        expect(_B.isEqual instance, arr, onlyProps:true).to.be.true
-        if not (window.PHANTOMJS or window.mochaPhantomJS) #todo: why is this failing in PhantomJS ?
-          expect(_B.isEqual args, arr, onlyProps:true).to.be.true
-        expect(_B.isEqual hash, func, onlyProps:true).to.be.true
-        expect(_B.isEqual instance, func, onlyProps:true).to.be.true
+        it 'instance against array', ->
+          fals _B.isEqual instance, arr
+          tru _B.isEqual instance, arr, onlyProps:true
+
+        it 'arguments against array', ->
+          if not (window.PHANTOMJS or window.mochaPhantomJS) #todo: why is this failing in PhantomJS ?
+            fals _B.isEqual args, arr
+            tru _B.isEqual args, arr, onlyProps:true
+
+        it 'hash against function', ->
+          fals _B.isEqual hash, func
+          tru _B.isEqual hash, func, onlyProps:true
+
+        it 'instance against function', ->
+          fals _B.isEqual instance, func
+          tru _B.isEqual instance, func, onlyProps:true
 
     describe "works along with like:", ->
 
@@ -587,5 +597,3 @@ describe 'isEqual:', ->
       expect(_B.isLike b1, a1, path:path1=[], undefined, path:path2=[]).to.be.false
       expect(path1).to.be.deep.equal ['b', 'b2']
       expect(path2).to.be.empty
-
-

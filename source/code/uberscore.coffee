@@ -40,7 +40,6 @@ define ->
       isOk: (val)-> !!val
 
       # Collections
-      go: require 'collections/go'
       isEqualArraySet: require "collections/array/isEqualArraySet"
       arrayize: require 'collections/array/arrayize'
 

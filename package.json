@@ -30,22 +30,23 @@
     "test": "grunt clean release"
   },
   "engines": {
-    "node": ">=0.10"
+    "node": ">=0.10 <=5"
   },
   "dependencies": {
-    "lodash": "~2.x"
+    "lodash": "3.x"
   },
   "devDependencies": {
-    "chai": "^1.9.2",
-    "mocha": "1.x.x",
-    "coffee-script": "*",
+    "chai": "3.5.x",
+    "mocha": "2.4.x",
+    "coffee-script": "1.10.x",
     "grunt": "0.4.5",
     "grunt-urequire": "0.7.2",
-    "grunt-contrib-watch": "0.5.x",
-    "grunt-contrib-clean": "0.4.x",
+    "grunt-contrib-watch": "0.6.x",
+    "grunt-contrib-clean": "1.0.x",
     "urequire": ">=0.7.0-beta.25",
     "urequire-rc-inject-version": "^0.1.6",
     "urequire-rc-import-keys": "^0.1.4",
+    "urequire-ab-grunt-contrib-watch": "^0.0.x",
     "urequire-ab-specrunner": "^0.2.2"
   }
 }

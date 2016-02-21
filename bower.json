@@ -20,7 +20,7 @@
     "travis.yml"
   ],
   "dependencies": {
-    "lodash": "2.x"
+    "lodash": "3.x"
   },
   "devDependencies": {
     "chai": "^1.9.2",

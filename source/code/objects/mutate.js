@@ -1,5 +1,3 @@
-var go = require('./../collections/go');
-
 /*
   Mutates the `Value` for each of the `Keys` of a given Object or Array
 
@@ -14,12 +12,10 @@ var isAgree = require('agreement/isAgree');
 
 var mutate = function(oa, mutator, fltr) {
   if (_.isFunction(mutator)) {
-    go(oa, {
-      iter: function(v, k) {
-        if (isAgree(v, fltr)) {
-          return oa[k] = mutator(v);
+    _.each(oa, function(val, key) {
+        if (isAgree(val, fltr)) {
+          return oa[key] = mutator(val, key);
         }
-      }
     });
   }
   return oa;

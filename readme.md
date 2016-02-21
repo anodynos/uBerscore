@@ -1,13 +1,13 @@
-# uBerscore v0.0.17
+# uBerscore v0.0.18
 
 [![Build Status](https://travis-ci.org/anodynos/uBerscore.png)](https://travis-ci.org/anodynos/uBerscore)
-[![Up to date Status](https://david-dm.org/anodynos/uBerscore.png)](https://david-dm.org/anodynos/uBerscore.png)
+[![Up to date Status](https://david-dm.org/anodynos/uBerscore.png)](https://david-dm.org/anodynos/uBerscore)
 
-An anorthodox, extensible, overloaded, highly experimental facade of *underscore* facilities & leftovers.
+An anorthodox, extensible, overloaded, experimental facade of *underscore* facilities & leftovers.
 
-uBerscore.js is an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality that underscore doesn't and wouldn't have, and its highly build on the great `_`.
+uBerscore.js offers some functionality that underscore/lodash doesn't have (or didn't have at the time of authoring) - its highly build around the great `_`.
 
-There will be no documentation before 0.1 and consider it likely to change...
+Sorry, no documentation before 0.1.x and some features might change.
 
 But do see:
 
@@ -22,7 +22,7 @@ Note: [uBerscore-dev.js](https://github.com/anodynos/uBerscore/blob/master/build
 # License
 The MIT License
 
-Copyright (c) 2012 Agelos Pikoulas (agelos.pikoulas@gmail.com)
+Copyright (c) 2012 Angelos Pikoulas (agelos.pikoulas@gmail.com)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
