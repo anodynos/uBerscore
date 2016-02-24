@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="utf-8" /><title>urequire-ab-specrunner:lib.target:'AMD', spec.target:'spec'</title></head><body><h3>Auto generated spec runner by `urequire-ab-specrunner` v'0.2.4</h3><style>.tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}
+  .tg td{font-family:Arial, sans-serif;font-size:14px;padding:3px 20px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}
+  .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:3px 20px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}
+  .tg .tg-70v4{background-color:#cbcefb;color:#000000}</style><table class="tg"><tr><td class="tg-70v4">Loader</td><td class="tg-031e">AMD (RequireJS `../../bower_components/requirejs/require.js`)</td></tr><tr><td class="tg-70v4">.globals</td><td class="tg-031e">.globals(['_', 'chai', '_uB', '_B'])</td></tr><tr><td class="tg-70v4">loaded deps</td><td class="tg-031e">chai, lodash</td></tr><tr><td class="tg-70v4">watch</td><td class="tg-031e">disabled</td></tr></table><table class="tg"><tr><th class="tg-031e"></th><th class="tg-031e">lib</th><th class="tg-031e">spec</th></tr><tr><td class="tg-70v4">build.dstPath</td><td class="tg-031e">build/AMD</td><td class="tg-031e">build/spec</td></tr><tr><td class="tg-70v4">build.dstMainFilename</td><td class="tg-031e">uberscore.js</td><td class="tg-031e">none (all spec files loaded)</td></tr><tr><td class="tg-70v4">build.target</td><td class="tg-031e">AMD</td><td class="tg-031e">spec</td></tr><tr><td class="tg-70v4">bundle.name</td><td class="tg-031e">undefined</td><td class="tg-031e">undefined</td></tr><tr><td class="tg-70v4">build.template</td><td class="tg-031e">AMD</td><td class="tg-031e">UMDplain</td></tr></table><div id="mocha"></div></body><link rel="stylesheet" href="../../bower_components/mocha/mocha.css" /><script src="../../bower_components/mocha/mocha.js"></script><script src="../../bower_components/chai/chai.js"></script><script>window._B = 'Old global `_B`'; //test `noConflict()`</script><script>mocha.setup('bdd');</script><script src="../../bower_components/requirejs/require.js"></script><script>require.config({
+  "baseUrl": "../AMD",
+  "paths": {
+    "chai": [
+      "../../bower_components/chai/chai"
+    ],
+    "lodash": [
+      "../../bower_components/lodash/dist/lodash.compat"
+    ],
+    "uberscore": "uberscore",
+    "libToSpecPath": "../spec"
+  },
+  "shim": {
+    "chai": {
+      "deps": [],
+      "exports": "chai"
+    },
+    "lodash": {
+      "deps": [],
+      "exports": "_"
+    }
+  }
+});</script><!--Invoke `mocha.run()` as AMD, taking care of phantomjs--><script>require(['libToSpecPath/agreement/inAgreements-spec', 'libToSpecPath/agreement/isAgree-spec', 'libToSpecPath/blending/ArrayizeBlender-spec', 'libToSpecPath/blending/Blender-spec', 'libToSpecPath/blending/clone-spec', 'libToSpecPath/blending/DeepDefaultsBlender-spec', 'libToSpecPath/blending/deepExtend-spec', 'libToSpecPath/blending/lodash-merge-spec', 'libToSpecPath/blending/Mergers_Blender-spec', 'libToSpecPath/blending/shared/deepExtendExamples-specs', 'libToSpecPath/blending/shared/lodashMerge_Blender-specs', 'libToSpecPath/blending/shared/lodashMerge-specs', 'libToSpecPath/blending/traverse-spec', 'libToSpecPath/collections/array/arrayize-spec', 'libToSpecPath/collections/array/isEqualArraySet-spec', 'libToSpecPath/Logger-spec', 'libToSpecPath/objects/getInheritedPropertyNames-spec', 'libToSpecPath/objects/getp-spec', 'libToSpecPath/objects/getRefs-spec', 'libToSpecPath/objects/isDisjoint-spec', 'libToSpecPath/objects/isEqual-spec', 'libToSpecPath/objects/isOK-True-False-spec', 'libToSpecPath/objects/isRefDisjoint-spec', 'libToSpecPath/objects/mutate-spec', 'libToSpecPath/objects/okv-spec', 'libToSpecPath/objects/setp-spec', 'libToSpecPath/spec-data', 'libToSpecPath/specHelpers', 'libToSpecPath/types/types-spec', 'libToSpecPath/uberscore-spec', 'libToSpecPath/utils/CalcCachedProperties-spec', 'libToSpecPath/utils/CoffeeUtils-spec'], function() {
+
+  if (window.mochaPhantomJS) {
+    mochaPhantomJS.run().globals(['_', 'chai', '_uB', '_B']);
+  } else {
+    mocha.run().globals(['_', 'chai', '_uB', '_B']);
+  }
+});</script></html>

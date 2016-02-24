@@ -2,7 +2,7 @@
 * uberscore https://github.com/anodynos/uBerscore
 *
 * uBerscore js is (still) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality & shortcuts that underscore doesn't, wouldn't, shouldn't have.
-* Version 0.0.18 - Compiled on 2016-02-21 19:54:30
+* Version 0.0.18 - Compiled on 2016-02-24 21:18:59
 * Repository git://github.com/anodynos/uBerscore
 * Copyright(c) 2016 Agelos Pikoulas <agelos.pikoulas@gmail.com>
 * License MIT http://www.opensource.org/licenses/mit-license.php
@@ -1925,7 +1925,7 @@ isDisjoint = function (oa1, oa2, equality) {
   }
   found = false;
   _.each(oa1, function (v1) {
-    if (_.any(oa2, function (v2) {
+    if (_.some(oa2, function (v2) {
         return equality(v1, v2);
       })) {
       found = true;
@@ -2240,7 +2240,7 @@ getProps = function (oa, options) {
     options = {};
   }
   isExcluded = function (prop) {
-    return _.any(options.exclude, function (p) {
+    return _.some(options.exclude, function (p) {
       return p + "" === prop + "";
     });
   };

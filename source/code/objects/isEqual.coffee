@@ -132,16 +132,15 @@ isEqual.defaults =
   path: undefined # path: pass an Array, populated with key/index as objects/arrays are traversed - usefull for debuging!
 
   exclude: [] # keys to be excluded - <String> of excluded key names.
-              # todo: NOT IMPLEMNTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
+              # todo: NOT IMPLEMENTED: Array<String> & a Function, then its called with (key, val, ??) that excludes calls returning true
 
   allProps: false # if true, all props are considered for all Object types (eg Array props but also String, Number etc)
 
   onlyProps: false # if true, equality only cares about properties, NOT values OR types of function, Number, Boolean etc
                    # forces allProps behavior on all types (incl Arrays)
 
-
 getProps = (oa, options={})->
-  isExcluded = (prop)-> _.any options.exclude, (p)->p+'' is prop+'' # allows to check for 3 or '3'
+  isExcluded = (prop)-> _.some options.exclude, (p)->p+'' is prop+'' # allows to check for 3 or '3'
 
   if _.isArray(oa) and not (options.allProps or options.onlyProps)
     i for i in [0...oa.length] when not isExcluded i
