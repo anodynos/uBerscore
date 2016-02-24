@@ -2,7 +2,7 @@
 * uberscore https://github.com/anodynos/uBerscore
 *
 * uBerscore js is (still) an early experiment: a 'higher' level data manipulator for all kinds of js collections (objects+arrays); it offers functionality & shortcuts that underscore doesn't, wouldn't, shouldn't have.
-* Version 0.0.18 - Compiled on 2016-02-24 21:18:54
+* Version 0.0.18 - Compiled on 2016-02-24 21:59:47
 * Repository git://github.com/anodynos/uBerscore
 * Copyright(c) 2016 Agelos Pikoulas <agelos.pikoulas@gmail.com>
 * License MIT http://www.opensource.org/licenses/mit-license.php

@@ -13,9 +13,9 @@ module.exports = (grunt)->
         main: 'uberscore'
         path: 'source/code'
         resources: [ 'inject-version' ]
-        runtimeInfo: ['Logger']        
+        runtimeInfo: ['Logger']
 
-      UMD: 
+      UMD:
         template: 'UMDplain'
         dstPath: 'build/UMD'
 
@@ -76,7 +76,9 @@ module.exports = (grunt)->
           watch: 1439
         ]
 
-    clean: files: ['build']
+    clean:
+      files: ['build']
+      options: force: true
 
   splitTasks = (tasks)-> if (tasks instanceof Array) then tasks else tasks.split(/\s/).filter((f)->!!f)
   grunt.registerTask shortCut, "urequire:#{shortCut}" for shortCut of gruntConfig.urequire
