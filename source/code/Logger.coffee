@@ -1,6 +1,26 @@
 inAgreements = require './agreement/inAgreements'
 setp = require './objects/setp'
 getp = require './objects/getp'
+
+ANSI_RESET = "\u001B[0m"
+ANSI_BLACK = "\u001B[30m"
+ANSI_RED = "\u001B[31m"
+ANSI_GREEN = "\u001B[32m"
+ANSI_YELLOW = "\u001B[33m"
+ANSI_BLUE = "\u001B[34m"
+ANSI_PURPLE = "\u001B[35m"
+ANSI_CYAN = "\u001B[36m"
+ANSI_WHITE = "\u001B[37m"
+
+ANSI_BLACK_BOLD = "\u001B[30;1m"
+ANSI_RED_BOLD = "\u001B[31;1m"
+ANSI_GREEN_BOLD = "\u001B[32;1m"
+ANSI_YELLOW_BOLD = "\u001B[33;1m"
+ANSI_BLUE_BOLD = "\u001B[34;1m"
+ANSI_PURPLE_BOLD = "\u001B[35;1m"
+ANSI_CYAN_BOLD = "\u001B[36;1m"
+ANSI_WHITE_BOLD = "\u001B[37;1m"
+
 ###
   The simplest possible powerfull Logger
 
@@ -56,7 +76,7 @@ getp = require './objects/getp'
     * New lines in front of 1st arg are respected & printed before title
 ###
 
-module.exports = class Logger
+class Logger
   constructor: (debugPath=[], @debugLevel)->
     @setDebugPath debugPath
     Logger.loggerCount = (Logger.loggerCount or 0) + 1
@@ -206,32 +226,13 @@ module.exports = class Logger
       (o)->o #todo: check for "can't convert to primitive type"' cases, and convert to string representation. http://docstore.mik.ua/orelly/webprog/jscript/ch03_12.htm
   prettify: Logger.prettify # available on each instance
 
-  err:  getALog "ERROR", ANSI_RED, console.error 
-  er:  getALog "ERRor", ANSI_RED_BOLD, console.log
-  warn: getALog "WARNING", ANSI_YELLOW_BOLD, console.log # yellow
-  verbose: getALog "", ANSI_CYAN_BOLD, console.log       # purple
-  ver: @::verbose                                   # alias
-  ok: getALog "", ANSI_GREEN_BOLD, console.log           # green
-  log: getALog "", ANSI_RESET, console.log          # white
-
-  ANSI_RESET = "\u001B[0m"
-  ANSI_BLACK = "\u001B[30m"
-  ANSI_RED = "\u001B[31m"
-  ANSI_GREEN = "\u001B[32m"
-  ANSI_YELLOW = "\u001B[33m"
-  ANSI_BLUE = "\u001B[34m"
-  ANSI_PURPLE = "\u001B[35m"
-  ANSI_CYAN = "\u001B[36m"
-  ANSI_WHITE = "\u001B[37m"
-
-  ANSI_BLACK_BOLD = "\u001B[30;1m"
-  ANSI_RED_BOLD = "\u001B[31;1m"
-  ANSI_GREEN_BOLD = "\u001B[32;1m"
-  ANSI_YELLOW_BOLD = "\u001B[33;1m"
-  ANSI_BLUE_BOLD = "\u001B[34;1m"
-  ANSI_PURPLE_BOLD = "\u001B[35;1m"
-  ANSI_CYAN_BOLD = "\u001B[36;1m"
-  ANSI_WHITE_BOLD = "\u001B[37;1m"
+  err:  getALog "ERROR", ANSI_RED_BOLD, console.error #red
+  er:  getALog "ERRor", ANSI_RED, console.log    #red
+  warn: getALog "WARNING", ANSI_YELLOW_BOLD, console.log #yellow
+  verbose: getALog "", ANSI_CYAN_BOLD, console.log     #purple
+  ver: @::verbose                                    # alias
+  ok: getALog "", ANSI_GREEN_BOLD, console.log          #green
+  log: getALog "", ANSI_WHITE_BOLD, console.log          #white
 
   # create a `default` instance and add static class methods for 'log', 'warn' etc,
   # bound with this default instance
@@ -241,3 +242,24 @@ module.exports = class Logger
       Logger[key] = _.bind val, Logger.logger
     else
       Logger[key] = val
+
+module.exports = Logger
+
+#ANSI_RESET = "\u001B[0m"
+#ANSI_BLACK = "\u001B[30m"
+#ANSI_RED = "\u001B[31m"
+#ANSI_GREEN = "\u001B[32m"
+#ANSI_YELLOW = "\u001B[33m"
+#ANSI_BLUE = "\u001B[34m"
+#ANSI_PURPLE = "\u001B[35m"
+#ANSI_CYAN = "\u001B[36m"
+#ANSI_WHITE = "\u001B[37m"
+#
+#ANSI_BLACK_BOLD = "\u001B[30;1m"
+#ANSI_RED_BOLD = "\u001B[31;1m"
+#ANSI_GREEN_BOLD = "\u001B[32;1m"
+#ANSI_YELLOW_BOLD = "\u001B[33;1m"
+#ANSI_BLUE_BOLD = "\u001B[34;1m"
+#ANSI_PURPLE_BOLD = "\u001B[35;1m"
+#ANSI_CYAN_BOLD = "\u001B[36;1m"
+#ANSI_WHITE_BOLD = "\u001B[37;1m"

@@ -88,5 +88,6 @@ module.exports = (grunt)->
     develop: 'clean dev specWatch'
     all: 'clean UMD spec AMD spec dev specDev min specDev UMD specDev AMD specDev dev spec min spec' # once each builds once, its rapid! So test 'em all with all!
   }
-  grunt.loadNpmTasks task for task of grunt.file.readJSON('package.json').devDependencies when task.lastIndexOf('grunt-', 0) is 0
+
+  require('load-grunt-tasks')(grunt);
   grunt.initConfig gruntConfig
