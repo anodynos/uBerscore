@@ -37,7 +37,7 @@ module.exports = (grunt)->
         resources: [
           [ '+remove:debug', [/./]
             (m)-> m.replaceCode c for c in ['l.deb()', 'this.l.deb()',
-                                            'if (l.deb()){}', 'if (this.l.deb()){}']]
+              'if (l.deb()){}', 'if (this.l.deb()){}']]
         ]
 
       spec:
