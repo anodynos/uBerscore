@@ -23,7 +23,7 @@ oOs = { #@ todo: provide ALL test cases from The Good Parts !
     Object.create(AClass.prototype)
   ] # also works for plain objects {}, BUT NOT for Function and Array
 }
-describe.only 'types & its associates:', ->
+describe 'types & its associates:', ->
 
   describe "`type` distisquishes all types", ->
     for typeName, values of oOs
@@ -34,12 +34,12 @@ describe.only 'types & its associates:', ->
             shortType = _B.type(value, true)
           )->
             it "`type` recognises value of type '#{typeName}' both as long='#{longType}', as short='#{shortType}", ->
+#            it "`type` recognises value of type '#{typeName}'", ->
               expect( longType ).to.equal _B.type.toLong(typeName)
               expect(_B.type.isType longType ).to.be.true
-
+#
               expect( shortType ).to.equal _B.type.toShort(typeName)
               expect(_B.type.isType shortType ).to.be.true
-
               expect( _B.type.areEqual longType, shortType).to.be.true
     null
 

@@ -1,11 +1,25 @@
-# @todo: provide a more plausible implementation, instead of a looping ?
+###
+#  OLD non plausible implementation:
+#   looping on lodash's isXXX function in a particular order (that's not even guaranteed!)
+###
+#type = (o, isShort=false)->
+#  for long, shorts of type.TYPES
+#    if _["is#{long}"] o
+#      return if isShort then shorts[0] else long
+#
+#  return 'UNKNOWN'
 
-type = (o, isShort=false)->
-  for long, shorts of type.TYPES
-    if _["is#{long}"] o
-      return if isShort then shorts[0] else long
+# based on Ramda - see here https://stackoverflow.com/a/48937590/799502
+type = (val, isShort=false) ->
+  long =
+    if val is null
+      'Null'
+    else if val is undefined
+      'Undefined'
+    else
+      Object.prototype.toString.call(val).slice(8, -1);
 
-  return 'UNKNOWN'
+  if isShort then type.TYPES[long][0] else long
 
 type.toShort = (aType)->
   if type.TYPES[aType]
