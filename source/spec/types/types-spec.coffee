@@ -11,12 +11,19 @@ oOs = { #@ todo: provide ALL test cases from The Good Parts !
   'Number':     [ 667, new Number(668.13) ]
   'Date':       [ new Date() ]
   'RegExp':     [ /./g, new RegExp('/./') ]
-  'Boolean':    [ true, false, new Boolean(true) ]
+  'Boolean':    [ true, false, new Boolean(true),  new Boolean(false)]
   'Null':       [ null ]
   'Undefined':  [ undefined, `void 0`, do -> ]
-  'Object':     [ {someProp:'SomeVal'}, anInstance, new Object, new -> ] # also works for plain objects {}, BUT NOT for Function and Array
+  'Object':     [
+    {someProp:'SomeVal'},
+    anInstance,
+    new Object,
+    (new ->),
+    Object.create(null)
+    Object.create(AClass.prototype)
+  ] # also works for plain objects {}, BUT NOT for Function and Array
 }
-describe 'types & its associates:', ->
+describe.only 'types & its associates:', ->
 
   describe "`type` distisquishes all types", ->
     for typeName, values of oOs

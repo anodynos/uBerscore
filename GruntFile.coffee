@@ -72,7 +72,7 @@ module.exports = (grunt)->
         derive: ['spec']
         afterBuild: [[null], require('urequire-ab-specrunner').options
           injectCode: testNoConflict
-          mochaOptions: '-R dot'
+#          mochaOptions: '-R dot'
           watch: 1439
         ]
 
