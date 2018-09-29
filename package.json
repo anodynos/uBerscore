@@ -44,7 +44,7 @@
     "grunt-urequire": "^0.7.3",
     "load-grunt-tasks": "^3.5.0",
     "mocha": "^2.5.2",
-    "urequire": ">=0.7.0-beta.28",
+    "urequire": "0.7.0-beta.29",
     "urequire-ab-grunt-contrib-watch": "^0.0.x",
     "urequire-ab-specrunner": "^0.2.5",
     "urequire-rc-import-keys": "^0.1.4",
