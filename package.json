@@ -33,7 +33,7 @@
     "node": ">=0.10 <=10"
   },
   "dependencies": {
-    "lodash": "3.x"
+    "lodash": "4.x"
   },
   "devDependencies": {
     "chai": "^3.5.0",
